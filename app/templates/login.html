@@ -1,0 +1,50 @@
+{% extends 'mainpage.html' %}
+
+
+{% block content %}
+
+<html>
+    <div>
+        <div class="form-content">
+            <h1 class="form-heading">Login</h1>
+    
+            <form method="POST" action="">
+                {% csrf_token %}
+                
+                
+                <div>
+                    <label  for="username">Username</label>
+                    <input type="text" name="username" id="username" placeholder="Username...">
+                </div>
+    
+                
+                <div>
+                    <label for="password">Password</label>
+                    <input type="password" name="password" id="password" placeholder="Password..." class="form-control">
+                </div>
+    
+                
+                <div class="form-submit">
+                    <input type="submit" value="Login" class="submit-btn">
+                </div>
+    
+                
+                {% for message in messages %}
+                    <p class="error-msg">{{ message }}</p>
+                {% endfor %}
+            </form>
+    
+            
+            <div class="signup-redirect">
+                <p class="account-label">Don't have an account? <a href="{% url 'register' %}" class="signup-link">Sign Up</a></p>
+            </div>
+        </div>
+    </div>
+
+</html>
+
+
+
+
+
+{% endblock %}

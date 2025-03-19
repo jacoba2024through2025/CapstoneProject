@@ -1,0 +1,62 @@
+{% extends 'mainpage.html' %}
+
+
+{% block content %}
+
+    <h1>Register Page</h1>
+
+    <html>
+        <!-- The main container for the form -->
+    <div>
+        <div>
+            <h1>Sign Up</h1>
+
+            <form method="POST" action="">
+                {% csrf_token %}
+
+                <!-- Username input -->
+                <div>
+                    <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+                    {{ form.username }}
+                </div>
+
+                
+
+                <!-- Password input -->
+                <div>
+                    <label for="{{ form.password1.id_for_label }}">{{ form.password1.label }}</label>
+                    {{ form.password1 }}
+                </div>
+
+                <!-- Confirm password input -->
+                <div>
+                    <label for="{{ form.password2.id_for_label }}">{{ form.password2.label }}</label>
+                    {{ form.password2 }}
+                </div>
+
+                <!-- Submit button -->
+                <div>
+                    <input type="submit" value="Create User">
+                </div>
+
+                <!-- Login redirect link -->
+                <div>
+                    <p>Already have an account? <a href="{% url 'login' %}"> Log in</a></p>
+                </div>
+
+                <div>
+                    <p><a href="{% url 'home' %}">Continue as a guest.</a> </p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</html>
+
+    
+
+
+
+
+
+{% endblock %}
