@@ -57,3 +57,6 @@ def register(request):
 def viewLogout(request):
     logout(request)
     return redirect('login')
+
+def viewProducts(request):
+    return render(request, 'products.html')
