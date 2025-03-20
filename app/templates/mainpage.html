@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="{% static "css/templatemo-sixteen.css" %}"/>
     <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&display=swap" rel="stylesheet">
     <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
-    
+    <link rel="stylesheet" href="{% static "css/register.css" %}"/>
 
     
 
@@ -42,6 +42,14 @@
                 <li class="nav-item">
                   <a class="nav-link" href="contact.html">Contact Us</a>
                 </li>
+                {% if request.user.is_authenticated %}
+                  <li class="nav-item">
+                    <p>Welcome Back, {{request.user}}</p>
+                    <span><a href="{% url 'logout' %}">Logout</a></span>
+                  </li>
+                {% else %}
+                  <span><a href="{% url 'register' %}"></i>Sign Up</a></span>
+                {% endif %}
               </ul>
             </div>
           </div>
@@ -50,16 +58,9 @@
     </main>
 
 
-    {% block content %}
-        {% comment %} <h1>Yeah</h1>
 
-          {% if request.user.is_authenticated %}
-            <h1>User logged in:{{request.user}}</h1>
-            <span><a href="{% url 'logout' %}">Logout</a></span>
-          {% else %}
-            <h1>You are not</h1>
-            <span><a href="{% url 'register' %}"></i>Sign Up</a></span>
-          {% endif %} {% endcomment %}
+    {% block content %}
+        
 
     <div class="best-features">
       <div class="container">

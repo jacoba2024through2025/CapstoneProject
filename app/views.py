@@ -12,6 +12,30 @@ def view_main_page(request):
     return render(request, "mainpage.html")
 
 def view_login(request):
+    
+    
+    
+
+    
+    return render(request, 'register.html')
+
+def register(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+
+    form = CreateUserForm()
+
+    if request.method == "POST":
+        form = CreateUserForm(request.POST)
+        if form.is_valid():
+            form.save()
+            user = form.cleaned_data.get("username")
+            messages.success(request, "Account created successfully! Please login.")
+            return redirect('register')  
+
+    context = {'form': form}
+
+
     if request.user.is_authenticated:
         print("You are already logged in")
         return redirect('home')
@@ -35,28 +59,11 @@ def view_login(request):
             messages.error(request, "Username or Password is Incorrect")
             print("Authentication failed")
 
-    
-    return render(request, 'login.html')
-
-def register(request):
-    if request.user.is_authenticated:
-        return redirect('home')
-
-    form = CreateUserForm()
-
-    if request.method == "POST":
-        form = CreateUserForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Account created successfully! Please login.")
-            return redirect('login')  
-
-    context = {'form': form}
     return render(request, 'register.html', context)
 
 def viewLogout(request):
     logout(request)
-    return redirect('login')
+    return redirect('register')
 
 def viewProducts(request):
     return render(request, 'products.html')
