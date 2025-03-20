@@ -4,6 +4,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&display=swap" rel="stylesheet">
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/fontawsome.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/owl.css' %}" />
 
     <link
       rel="icon"
@@ -11,37 +16,12 @@
       href="{% static 'images\Westletics.png' %}"
     />
 
-    <title>{% block title %}{% endblock tittle %}</title>
-  </head>
-  <body>
-    <header>
-      <nav class="navbar navbar-expand-lg">
-        <div class="container">
-          <div class="collapse navbar-collapse" id="navbarResponsive">
-            <ul class="navbar-nav ml-auto">
-              <li class="nav-item active">
-                <a class="nav-link" href="{% url 'home' %}"
-                  >Home
-                  <span class="sr-only">(current)</span>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'products' %}">Our Products</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'products' %}"
-                  >Scheduling Services</a
-                >
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'contact' %}">Contact Us</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
-    </header>
+    <title>{% block title %}{% endblock title %}</title>
+  
 
     {% block content %}{% endblock content %}
+
+    
+    
   </body>
 </html>

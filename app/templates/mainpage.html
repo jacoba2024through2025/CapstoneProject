@@ -1,24 +1,10 @@
 {% load static %}
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Westletics</title>
-    <link rel="stylesheet" href="{% static "styles.css" %}"/>
-    
 
-    
-
-  </head>
-  <body>
-    <main>
-        <h1>This is the main page</h1>  
-    </main>
+{% block title %}Westletics{% endblock title %}
 
 
     {% block content %}
-        <h1>Yeah</h1>
+        {% comment %} <h1>Yeah</h1>
 
           {% if request.user.is_authenticated %}
             <h1>User logged in:{{request.user}}</h1>
@@ -26,7 +12,31 @@
           {% else %}
             <h1>You are not</h1>
             <span><a href="{% url 'register' %}"></i>Sign Up</a></span>
-          {% endif %}
+          {% endif %} {% endcomment %}
+
+    <div class="best-features">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="section-heading">
+              <h2>About Westletics</h2>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="left-content">
+              <p>As a lacrosse player myself, I have come to realize there is a lack of lacrosse specific stores. I was going all over to find equipment to help me on and off the field. One place was for all of my off field strength and conditioning equipment and the other for my on field gear. One day I had an idea, create a one stop shop for all on and off field training equipment and gear a lacrosse player needs.</p>
+              <p>Westletics was born! A dedicated lacrosse company that aims to help players reach their full POTENTIAL. We plan to offer a wide range of off-field training equipment carefully selected to enhance a players' gains off the field. Along with this a professional stringing and dying service is provided to ensure a perfect pocket custom to each player's need. Reach out for stringing inquries!</p>
+              <a href="" class="filled-button">Contact Me</a>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="right-image">
+              <img src="" alt="">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
          
 
