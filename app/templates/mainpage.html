@@ -9,13 +9,8 @@
     <link rel="stylesheet" href="{% static "css/owl.css" %}"/>
     <link rel="stylesheet" href="{% static "css/fontawesome.css" %}"/>
     <link rel="stylesheet" href="{% static "css/flex-slider.css" %}"/>
-    <link rel="stylesheet" href="{% static "css/templatemo-sixteen.css" %}"/>
     <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&display=swap" rel="stylesheet">
     <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
-    
-
-    
-
   </head>
   <body>
     <main>
@@ -37,10 +32,10 @@
                   <a class="nav-link" href="{% url 'products' %}"> Our Products</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="about.html">About Us</a>
+                  <a class="nav-link" href="#">Something</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="contact.html">Contact Us</a>
+                  <a class="nav-link" href="{% url "contact" %}">Contact Us</a>
                 </li>
               </ul>
             </div>
@@ -60,6 +55,17 @@
             <h1>You are not</h1>
             <span><a href="{% url 'register' %}"></i>Sign Up</a></span>
           {% endif %} {% endcomment %}
+
+    <div class="banner header-text">
+      <div class="owl-banner owl-carousel">
+        <div class="banner-item-01">
+          <div class="text-content">
+            <h4>Outplay. Outwork. Outlast. Unleash your extraordinary potential</h4>
+            <h2>Test Words</h2>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="best-features">
       <div class="container">
@@ -84,6 +90,20 @@
         </div>
       </div>
     </div>
+
+    <footer>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="inner-content">
+              <p>Copyright &copy; 2020 Sixteen Clothing Co., Ltd.
+            
+            - Design: <a rel="nofollow noopener" href="https://templatemo.com" target="_blank">TemplateMo</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
 
     
     <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>

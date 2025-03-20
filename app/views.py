@@ -11,6 +11,9 @@ from django.contrib import messages
 def view_main_page(request):
     return render(request, "mainpage.html")
 
+def view_contact_page(request):
+    return render(request, "contact.html")
+
 def view_login(request):
     if request.user.is_authenticated:
         print("You are already logged in")
