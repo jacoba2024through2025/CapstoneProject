@@ -152,3 +152,7 @@ a{color:inherit;text-decoration:none}
 .link-style {
 	color: white;
 }
+
+.error-msg {
+	color: white;
+}
