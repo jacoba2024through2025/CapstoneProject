@@ -1,111 +1,160 @@
-{% extends 'mainpage.html' %}
-
 {% load static %}
-{% block content %}
-
-    <h1>Register Page</h1>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{% static "store/css/register.css" %}"/>
+    <title>Login/Sign Up</title>
+  </head>
+  <body>
+    {% comment %} <h1>Register Page</h1> {% endcomment %}
 
     <div class="login-wrap">
-        <div class="login-html">
-            <input id="tab-1" type="radio" name="tab" class="sign-in" checked><label for="tab-1" class="tab">Sign In</label>
-            <input id="tab-2" type="radio" name="tab" class="sign-up"><label for="tab-2" class="tab">Sign Up</label>
-            <div class="login-form">
-                <div class="sign-in-htm">
-                    <form method="POST" action="">
-                        {% csrf_token %}
-                        <div class="group">
-                            <label for="user" class="label">Username</label>
-                            
-                            <input type="text" class="input" name="username" id="username" placeholder="Username...">
-                        </div>
-                        <div class="group">
-                            <label for="pass" class="label">Password</label>
-                            <input type="password" name="password" id="password" placeholder="Password..." class="input">
-                        </div>
-                        <div class="group">
-                            <input id="check" type="checkbox" class="check" checked>
-                            <label for="check"><span class="icon"></span> Keep me Signed in</label>
-                        </div>
-                        <div class="group">
-                            <input type="submit" class="button" value="Sign In">
-                        </div>
-                        <div class="hr"></div>
-                        <div class="foot-lnk">
-                            <a href="#forgot">Forgot Password?</a>
-                        </div>
+      <div class="login-html">
+        <input
+          id="tab-1"
+          type="radio"
+          name="tab"
+          class="sign-in"
+          checked
+        /><label for="tab-1" class="tab">Sign In</label>
+        <input id="tab-2" type="radio" name="tab" class="sign-up" /><label
+          for="tab-2"
+          class="tab"
+          >Sign Up</label
+        >
+        <div class="login-form">
+          <div class="sign-in-htm">
+            <form method="POST" action="">
+              {% csrf_token %}
+              <div class="group">
+                <label for="user" class="label">Username</label>
 
-                    </form>
-                    
-                </div>
-                <div class="sign-up-htm">
-                    <form method="POST" action="">
-                        {% csrf_token %}
-                        <div class="group">
-                            <label for="user" class="label">Username</label>
-                            
-                            <input type="text" name="username" id="{{ form.username.id_for_label }}" class="input" value="{{ form.username.value|default:'' }}">
-                        </div>
-                        <div class="group">
-                            <label for="pass" class="label">Password</label>
-                            
-                            <input type="password" name="password1" id="{{ form.password1.id_for_label }}" class="input">
-                        </div>
-                        <div class="group">
-                            <label for="pass" class="label">Repeat Password</label>
-                            
-                            <input type="password" name="password2" id="{{ form.password2.id_for_label }}" class="input">
-                        </div>
-                        <div class="group">
-                            <input type="submit" class="button" value="Create Account">
-                        </div>
-                        <div class="hr"></div>
-                        <div class="foot-lnk">
-                            <p><a class="link-style" href="{% url 'home' %}">Continue as a Guest</a> </p>
-                        </div>
-                    </form>
-                </div>
-            </div>
+                <input
+                  type="text"
+                  class="input"
+                  name="username"
+                  id="username"
+                  placeholder="Username..."
+                />
+              </div>
+              <div class="group">
+                <label for="pass" class="label">Password</label>
+                <input
+                  type="password"
+                  name="password"
+                  id="password"
+                  placeholder="Password..."
+                  class="input"
+                />
+              </div>
+              <div class="group">
+                <input id="check" type="checkbox" class="check" checked />
+                <label for="check"
+                  ><span class="icon"></span> Keep me Signed in</label
+                >
+              </div>
+              <div class="group">
+                <input type="submit" class="button" value="Sign In" />
+              </div>
+              <div class="hr"></div>
+              <div class="foot-lnk">
+                <a href="#forgot">Forgot Password?</a>
+              </div>
+            </form>
+          </div>
+          <div class="sign-up-htm">
+            <form method="POST" action="">
+              {% csrf_token %}
+              <div class="group">
+                <label for="user" class="label">Username</label>
+
+                <input
+                  type="text"
+                  name="username"
+                  id="{{ form.username.id_for_label }}"
+                  class="input"
+                  value="{{ form.username.value|default:'' }}"
+                />
+              </div>
+              <div class="group">
+                <label for="pass" class="label">Password</label>
+
+                <input
+                  type="password"
+                  name="password1"
+                  id="{{ form.password1.id_for_label }}"
+                  class="input"
+                />
+              </div>
+              <div class="group">
+                <label for="pass" class="label">Repeat Password</label>
+
+                <input
+                  type="password"
+                  name="password2"
+                  id="{{ form.password2.id_for_label }}"
+                  class="input"
+                />
+              </div>
+              <div class="group">
+                <input type="submit" class="button" value="Create Account" />
+              </div>
+              <div class="hr"></div>
+              <div class="foot-lnk">
+                <p>
+                  <a class="link-style" href="{% url 'home' %}"
+                    >Continue as a Guest</a
+                  >
+                </p>
+              </div>
+            </form>
+          </div>
         </div>
+      </div>
     </div>
-    
+  </body>
+</html>
 
+{% block content %} {% comment %}
+<form method="POST" action="">
+  {% csrf_token %}
 
-    <form method="POST" action="">
-        {% csrf_token %}
-        
-        
-        <div>
-            <label  for="username">Username</label>
-            <input type="text" name="username" id="username" placeholder="Username...">
-        </div>
+  <div>
+    <label for="username">Username</label>
+    <input
+      type="text"
+      name="username"
+      id="username"
+      placeholder="Username..."
+    />
+  </div>
 
-        
-        <div>
-            <label for="password">Password</label>
-            <input type="password" name="password" id="password" placeholder="Password..." class="form-control">
-        </div>
+  <div>
+    <label for="password">Password</label>
+    <input
+      type="password"
+      name="password"
+      id="password"
+      placeholder="Password..."
+      class="form-control"
+    />
+  </div>
 
-        
-        <div class="form-submit">
-            <input type="submit" value="Login" class="submit-btn">
-        </div>
+  <div class="form-submit">
+    <input type="submit" value="Login" class="submit-btn" />
+  </div>
 
-        
-        {% for message in messages %}
-            <p class="error-msg">{{ message }}</p>
-        {% endfor %}
-    </form>
+  {% for message in messages %}
+  <p class="error-msg">{{ message }}</p>
+  {% endfor %}
+</form>
 
-    
-    <div class="signup-redirect">
-        <p class="account-label">Don't have an account? <a href="{% url 'register' %}" class="signup-link">Sign Up</a></p>
-    </div>
-{% endblock %}
-
-
-    
-
-
-
-
-
+<div class="signup-redirect">
+  <p class="account-label">
+    Don't have an account?
+    <a href="{% url 'register' %}" class="signup-link">Sign Up</a>
+  </p>
+</div>
+{% endcomment %} {% endblock %}
