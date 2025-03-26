@@ -7,7 +7,7 @@ body {
 }
 p {
 	margin-bottom: 0px;
-	font-size: 14px;
+	font-size: 20px;
 	font-weight: 300;
 	color: #4a4a4a;
 	line-height: 24px;
@@ -1050,4 +1050,179 @@ footer .inner-content p a {
 		right: 0;
 		bottom: 0;
 	}
+}
+
+.logged-in-user {
+	margin-top: 2vh;
+	display: flex;
+	gap: 1.5vw;
+	
+}
+
+.logged-in-user p {
+	color: white;
+	
+	
+}
+
+
+.logged-in-user span a {
+	color: white;
+	background: #f33f3f;
+	padding: 7px;
+	border-radius: 5%;
+	
+}
+
+
+.logged-in-user span a:hover {
+	background:#f33f3f8f
+	
+	
+}
+
+
+/*Dropdown menu css*/
+.navbar .dropdown-menu {
+	display: none;
+	opacity: 0;
+	transform: translateY(-20px);
+	transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  
+  /* Show the dropdown with sliding effect */
+  .navbar .dropdown.show .dropdown-menu {
+	display: block;
+	opacity: 1;
+	transform: translateY(0);
+  }
+  
+  /* Optional: Improve the hover effect on dropdown items */
+  .navbar .dropdown-item:hover {
+	background-color: #f1f1f1;
+  }
+
+
+
+
+/* General styling for the profile page */
+.profile-page {
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f4f4f9;
+}
+
+/* Profile form container */
+.profile-form-content {
+	
+    max-width: 800px;
+    margin: 30px;
+    padding: 2rem;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* Profile image */
+.profile-image-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.profile-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Profile heading */
+.profile-heading {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    color: #333;
+    font-family: 'Lucida Sans', sans-serif;
+}
+
+/* User email styling */
+.users-email {
+    text-align: center;
+    color: #555;
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+}
+
+/* Form styling */
+.profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Form field styling */
+.form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-field input, .form-field textarea {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #333;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+.form-field input:focus, .form-field textarea:focus {
+    border-color: #f33f3f;
+    outline: none;
+}
+
+.save-button {
+    align-self: center;
+    background-color: #f33f3f;
+    color: #fff;
+    font-size: 1.1rem;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 200px;
+}
+
+.save-button:hover {
+    background-color: #d02d2d;
+}
+
+/* Responsive styling */
+@media (max-width: 768px) {
+    .profile-form-content {
+        padding: 1.5rem;
+    }
+
+    .profile-heading {
+        font-size: 2rem;
+    }
+
+    .save-button {
+        width: 100%;
+    }
 }

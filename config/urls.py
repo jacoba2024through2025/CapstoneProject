@@ -18,13 +18,22 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from app import views
-
+from django.conf import settings
+from django.conf.urls.static import static
+from app.views import SuccessView, ContactView
 
 urlpatterns = [
     path("", views.view_main_page, name="home"),
     path("login/", views.view_login, name="login"),
     path("register/", views.register, name="register"),
+    path("profile/<str:username>/", views.viewUserProfile, name="profile"),
     path("logout/", views.viewLogout, name="logout"),
     path("products/", views.viewProducts, name="products"),
+    # path("contact/", views.view_contact_page, name="contact"),
+    path("contact/", ContactView.as_view(), name="contact"),
+    path("success/", SuccessView.as_view(), name="success"),
     path("admin/", admin.site.urls),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
