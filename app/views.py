@@ -21,7 +21,7 @@ class SuccessView(TemplateView):
 
 class ContactView(FormView):
     form_class = ContactForm
-    template_name = "contact.html"
+    template_name = "store/contact.html"
 
     def get_success_url(self):
         return reverse("contact")
