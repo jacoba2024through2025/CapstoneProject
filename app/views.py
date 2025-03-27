@@ -12,6 +12,7 @@ from .forms import ContactForm
 from django.shortcuts import reverse
 from django.views.generic import TemplateView, FormView
 from django.http import HttpResponse
+from app.models import *
 import os
 import requests
 
@@ -154,6 +155,16 @@ def viewUserProfile(request, username):
     
     profile, created = Profile.objects.get_or_create(user=user)
 
+    try:
+        coach = Coach.objects.get(user=user)
+        user_role = 'Coach'  # Set the role to 'Coach' if this is a coach
+    except Coach.DoesNotExist:
+        # If the user is a superuser, set the role to 'Superuser', else 'User'
+        if user.is_superuser:
+            user_role = 'Superuser'
+        else:
+            user_role = 'User'
+
     
     if request.method == 'POST':
         form = ProfileImageForm(request.POST, request.FILES, instance=profile)
@@ -170,6 +181,7 @@ def viewUserProfile(request, username):
         'form': form,
         'user': user,
         'profile': profile,
+        'user_role': user_role
          
     })
 

@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from datetime import datetime
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models import Avg
 
 # Create your models here.
 class Profile(models.Model):
@@ -11,6 +13,24 @@ class Profile(models.Model):
 
     def __str__(self):
         return f'{self.user.username} Profile'
+    
+
+class Classes(models.Model):
+    name = models.CharField(max_length=255)  
+    class_image = models.ImageField(upload_to='class_images', blank=True, null=True, default='default.jpg')
+    description = models.TextField()
+    price = models.IntegerField()
+    schedules = models.OneToOneField('Schedule', on_delete=models.CASCADE)
+    students = models.ManyToManyField(User, related_name='classes', blank=True)
+    
+    def __str__(self):
+        return f"{self.name} ({self.start_time} - {self.end_time})"
+    
+    def clean(self):
+        if self.start_time > self.end_time:
+            raise ValidationError("Start time must be before end time")
+        if self.start_time < datetime.now():
+            raise ValidationError("Start time must be in the future")
 
 class Schedule(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE) 
@@ -93,3 +113,34 @@ class Activity(models.Model):
     def __str__(self):
         return f"Activity for {self.timeslot} - {self.description}"
 
+
+class Coach(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    rating = models.IntegerField(default=0, validators=[MinValueValidator(1), MaxValueValidator(5)])
+    experience_years = models.IntegerField(default=0)
+    expertise = models.CharField(max_length=255, blank=True, null=True)
+    profile = models.OneToOneField(Profile, on_delete=models.CASCADE, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.user.username} (Coach)"
+
+    def get_average_rating(self):
+        
+        average_rating = Review.objects.filter(coach=self).aggregate(Avg('rating'))['rating__avg']
+        return round(average_rating, 1) if average_rating else None
+
+
+
+class Review(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # User who is leaving the review
+    coach = models.ForeignKey(Coach, on_delete=models.CASCADE)  # Coach being reviewed
+    rating = models.IntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(5)])  # Rating from 1 to 5
+    comment = models.TextField(blank=True, null=True)
+    
+    def __str__(self):
+        return f"Review by {self.user.username} for {self.coach.user.username} - Rating: {self.rating}"
+    
+    def clean(self):
+        # Ensure rating is between 1 and 5
+        if self.rating < 1 or self.rating > 5:
+            raise ValidationError('Rating must be between 1 and 5.')
