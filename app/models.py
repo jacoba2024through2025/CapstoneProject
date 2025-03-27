@@ -93,3 +93,11 @@ class Activity(models.Model):
     def __str__(self):
         return f"Activity for {self.timeslot} - {self.description}"
 
+class Products(models.Model):
+    image = models.ImageField(upload_to='product_pics')
+    name = models.CharField(max_length=255)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.TextField()
+    
+    def __str__(self):
+        return f"{self.name} - {self.price}"

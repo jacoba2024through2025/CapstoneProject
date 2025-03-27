@@ -12,6 +12,7 @@ from .forms import ContactForm
 from django.shortcuts import reverse
 from django.views.generic import TemplateView, FormView
 from django.http import HttpResponse
+from django.core.paginator import Paginator
 import os
 import requests
 
@@ -141,7 +142,17 @@ def viewLogout(request):
     return redirect('register')
 
 def viewProducts(request):
-    return render(request, 'store/products.html')
+    products = Products.objects.all()
+    paginator = Paginator(products, 6)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    context = {
+        'products': page_obj
+    }
+    return render(request, 'store/products.html', context)
+
+def addProducts(request):
+    pass
 
 def view_schedule_page(request):
     return render(request, 'classes/scheduling.html')
