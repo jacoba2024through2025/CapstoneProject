@@ -13,33 +13,39 @@ class Profile(models.Model):
 
     def __str__(self):
         return f'{self.user.username} Profile'
-    
+class Coach(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    rating = models.IntegerField(default=0, validators=[MinValueValidator(1), MaxValueValidator(5)])
+    experience_years = models.IntegerField(default=0)
+    expertise = models.CharField(max_length=255, blank=True, null=True)
+    profile = models.OneToOneField(Profile, on_delete=models.CASCADE, blank=True, null=True)
 
+    def __str__(self):
+        return f"{self.user.username} (Coach)"
+
+    def get_average_rating(self):
+        
+        average_rating = Review.objects.filter(coach=self).aggregate(Avg('rating'))['rating__avg']
+        return round(average_rating, 1) if average_rating else None
+        
 class Classes(models.Model):
     name = models.CharField(max_length=255)  
     class_image = models.ImageField(upload_to='class_images', blank=True, null=True, default='default.jpg')
     description = models.TextField()
     price = models.IntegerField()
-    schedules = models.OneToOneField('Schedule', on_delete=models.CASCADE)
+    
     students = models.ManyToManyField(User, related_name='classes', blank=True)
-    
-    def __str__(self):
-        return f"{self.name} ({self.start_time} - {self.end_time})"
-    
-    def clean(self):
-        if self.start_time > self.end_time:
-            raise ValidationError("Start time must be before end time")
-        if self.start_time < datetime.now():
-            raise ValidationError("Start time must be in the future")
+    coach = models.ForeignKey(Coach, on_delete=models.CASCADE, blank=True, null=True)
+
 
 class Schedule(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE) 
-    name = models.CharField(max_length=255)  
+      
     start_date = models.DateField()  
-    end_date = models.DateField()  
+    end_date = models.DateField()
+    scheduled_class = models.OneToOneField(Classes, on_delete=models.CASCADE, blank=True, null=True)  
     
-    def __str__(self):
-        return f"{self.name} ({self.start_date} - {self.end_date})"
+    
     
 class TimeSlot(models.Model):
     
@@ -86,6 +92,10 @@ class TimeSlot(models.Model):
     ]
     
     fitness_plan = models.ForeignKey(Schedule, related_name='timeslots', on_delete=models.CASCADE)
+
+    time_slot_name = models.CharField(max_length=255, blank=True, null=True)
+
+
     day_of_week = models.CharField(
         max_length=9,  
         choices=DAY_OF_WEEK_CHOICES, 
@@ -114,22 +124,11 @@ class Activity(models.Model):
         return f"Activity for {self.timeslot} - {self.description}"
 
 
-class Coach(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    rating = models.IntegerField(default=0, validators=[MinValueValidator(1), MaxValueValidator(5)])
-    experience_years = models.IntegerField(default=0)
-    expertise = models.CharField(max_length=255, blank=True, null=True)
-    profile = models.OneToOneField(Profile, on_delete=models.CASCADE, blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.user.username} (Coach)"
-
-    def get_average_rating(self):
-        
-        average_rating = Review.objects.filter(coach=self).aggregate(Avg('rating'))['rating__avg']
-        return round(average_rating, 1) if average_rating else None
 
 
+
+    
+    
 
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)  # User who is leaving the review
@@ -144,3 +143,20 @@ class Review(models.Model):
         # Ensure rating is between 1 and 5
         if self.rating < 1 or self.rating > 5:
             raise ValidationError('Rating must be between 1 and 5.')
+class Products(models.Model):
+    image = models.ImageField(upload_to='product_pics')
+    name = models.CharField(max_length=255)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.TextField()
+    
+    def __str__(self):
+        return f"{self.name} - {self.price}"
+    
+class Event(models.Model):
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+
+    def __str__(self):
+        return self.title

@@ -10,7 +10,10 @@
     <link rel="stylesheet" href="{% static "store/css/flex-slider.css" %}"/>
     <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'store/vendor/bootstrap/css/bootstrap.min.css' %}">
-    
+    <script src="
+https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js
+"></script>
+<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.15/index.global.min.js"></script>
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
       rel="stylesheet"
@@ -36,7 +39,10 @@
       <header class="">
         <nav class="navbar navbar-expand-lg">
           <div class="container">
-            <a class="navbar-brand" href="index.html"><h2>Westletics</h2></a>
+            <div>
+              <a href="index.html"><img src="{% static 'store/images/Westletics_logo.png' %}" alt="Westletics Logo" class="project-logo" /></a>
+            </div>
+            <a class="navbar-brand" href="index.html"><h2 class="west-h2">Westletics</h2></a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
@@ -47,7 +53,7 @@
                     <span class="sr-only">(current)</span>
                   </a>
                 </li>
-                <li class="nav-item active">
+                <li class="nav-item">
                   <a class="nav-link" href="{% url 'products' %}"><i class="icon-spacing fa-solid fa-bag-shopping"></i>Our Products</a>
                 </li>
                 <li class="nav-item">
@@ -56,7 +62,7 @@
                 {% if request.user.is_authenticated %}
                   <li class="nav-item">
                     <div class="logged-in-user">
-                      <p><i class="icon-spacing fa-solid fa-user"></i>{{request.user}}</p>
+                      <p class="logged-user"><i class="icon-spacing fa-solid fa-user"></i>{{request.user}}</p>
                       <span><a href="{% url 'logout' %}">Logout</a></span>
                     </div>
                   </li>
@@ -66,7 +72,7 @@
                     </a>
                     <div class="dropdown-menu sliding-dropdown" aria-labelledby="navbarDropdown">
                       <a class="dropdown-item" href="{% url "profile" username=request.user.username %}"><i class="icon-spacing fa-regular fa-circle-user"></i>View Profile</a>
-                      <a class="dropdown-item" href="{% url "schedule" %}"><i class="icon-spacing fa-solid fa-calendar"></i>My Schedules</a>
+                      <a class="dropdown-item" href="{% url "schedule" username=request.user.username %}"><i class="icon-spacing fa-solid fa-calendar"></i>My Schedules</a>
                       <a class="dropdown-item" href="#"><i class="icon-spacing fa-solid fa-bell"></i></i>Notifications</a>
                       <a class="dropdown-item" href="#"><i class="icon-spacing fa-solid fa-cart-shopping"></i></i></i>My Cart</a>
                     </div>

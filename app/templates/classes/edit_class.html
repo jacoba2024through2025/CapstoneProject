@@ -1,0 +1,32 @@
+{% extends 'root.html' %}
+
+{% block content %}
+    <div class="edit-class-page">
+        <h1>Edit Class: {{ class_instance.name }}</h1>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-fields">
+                <div class="form-field">
+                    {{ form.name.label }}
+                    {{ form.name }}
+                </div>
+                <div class="form-field">
+                    {{ form.description.label }}
+                    {{ form.description }}
+                </div>
+                <div class="form-field">
+                    {{ form.price.label }}
+                    {{ form.price }}
+                </div>
+                <div class="form-field">
+                    {{ form.class_image.label }}
+                    {{ form.class_image }}
+                </div>
+            </div>
+
+            <button type="submit" class="save-button">Save Changes</button>
+            <button type="submit" name="delete_class" class="save-button">Delete Class</button>
+        </form>
+    </div>
+{% endblock %}

@@ -18,7 +18,10 @@ class CreateUserForm(UserCreationForm):
 class ScheduleForm(forms.ModelForm):
     class Meta:
         model = Schedule
-        fields = ['user', 'name', 'start_date', 'end_date']
+        fields = ['start_date', 'end_date']
+
+    
+
 
 class TimeSlotForm(forms.ModelForm):
     class Meta:
@@ -38,3 +41,27 @@ class ContactForm(forms.Form):
     message = forms.CharField(
         widget=forms.Textarea(attrs={"placeholder": "Your message"})
     )
+
+class CreateClassForm(forms.ModelForm):
+    class Meta:
+        model = Classes
+        fields = ['name', 'class_image', 'description', 'price']
+
+        ###Widgets and placeholders
+        name = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'placeholder': 'Class Name'}))
+        description = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Class Description'}))
+        price = forms.IntegerField(widget=forms.NumberInput(attrs={'placeholder': 'Price'}))
+
+class ClassEditForm(forms.ModelForm):
+    class Meta:
+        model = Classes
+        fields = ['name', 'description', 'price', 'class_image']
+
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = ['title', 'description', 'start_date', 'end_date']
+        widgets = {
+            'start_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'end_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }

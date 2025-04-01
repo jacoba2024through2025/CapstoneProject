@@ -29,12 +29,18 @@ urlpatterns = [
     path("profile/<str:username>/", views.viewUserProfile, name="profile"),
     path("logout/", views.viewLogout, name="logout"),
     path("products/", views.viewProducts, name="products"),
-    path("schedule/", views.view_schedule_page, name="schedule"),
-    # path("contact/", views.view_contact_page, name="contact"),
+    path("schedule/<str:username>/", views.view_schedule_page, name="schedule"),  
+    
+    path('create_class/', views.create_class, name='create_class'),
+    path('edit_class/<int:class_id>/', views.edit_class, name='edit_class'),
+    
     path("contact/", ContactView.as_view(), name="contact"),
     path("success/", SuccessView.as_view(), name="success"),
     path("admin/", admin.site.urls),
 ]
+
+
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

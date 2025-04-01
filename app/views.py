@@ -13,6 +13,8 @@ from django.shortcuts import reverse
 from django.views.generic import TemplateView, FormView
 from django.http import HttpResponse
 from app.models import *
+from django.core.paginator import Paginator
+from django.http import HttpResponseRedirect
 import os
 import requests
 
@@ -142,29 +144,101 @@ def viewLogout(request):
     return redirect('register')
 
 def viewProducts(request):
-    return render(request, 'store/products.html')
+    products = Products.objects.all()
+    paginator = Paginator(products, 6)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    context = {
+        'products': page_obj
+    }
+    return render(request, 'store/products.html', context)
 
-def view_schedule_page(request):
-    return render(request, 'classes/scheduling.html')
+def addProducts(request):
+    pass
 
-def viewUserProfile(request, username):
 
-    
+
+def view_schedule_page(request, username):
     user = get_object_or_404(User, username=username)
-
-    
-    profile, created = Profile.objects.get_or_create(user=user)
 
     try:
         coach = Coach.objects.get(user=user)
-        user_role = 'Coach'  # Set the role to 'Coach' if this is a coach
+        coach_classes = Classes.objects.filter(coach=coach)
+        class_count = coach_classes.count()
     except Coach.DoesNotExist:
-        # If the user is a superuser, set the role to 'Superuser', else 'User'
+        coach_classes = []
+        class_count = 0
+        messages.error(request, "This user does not have any coaches")
+
+    
+    if request.method == 'POST':
+        if 'create_event' in request.POST:  
+            event_form = EventForm(request.POST)
+            if event_form.is_valid():
+                event_form.save()  # Save the event
+                messages.success(request, "Event created successfully!")
+                return redirect('schedule', username=username) 
+        else:  
+            class_id = request.POST.get('class_id')
+            selected_class = Classes.objects.get(id=class_id)
+
+            schedule_form = ScheduleForm(request.POST)
+            if schedule_form.is_valid():
+                schedule = schedule_form.save(commit=False)
+                schedule.scheduled_class = selected_class
+                schedule.user = user
+                schedule.save()
+    else:
+        schedule_form = ScheduleForm()
+        event_form = EventForm()  
+
+    
+    events = Event.objects.all()
+    event_data = []
+    for event in events:
+        event_data.append({
+            'title': event.title,
+            'start': event.start_date.isoformat(),
+            'end': event.end_date.isoformat(),
+            'description': event.description,
+            'color': '#ff7c00',  
+        })
+    
+
+    return render(request, 'classes/scheduling.html', {
+        'user': user,
+        'coach_classes': coach_classes,
+        'class_count': class_count,
+        'schedule_form': schedule_form,
+        'event_form': event_form,  
+        'events': event_data,  
+    })
+
+
+
+
+
+
+
+def viewUserProfile(request, username):
+    user = get_object_or_404(User, username=username)
+
+    profile, created = Profile.objects.get_or_create(user=user)
+
+    
+    user_role = 'User'  
+    coach_classes = []  
+    class_count = 0  
+
+    try:
+        coach = Coach.objects.get(user=user)
+        user_role = 'Coach'  
+        coach_classes = Classes.objects.filter(coach=coach)
+        class_count = coach_classes.count() 
+    except Coach.DoesNotExist:
+        
         if user.is_superuser:
             user_role = 'Superuser'
-        else:
-            user_role = 'User'
-
     
     if request.method == 'POST':
         form = ProfileImageForm(request.POST, request.FILES, instance=profile)
@@ -173,15 +247,64 @@ def viewUserProfile(request, username):
             form.save()  
             return redirect('profile', username=username)  
     else:
-        
         form = ProfileImageForm(instance=profile)
 
-    
     return render(request, 'profile.html', {
         'form': form,
         'user': user,
         'profile': profile,
-        'user_role': user_role
-         
+        'user_role': user_role,
+        'coach_classes': coach_classes,
+        'class_count': class_count,
     })
+
+@login_required
+def create_class(request):
+    
+    coach = Coach.objects.get(user=request.user)
+    
+    if request.method == 'POST':
+        form = CreateClassForm(request.POST, request.FILES)
+        
+        if form.is_valid():
+            
+            new_class = form.save(commit=False)
+            new_class.coach = coach
+            new_class.save()
+            
+            return redirect('profile', username=request.user.username)  
+            
+    else:
+        form = CreateClassForm()
+        
+    return render(request, 'classes/create_class.html', {'form': form})
+
+
+
+def edit_class(request, class_id):
+    
+    class_instance = get_object_or_404(Classes, id=class_id)
+    
+    
+    if request.user != class_instance.coach.user:
+        return redirect('profile', username=request.user.username)
+
+    
+    if request.method == 'POST':
+        if 'delete_class' in request.POST:  
+            
+            class_instance.delete()
+            return redirect('profile', username=request.user.username)  
+
+        
+        form = ClassEditForm(request.POST, request.FILES, instance=class_instance)
+        if form.is_valid():
+            form.save()
+            return redirect('profile', username=request.user.username)  
+    else:
+        form = ClassEditForm(instance=class_instance)
+
+    return render(request, 'classes/edit_class.html', {'form': form, 'class_instance': class_instance})
+
+
 
