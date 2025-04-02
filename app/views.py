@@ -14,7 +14,9 @@ from django.views.generic import TemplateView, FormView
 from django.http import HttpResponse
 from app.models import *
 from django.core.paginator import Paginator
+from django.http import JsonResponse
 from django.http import HttpResponseRedirect
+
 import os
 import requests
 
@@ -170,53 +172,67 @@ def view_schedule_page(request, username):
         class_count = 0
         messages.error(request, "This user does not have any coaches")
 
-    
     if request.method == 'POST':
         if 'create_event' in request.POST:  
             event_form = EventForm(request.POST)
             if event_form.is_valid():
-                event_form.save()  # Save the event
+                event = event_form.save()  # Save the event
                 messages.success(request, "Event created successfully!")
                 return redirect('schedule', username=username) 
         else:  
             class_id = request.POST.get('class_id')
             selected_class = Classes.objects.get(id=class_id)
 
-            schedule_form = ScheduleForm(request.POST)
-            if schedule_form.is_valid():
-                schedule = schedule_form.save(commit=False)
-                schedule.scheduled_class = selected_class
-                schedule.user = user
-                schedule.save()
+            
     else:
-        schedule_form = ScheduleForm()
+        
         event_form = EventForm()  
 
-    
+    # Retrieve all events
     events = Event.objects.all()
     event_data = []
     for event in events:
         event_data.append({
+            'id': event.id,  #event ID
             'title': event.title,
             'start': event.start_date.isoformat(),
             'end': event.end_date.isoformat(),
             'description': event.description,
-            'color': '#ff7c00',  
+            'color': '#ff7c00',  # color
         })
-    
 
     return render(request, 'classes/scheduling.html', {
         'user': user,
         'coach_classes': coach_classes,
         'class_count': class_count,
-        'schedule_form': schedule_form,
+        
         'event_form': event_form,  
-        'events': event_data,  
+        'events': event_data,
     })
 
+from django.urls import reverse
 
+def update_event(request, event_id):
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        print("event id: ", event_id)
 
+        event = get_object_or_404(Event, id=event_id)
+        form = EventForm(request.POST, instance=event)
 
+        if form.is_valid():
+            print("saved the event.")
+            form.save()
+            home_url = reverse('schedule')  
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Event updated successfully!',
+                'redirect_url': home_url
+            })
+        else:
+            print("Form errors:", form.errors)
+            return JsonResponse({'status': 'error', 'message': 'There was an error updating the event.'})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request'})
 
 
 

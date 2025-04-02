@@ -15,24 +15,6 @@ class CreateUserForm(UserCreationForm):
         fields = ['username', 'email', 'password1', 'password2']
 
 
-class ScheduleForm(forms.ModelForm):
-    class Meta:
-        model = Schedule
-        fields = ['start_date', 'end_date']
-
-    
-
-
-class TimeSlotForm(forms.ModelForm):
-    class Meta:
-        model = TimeSlot
-        fields = ['fitness_plan', 'day_of_week', 'start_time', 'end_time']
-
-class ActivityForm(forms.ModelForm):
-    class Meta:
-        model = Activity
-        fields = ['timeslot', 'description']
-
 class ContactForm(forms.Form):
     email = forms.EmailField(
         widget=forms.TextInput(attrs={"placeholder": "Your e-mail"})

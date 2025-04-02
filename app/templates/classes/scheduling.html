@@ -34,12 +34,6 @@
                 {{ class.description }}
               </p>
 
-              {% if class.schedule_set.exists %}
-                <p>There are schedules for this class</p>
-              {% else %}
-                <p>There are no schedules for this class</p>
-              {% endif %}
-              
             </div>
           </div>
           
@@ -49,7 +43,7 @@
       {% endfor %}
 
       {% if class_count > 3 %}
-        </div> <!-- Close the scrollable container -->
+        </div> 
       {% endif %}
       
       
@@ -73,33 +67,114 @@
 </div>
 
 
+<!-- Modal for editing event -->
+<div class="modal fade" id="eventEditModal" tabindex="-1" aria-labelledby="eventEditModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="eventEditModalLabel">Edit Event</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="eventEditForm">
+          {% csrf_token %}
+          <input type="hidden" id="eventId" name="event_id">
+          <div class="form-group">
+            <label for="eventTitle">Title</label>
+            <input type="text" id="eventTitle" name="title" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="eventDescription">Description</label>
+            <textarea id="eventDescription" name="description" class="form-control" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="eventStartDate">Start Date</label>
+            <input type="datetime-local" id="eventStartDate" name="start_date" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="eventEndDate">End Date</label>
+            <input type="datetime-local" id="eventEndDate" name="end_date" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Update Event</button>
+        </form>
+        <div id="updateMessage" style="display: none;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FullCalendar initialization -->
+<div id="calendar"></div>
+
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar'); // The div that will hold the calendar
+    var calendarEl = document.getElementById('calendar');
 
-    // Fetching events dynamically passed from the view
-    var eventsFromBackend = {{ events|safe }}; // The events passed from the view, rendering it as JSON
+    // events from django model
+    var eventsFromBackend = {{ events|safe }}; 
 
     var calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: 'listMonth', // Default view is listMonth
+      initialView: 'listMonth',
       headerToolbar: {
         left: 'prev,next today',
         center: 'title',
-        right: 'listMonth,dayGridMonth,agendaWeek,agendaDay' // Added listMonth view
+        right: 'listMonth,dayGridMonth,agendaWeek,agendaDay'
       },
-      droppable: true, // Enable drag-and-drop
-      events: eventsFromBackend, // Use dynamic events from the view
-      eventDrop: function(info) {
-        // Optionally, update event drop logic if needed
-        alert('Event dropped to ' + info.event.start.toISOString());
-      },
-      eventResize: function(info) {
-        // Optionally, handle resizing of events if needed
-        alert('Event resized to ' + info.event.end.toISOString());
-      },
+      events: eventsFromBackend,
+      eventClick: function(info) {
+        
+        var eventId = info.event.id;
+        var eventTitle = info.event.title;
+        var eventDescription = info.event.extendedProps.description;
+        var eventStartDate = info.event.start.toISOString().slice(0, 16);
+        var eventEndDate = info.event.end.toISOString().slice(0, 16);
+
+        
+        document.getElementById('eventId').value = eventId;
+        document.getElementById('eventTitle').value = eventTitle;
+        document.getElementById('eventDescription').value = eventDescription;
+        document.getElementById('eventStartDate').value = eventStartDate;
+        document.getElementById('eventEndDate').value = eventEndDate;
+
+        
+        var myModal = new bootstrap.Modal(document.getElementById('eventEditModal'), {
+          keyboard: false
+        });
+        myModal.show();
+      }
     });
 
-    calendar.render(); // Render the calendar
+    calendar.render();
+
+    
+    document.getElementById('eventEditForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      
+      var formData = new FormData(this);
+
+      
+      fetch('/events/update/' + document.getElementById('eventId').value + '/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',  
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          window.location.href = data.redirect_url;
+          
+          
+          var myModal = bootstrap.Modal.getInstance(document.getElementById('eventEditModal'));
+          myModal.hide();
+          
+          calendar.refetchEvents();
+        } 
+      })
+      
+    });
   });
 </script>
 

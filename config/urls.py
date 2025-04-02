@@ -30,6 +30,7 @@ urlpatterns = [
     path("logout/", views.viewLogout, name="logout"),
     path("products/", views.viewProducts, name="products"),
     path("schedule/<str:username>/", views.view_schedule_page, name="schedule"),  
+    path('events/update/<int:event_id>/', views.update_event, name='update_event'),
     
     path('create_class/', views.create_class, name='create_class'),
     path('edit_class/<int:class_id>/', views.edit_class, name='edit_class'),
