@@ -24,13 +24,22 @@ from app.views import SuccessView, ContactView
 
 urlpatterns = [
     path("", views.view_main_page, name="home"),
+
+    # Authentication
     path("login/", views.view_login, name="login"),
     path("register/", views.register, name="register"),
     path("profile/<str:username>/", views.viewUserProfile, name="profile"),
     path("logout/", views.viewLogout, name="logout"),
+
+    # Products and Cart
     path("products/", views.viewProducts, name="products"),
+    path("products/<int:product_id>/", views.viewOneProduct, name="product_detail"),
+    path("cart/add/<int:product_id>/", views.add_to_cart, name="add_to_cart"),
+    path("cart/", views.view_cart, name="view_cart"),
+    path("cart/checkout/", views.create_checkout_session, name="create_checkout_session"),
+
+    # Schedule and Contact
     path("schedule/", views.view_schedule_page, name="schedule"),
-    # path("contact/", views.view_contact_page, name="contact"),
     path("contact/", ContactView.as_view(), name="contact"),
     path("success/", SuccessView.as_view(), name="success"),
     path("admin/", admin.site.urls),

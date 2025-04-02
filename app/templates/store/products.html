@@ -40,7 +40,7 @@
                       <div class="product-item">
                         <a href="#"><img src="{{product.image.url}}" alt=""></a>
                         <div class="down-content">
-                          <a href="#"><h4>{{product.name}}</h4></a>
+                          <a href="{% url "product_detail" product.id %}"><h4>{{product.name}}</h4></a>
                           <h6>${{product.price}}</h6>
                           <p>{{product.description}}</p>
                         </div>

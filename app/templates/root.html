@@ -68,7 +68,7 @@
                       <a class="dropdown-item" href="{% url "profile" username=request.user.username %}"><i class="icon-spacing fa-regular fa-circle-user"></i>View Profile</a>
                       <a class="dropdown-item" href="{% url "schedule" %}"><i class="icon-spacing fa-solid fa-calendar"></i>My Schedules</a>
                       <a class="dropdown-item" href="#"><i class="icon-spacing fa-solid fa-bell"></i></i>Notifications</a>
-                      <a class="dropdown-item" href="#"><i class="icon-spacing fa-solid fa-cart-shopping"></i></i></i>My Cart</a>
+                      <a class="dropdown-item" href="{% url "view_cart" %}"><i class="icon-spacing fa-solid fa-cart-shopping"></i></i></i>My Cart</a>
                     </div>
                   </li>
                 {% else %}

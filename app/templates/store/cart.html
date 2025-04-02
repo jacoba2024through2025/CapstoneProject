@@ -1,0 +1,54 @@
+{% extends "root.html" %} {% load static %}
+{% block title %}Cart{% endblock title %}
+
+{% block content %}
+<h1>My Cart</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in cart_items %}
+        <tr>
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>${{ item.product.price }}</td>
+            <td>${{ item.get_total_price }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<h3>Total: ${{ total_price }}</h3>
+<form id="checkout-form" method="POST" action="{% url 'create_checkout_session' %}">
+    {% csrf_token %}
+    <button id="checkout-button">Proceed to Checkout</button>
+</form>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    const stripe = Stripe("{{ stripe_public_key }}");
+
+    document.getElementById("checkout-button").addEventListener("click", function (e) {
+        e.preventDefault();
+        fetch("{% url 'create_checkout_session' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.id) {
+                stripe.redirectToCheckout({ sessionId: data.id });
+            } else {
+                alert("Error: " + data.error);
+            }
+        });
+    });
+</script>
+{% endblock content %}

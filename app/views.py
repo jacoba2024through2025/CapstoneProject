@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from app.forms import *
 from app.models import *
 from django.contrib.auth import authenticate, login, logout
@@ -11,13 +10,19 @@ from django.conf import settings
 from .forms import ContactForm
 from django.shortcuts import reverse
 from django.views.generic import TemplateView, FormView
-from django.http import HttpResponse
+from django.http import *
 from django.core.paginator import Paginator
 import os
 import requests
+from django.views.decorators.csrf import csrf_exempt
+import stripe
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
 
 class SuccessView(TemplateView):
-    template_name = "success.html"
+    def success():
+        return HttpResponse("Payment successful!")
 
 
 class ContactView(FormView):
@@ -86,11 +91,6 @@ def view_contact_page(request):
         return render(request, "contact.html", {})
 
 def view_login(request):
-    
-    
-    
-
-    
     return render(request, 'register.html')
 
 def register(request):
@@ -151,8 +151,69 @@ def viewProducts(request):
     }
     return render(request, 'store/products.html', context)
 
-def addProducts(request):
-    pass
+def viewOneProduct(request, product_id):
+    product = get_object_or_404(Products, id=product_id)
+    context = {
+        'product': product
+    }
+    return render(request, 'store/apparel.html', context)
+
+@login_required
+def add_to_cart(request, product_id):
+    product = get_object_or_404(Products, id=product_id)
+    cart_item, created = Cart.objects.get_or_create(user=request.user, product=product)
+    if not created:
+        cart_item.quantity += 1
+        cart_item.save()
+    return redirect('view_cart')
+
+@login_required
+def view_cart(request):
+    cart_items = Cart.objects.filter(user=request.user)
+    total_price = sum(item.get_total_price() for item in cart_items)
+    context = {
+        'cart_items': cart_items,
+        'total_price': total_price
+    }
+    return render(request, 'store/cart.html', context)
+
+@login_required
+def create_checkout_session(request):
+    cart_items = Cart.objects.filter(user=request.user)
+    if not cart_items:
+        return JsonResponse({'error': 'No items in cart'})
+    
+    line_items = []
+    for item in cart_items:
+        line_items.append({
+            'price_data': {
+                'currency': 'usd',
+                'unit_amount': int(item.product.price * 100),
+                'product_data': {
+                    'name': item.product.name,
+                    'images': [item.product.image.url] if item.product.image else [],
+                },  # Stripe requires amount in cents
+            },
+            'quantity': item.quantity,
+        })
+    
+    try:
+        checkout_session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=line_items,
+            metadata={
+                'user_id': request.user.id,
+            },
+            mode='payment',
+            success_url=settings.PAYMENT_SUCCESS_URL,
+            cancel_url=settings.PAYMENT_CANCEL_URL,
+        )
+        return JsonResponse({'id': checkout_session.id})
+    except Exception as e:
+        return JsonResponse({'error': str(e)})
+    
+def success(request):
+    return HttpResponse("Payment successful!")
 
 def view_schedule_page(request):
     return render(request, 'classes/scheduling.html')
@@ -194,4 +255,3 @@ def viewUserProfile(request, username):
         'user_role': user_role
          
     })
-
