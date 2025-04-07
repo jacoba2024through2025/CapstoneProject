@@ -128,7 +128,48 @@ class Coach(models.Model):
         
         average_rating = Review.objects.filter(coach=self).aggregate(Avg('rating'))['rating__avg']
         return round(average_rating, 1) if average_rating else None
+        
+class Classes(models.Model):
+    name = models.CharField(max_length=255)  
+    class_image = models.ImageField(upload_to='class_images', blank=True, null=True, default='default.jpg')
+    description = models.TextField()
+    price = models.IntegerField()
+    
+    students = models.ManyToManyField(User, related_name='classes', blank=True)
+    coach = models.ForeignKey(Coach, on_delete=models.CASCADE, blank=True, null=True)
 
+class ClassCalendar(models.Model):
+    class_name = models.OneToOneField(Classes, on_delete=models.CASCADE, related_name='calendar')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Calendar for {self.class_name.name}"
+
+class Event(models.Model):
+    
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    class_item = models.ForeignKey('Classes', on_delete=models.CASCADE, related_name='events', null=True, blank=True)
+    def __str__(self):
+        return self.title
+  
+    
+    
+    
+
+    
+    
+    
+
+
+
+
+
+
+    
+    
 
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)  # User who is leaving the review
@@ -172,3 +213,4 @@ class Payment(models.Model):
     
     def __str__(self):
         return f"Payment by {self.user.username} - Amount: {self.amount}"
+    

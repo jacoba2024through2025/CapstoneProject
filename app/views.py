@@ -20,6 +20,32 @@ import stripe
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
+
+@login_required
+def view_admin_page(request):
+    
+    return render(request, "bs-binary-admin/index.html")
+    
+def view_admin_chart(request):
+
+    return render(request, "bs-binary-admin/chart.html")
+
+def view_admin_forms(request):
+
+    return render(request, "bs-binary-admin/form.html")
+
+def view_admin_tabs(request):
+    
+    return render(request, "bs-binary-admin/tab-panel.html")
+
+def view_admin_ui(request):
+        
+    return render(request, "bs-binary-admin/ui.html")
+
+def view_admin_tables(request):
+    
+    return render(request, "bs-binary-admin/tables.html")
+
 class SuccessView(TemplateView):
     template_name = "store/success.html"
 
@@ -105,6 +131,8 @@ def view_contact_page(request):
 
     else:
         return render(request, "contact.html", {})
+    
+
 
 def view_login(request):
     return render(request, 'register.html')
@@ -129,11 +157,12 @@ def register(request):
     if request.method == "POST" and "password" in request.POST:  # Login form
         username = request.POST.get('username')
         password = request.POST.get('password')
+        email = request.POST.get('email')
         keep_signed_in = request.POST.get('keep_signed_in')  # Check if 'Keep me signed in' was checked
 
         print(f"Attempting to authenticate with Username: {username} and Password: {password}")
 
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(request, username=username, password=password, email=email)
 
         if user is not None:
             login(request, user)
@@ -245,28 +274,130 @@ def create_checkout_session(request):
             print(f"Error creating checkout session: {e}")
             return JsonResponse({'error': str(e)})
 
-def view_schedule_page(request):
-    return render(request, 'classes/scheduling.html')
+
+
+def view_schedule_page(request, username):
+    user = get_object_or_404(User, username=username)
+
+    try:
+        coach = Coach.objects.get(user=user)
+        coach_classes = Classes.objects.filter(coach=coach)
+        class_count = coach_classes.count()
+    except Coach.DoesNotExist:
+        coach_classes = []
+        class_count = 0
+        messages.error(request, "This user does not have any classes")
+
+    # Check if the calendar exists for each class
+    for class_item in coach_classes:
+        if not hasattr(class_item, 'calendar'):
+            ClassCalendar.objects.create(class_name=class_item)
+
+    if request.method == 'POST':
+        if 'create_event' in request.POST:
+            event_form = EventForm(request.POST)
+            class_id = request.POST.get('class_id')  # Get class ID from the form
+
+            if event_form.is_valid():
+                event = event_form.save(commit=False)
+                event.class_item = Classes.objects.get(id=class_id)  # Link event to class
+                event.save()
+                messages.success(request, "Event created successfully!")
+                return redirect('schedule', username=username)
+    else:
+        event_form = EventForm()
+
+    events = Event.objects.all()
+    event_data = []
+    for event in events:
+        event_data.append({
+            'id': event.id,
+            'title': event.title,
+            'start': event.start_date.isoformat(),
+            'end': event.end_date.isoformat(),
+            'description': event.description,
+            'color': '#ff7c00',
+        })
+
+    return render(request, 'classes/scheduling.html', {
+        'user': user,
+        'coach_classes': coach_classes,
+        'class_count': class_count,
+        'event_form': event_form,
+        'events': event_data,
+    })
+
+
+
+def get_class_calendar(request, class_id):
+    # Get the class object based on the class_id
+    class_item = get_object_or_404(Classes, id=class_id)
+    
+    # Retrieve all events related to this class
+    events = Event.objects.filter(class_item=class_item)  # Assuming your Event model has a relation to Classes
+    
+    event_data = []
+    for event in events:
+        event_data.append({
+            'id': event.id,
+            'title': event.title,
+            'start': event.start_date.isoformat(),
+            'end': event.end_date.isoformat(),
+            'description': event.description,
+            'color': '#ff7c00',  # Optional color styling
+        })
+    
+    return JsonResponse({'events': event_data})
+
+
+from django.urls import reverse
+
+def update_event(request, event_id):
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        print("Event ID:", event_id)
+        print("POST data:", request.POST)
+
+        event = get_object_or_404(Event, id=event_id)
+        form = EventForm(request.POST, instance=event)
+
+        if form.is_valid():
+            print("Form is valid, saving event.")
+            form.save()
+              # Update this if needed
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Event updated successfully!',
+                
+            })
+        else:
+            print("Form errors:", form.errors)
+            return JsonResponse({'status': 'error', 'message': 'There was an error updating the event.'})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+
+
 
 
 def viewUserProfile(request, username):
-
-    
     user = get_object_or_404(User, username=username)
 
     
     profile, created = Profile.objects.get_or_create(user=user)
 
+    
+    user_role = 'User'  
+    coach_classes = []  
+    class_count = 0  
+
     try:
         coach = Coach.objects.get(user=user)
-        user_role = 'Coach'  # Set the role to 'Coach' if this is a coach
+        user_role = 'Coach'  
+        coach_classes = Classes.objects.filter(coach=coach)
+        class_count = coach_classes.count() 
     except Coach.DoesNotExist:
-        # If the user is a superuser, set the role to 'Superuser', else 'User'
+        
         if user.is_superuser:
             user_role = 'Superuser'
-        else:
-            user_role = 'User'
-
     
     if request.method == 'POST':
         form = ProfileImageForm(request.POST, request.FILES, instance=profile)
@@ -275,14 +406,67 @@ def viewUserProfile(request, username):
             form.save()  
             return redirect('profile', username=username)  
     else:
-        
         form = ProfileImageForm(instance=profile)
 
-    
     return render(request, 'profile.html', {
         'form': form,
         'user': user,
         'profile': profile,
+        'user_role': user_role,
+        'coach_classes': coach_classes,
+        'class_count': class_count,
+    })
+
+@login_required
+def create_class(request):
+    
+    coach = Coach.objects.get(user=request.user)
+    
+    if request.method == 'POST':
+        form = CreateClassForm(request.POST, request.FILES)
+        
+        if form.is_valid():
+            
+            new_class = form.save(commit=False)
+            new_class.coach = coach
+            new_class.save()
+            
+            return redirect('profile', username=request.user.username)  
+            
+    else:
+        form = CreateClassForm()
+        
+    return render(request, 'classes/create_class.html', {'form': form})
+
+
+
+def edit_class(request, class_id):
+    
+    class_instance = get_object_or_404(Classes, id=class_id)
+    
+    
+    if request.user != class_instance.coach.user:
+        return redirect('profile', username=request.user.username)
+
+    
+    if request.method == 'POST':
+        if 'delete_class' in request.POST:  
+            
+            class_instance.delete()
+            return redirect('profile', username=request.user.username)  
+
+        
+        form = ClassEditForm(request.POST, request.FILES, instance=class_instance)
+        if form.is_valid():
+            form.save()
+            return redirect('profile', username=request.user.username)  
+    else:
+        form = ClassEditForm(instance=class_instance)
+
+    return render(request, 'classes/edit_class.html', {'form': form, 'class_instance': class_instance})
+
+
+
         'user_role': user_role
          
     })

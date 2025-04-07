@@ -33,6 +33,44 @@
 
                 <button type="submit" class="save-button">Save Changes</button>
             </form>
+
+            {% if user_role == 'Coach' %}
+                {% if class_count == 1 %}
+                    <h2>You have 1 class</h2>
+                {% elif class_count > 1 %}
+                    <h2>You have {{ class_count }} classes</h2>
+                {% else %}
+                    <h2>You have no classes</h2>
+                {% endif %}
+
+                
+
+                
+                {% if coach_classes %}
+                    
+                    <ul>
+                        {% for class in coach_classes %}
+                            <li>
+                                <strong>Class Name: {{ class.name }}</strong>
+                                <div class="class-image-container">
+                                    {% if class.class_image %}
+                                        <img src="{{ class.class_image.url }}" alt="{{ class.name }}'s Image" class="class-image">
+                                    {% else %}
+                                        <img src="/media/class_images/default.jpg" alt="Default Class Image" class="class-image">
+                                    {% endif %}
+                                </div>
+                                <p>Description: {{class.description}}</p>
+                            </li>
+                            <a href="{% url 'edit_class' class.id %}" class="filled-button">Edit Details</a>
+                        {% endfor %}
+
+                        <a href="{% url 'create_class' %}" class="filled-button">Create Another Class</a>
+                    </ul>
+                {% else %}
+                    
+                    <a href="{% url 'create_class' %}" class="filled-button">Create One Now</a>
+                {% endif %}
+            {% endif %}
         </div>
     </div>
 {% endblock %}

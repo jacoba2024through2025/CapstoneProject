@@ -1,0 +1,42 @@
+{% extends 'root.html' %}
+
+{% block content %}
+    <div class="create-class-page">
+        <div class="create-class-form-content">
+            <h1>Create a New Class</h1>
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="form-fields">
+                    <div class="form-field">
+                        {{ form.name.label }}
+                        {{ form.name }}
+                    </div>
+                    <div class="form-field">
+                        {{ form.class_image.label }}
+                        {{ form.class_image }}
+                    </div>
+                    <div class="form-field">
+                        {{ form.description.label }}
+                        {{ form.description }}
+                    </div>
+                    <div class="form-field">
+                        {{ form.price.label }}
+                        {{ form.price }}
+                    </div>
+                    <div class="form-field">
+                        {{ form.schedules.label }}
+                        {{ form.schedules }}
+                    </div>
+                    <div class="form-field">
+                        {{ form.students.label }}
+                        {{ form.students }}
+                    </div>
+                </div>
+
+                <button type="submit" class="save-button">Create Class</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
