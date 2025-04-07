@@ -24,13 +24,12 @@
     </tbody>
 </table>
 <h3>Total: ${{ total_price }}</h3>
-<form id="checkout-form" method="POST" action="{% url 'create_checkout_session' %}">
-    {% csrf_token %}
-    <button id="checkout-button">Proceed to Checkout</button>
-</form>
+{% comment %} <form id="checkout-form" method="GET" action="{% url 'create_checkout_session' %}">
+    {% csrf_token %} {% endcomment %}
+<button id="checkout-button">Proceed to Checkout</button>
+{% comment %} </form> {% endcomment %}
 
-<script src="https://js.stripe.com/v3/"></script>
-<script>
+{% comment %} <script>
     const stripe = Stripe("{{ stripe_public_key }}");
 
     document.getElementById("checkout-button").addEventListener("click", function (e) {
@@ -50,5 +49,5 @@
             }
         });
     });
-</script>
+</script> {% endcomment %}
 {% endblock content %}

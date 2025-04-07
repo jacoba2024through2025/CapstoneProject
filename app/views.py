@@ -21,8 +21,24 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 class SuccessView(TemplateView):
-    def success():
-        return HttpResponse("Payment successful!")
+    template_name = "store/success.html"
+
+def empty_cart(request):
+    cart_items = Cart.objects.filter(user=request.user)
+    for item in cart_items:
+        item.delete()
+    return redirect('home')
+
+def cancel_payment(request):
+    return redirect('view_cart')
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     session_id = self.request.GET.get('session_id')
+    #     if session_id:
+    #         session = stripe.checkout.Session.retrieve(session_id)
+    #         context['session'] = session
+    #     return context
 
 
 class ContactView(FormView):
@@ -177,46 +193,61 @@ def view_cart(request):
     }
     return render(request, 'store/cart.html', context)
 
-@login_required
+def delete_cart_item(request, item_id):
+    pass
+
+
+class StripeConfigView(TemplateView):
+    template_name = "store/cart.html"
+
+    
+@csrf_exempt
+def stripe_config(request):
+    stripe_config = {'publicKey': settings.STRIPE_PUBLIC_KEY}
+    return JsonResponse(stripe_config, safe=False)
+
+@csrf_exempt
 def create_checkout_session(request):
-    cart_items = Cart.objects.filter(user=request.user)
-    if not cart_items:
-        return JsonResponse({'error': 'No items in cart'})
-    
-    line_items = []
-    for item in cart_items:
-        line_items.append({
-            'price_data': {
-                'currency': 'usd',
-                'unit_amount': int(item.product.price * 100),
-                'product_data': {
-                    'name': item.product.name,
-                    'images': [item.product.image.url] if item.product.image else [],
-                },  # Stripe requires amount in cents
-            },
-            'quantity': item.quantity,
-        })
-    
-    try:
-        checkout_session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            line_items=line_items,
-            metadata={
-                'user_id': request.user.id,
-            },
-            mode='payment',
-            success_url=settings.PAYMENT_SUCCESS_URL,
-            cancel_url=settings.PAYMENT_CANCEL_URL,
-        )
-        return JsonResponse({'id': checkout_session.id})
-    except Exception as e:
-        return JsonResponse({'error': str(e)})
-    
-def success(request):
-    return HttpResponse("Payment successful!")
+    if request.method == 'GET':
+        domain_url = 'http://localhost:8000/'
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        cart_items = Cart.objects.filter(user=request.user)
+        line_items = []
+        for item in cart_items:
+                    line_items.append(
+                        {
+                        'price_data': {
+                            'currency': 'usd',
+                            'product_data': {
+                                'name': item.product.name,
+                                'metadata': {
+                                    'product_id': item.product.id,
+                                },
+                                'description': item.product.description,
+                                'images': [item.product.image],  # Optional: Include product image
+                            },
+                            'unit_amount': int(item.product.price * 100),  # Convert to cents
+                        },
+                        'quantity': item.quantity,
+                    }
+                )
+        try:
+            checkout_session = stripe.checkout.Session.create(
+                success_url=domain_url + 'success?session_id={CHECKOUT_SESSION_ID}',
+                cancel_url=domain_url + 'cancelled/',
+                payment_method_types=['card'],
+                mode='payment',
+                
+                line_items=line_items
+            )
+            return JsonResponse({'sessionId': checkout_session['id']})
+        except Exception as e:
+            print(f"Error creating checkout session: {e}")
+            return JsonResponse({'error': str(e)})
 
 def view_schedule_page(request):
     return render(request, 'classes/scheduling.html')
+
 
 def viewUserProfile(request, username):
 

@@ -36,12 +36,15 @@ urlpatterns = [
     path("products/<int:product_id>/", views.viewOneProduct, name="product_detail"),
     path("cart/add/<int:product_id>/", views.add_to_cart, name="add_to_cart"),
     path("cart/", views.view_cart, name="view_cart"),
-    path("cart/checkout/", views.create_checkout_session, name="create_checkout_session"),
+    path('config/', views.stripe_config, name='stripe_config'),
+    path('checkout/', views.create_checkout_session, name='create_checkout_session'),
+
 
     # Schedule and Contact
     path("schedule/", views.view_schedule_page, name="schedule"),
     path("contact/", ContactView.as_view(), name="contact"),
-    path("success/", SuccessView.as_view(), name="success"),
+    path("success/", views.empty_cart, name="success"),
+    path("cancelled/", views.cancel_payment, name="cancel"),
     path("admin/", admin.site.urls),
 ]
 
