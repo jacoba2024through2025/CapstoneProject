@@ -20,6 +20,32 @@ from django.http import HttpResponseRedirect
 import os
 import requests
 
+
+@login_required
+def view_admin_page(request):
+    
+    return render(request, "bs-binary-admin/index.html")
+    
+def view_admin_chart(request):
+
+    return render(request, "bs-binary-admin/chart.html")
+
+def view_admin_forms(request):
+
+    return render(request, "bs-binary-admin/form.html")
+
+def view_admin_tabs(request):
+    
+    return render(request, "bs-binary-admin/tab-panel.html")
+
+def view_admin_ui(request):
+        
+    return render(request, "bs-binary-admin/ui.html")
+
+def view_admin_tables(request):
+    
+    return render(request, "bs-binary-admin/tables.html")
+
 class SuccessView(TemplateView):
     template_name = "success.html"
 
@@ -88,6 +114,8 @@ def view_contact_page(request):
 
     else:
         return render(request, "contact.html", {})
+    
+
 
 def view_login(request):
     
@@ -117,11 +145,12 @@ def register(request):
     if request.method == "POST" and "password" in request.POST:  # Login form
         username = request.POST.get('username')
         password = request.POST.get('password')
+        email = request.POST.get('email')
         keep_signed_in = request.POST.get('keep_signed_in')  # Check if 'Keep me signed in' was checked
 
         print(f"Attempting to authenticate with Username: {username} and Password: {password}")
 
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(request, username=username, password=password, email=email)
 
         if user is not None:
             login(request, user)
@@ -170,63 +199,88 @@ def view_schedule_page(request, username):
     except Coach.DoesNotExist:
         coach_classes = []
         class_count = 0
-        messages.error(request, "This user does not have any coaches")
+        messages.error(request, "This user does not have any classes")
+
+    # Check if the calendar exists for each class
+    for class_item in coach_classes:
+        if not hasattr(class_item, 'calendar'):
+            ClassCalendar.objects.create(class_name=class_item)
 
     if request.method == 'POST':
-        if 'create_event' in request.POST:  
+        if 'create_event' in request.POST:
             event_form = EventForm(request.POST)
+            class_id = request.POST.get('class_id')  # Get class ID from the form
+
             if event_form.is_valid():
-                event = event_form.save()  # Save the event
+                event = event_form.save(commit=False)
+                event.class_item = Classes.objects.get(id=class_id)  # Link event to class
+                event.save()
                 messages.success(request, "Event created successfully!")
-                return redirect('schedule', username=username) 
-        else:  
-            class_id = request.POST.get('class_id')
-            selected_class = Classes.objects.get(id=class_id)
-
-            
+                return redirect('schedule', username=username)
     else:
-        
-        event_form = EventForm()  
+        event_form = EventForm()
 
-    # Retrieve all events
     events = Event.objects.all()
     event_data = []
     for event in events:
         event_data.append({
-            'id': event.id,  #event ID
+            'id': event.id,
             'title': event.title,
             'start': event.start_date.isoformat(),
             'end': event.end_date.isoformat(),
             'description': event.description,
-            'color': '#ff7c00',  # color
+            'color': '#ff7c00',
         })
 
     return render(request, 'classes/scheduling.html', {
         'user': user,
         'coach_classes': coach_classes,
         'class_count': class_count,
-        
-        'event_form': event_form,  
+        'event_form': event_form,
         'events': event_data,
     })
+
+
+
+def get_class_calendar(request, class_id):
+    # Get the class object based on the class_id
+    class_item = get_object_or_404(Classes, id=class_id)
+    
+    # Retrieve all events related to this class
+    events = Event.objects.filter(class_item=class_item)  # Assuming your Event model has a relation to Classes
+    
+    event_data = []
+    for event in events:
+        event_data.append({
+            'id': event.id,
+            'title': event.title,
+            'start': event.start_date.isoformat(),
+            'end': event.end_date.isoformat(),
+            'description': event.description,
+            'color': '#ff7c00',  # Optional color styling
+        })
+    
+    return JsonResponse({'events': event_data})
+
 
 from django.urls import reverse
 
 def update_event(request, event_id):
     if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        print("event id: ", event_id)
+        print("Event ID:", event_id)
+        print("POST data:", request.POST)
 
         event = get_object_or_404(Event, id=event_id)
         form = EventForm(request.POST, instance=event)
 
         if form.is_valid():
-            print("saved the event.")
+            print("Form is valid, saving event.")
             form.save()
-            home_url = reverse('schedule')  
+              # Update this if needed
             return JsonResponse({
                 'status': 'success',
                 'message': 'Event updated successfully!',
-                'redirect_url': home_url
+                
             })
         else:
             print("Form errors:", form.errors)

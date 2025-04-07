@@ -81,7 +81,7 @@ a.filled-button {
 }
 
 a.filled-button:hover {
-	background-color: #121212;
+	background-color: #d02d2d;
 	color: #fff;
 }
 
@@ -1277,48 +1277,187 @@ footer .inner-content p a {
 	margin-right: 0.5vw;
 }
 
-.class-image {
-	width: 150px;
-    height: 150px;
-    border-radius: 30%;
-    object-fit: cover;
-    border: 4px solid #ddd;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
 
-/* Styling for the class images on schedule page */
-.class-image-schedule {
-	width: 20vw;
-    height: 20vh;
-    border-radius: 15%;
-    object-fit: cover;
-    border: 4px solid #ddd;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
 
-/* Style for horizontally scrollable container */
-.class-scroll-container {
-	display: flex;
-	overflow-x: auto;
-	scroll-snap-type: x mandatory;
-	gap: 1rem;
-	padding: 1rem 0;
-  }
-  
-  .class-thumb {
-	scroll-snap-align: start;
-  }
-  
-  .class-thumb img {
+
+/* Ensuring all images are the same size */
+.class-image-wrapper {
+	
 	width: 100%;
-	max-width: 100%;
-	height: auto;
+	height: 250px; /* You can adjust the height as per your requirement */
+	overflow: hidden;
+	position: relative;
   }
+  
+  .class-image-schedule {
+	border-radius: 3%;
+	max-height:fit-content;
+	width: 100%;
+	height: 100%;
+	object-fit: cover; /* This ensures the image covers the entire div without distortion */
+  }
+  
+  /* Styling the class info */
+
+	
+
+  .class-info {
+	background-color: #fff;
+	padding: 20px;
+	text-align: center;
+	border: 1px solid #e0e0e0;
+	border-top: none;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .class-info h3 {
+	font-size: 1.2rem;
+	font-weight: bold;
+	color: #333;
+  }
+  
+  .class-price {
+	font-size: 1rem;
+	color: #888;
+  }
+  
+  .class-info p {
+	font-size: 0.9rem;
+	color: #666;
+	margin-top: 15px;
+  }
+  
+  .view-calendar {
+	background-color: #007bff;
+	color: white;
+	padding: 10px 20px;
+	border: none;
+	cursor: pointer;
+	margin-top: 20px;
+	font-size: 1rem;
+  }
+  
+  .view-calendar:hover {
+	background-color: #0056b3;
+  }
+  
+  /* Additional styling for the responsive grid */
+  .class-item {
+	margin-bottom: 30px;
+	background: #056BA3;
+	border-radius: 3%;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	
+  }
+  
+  .class-scroll-container {
+	display: flex;
+	overflow-x: scroll;
+	padding: 10px 0;
+  }
+  
+  .class-scroll-container .col-lg-4 {
+	margin-right: 15px;
+  }
+  
+  
+
+
+
 
 /* Create schedule page*/
 
-.form-move {
-	margin-top: 50vh;
+/* Styling for the form container */
+.calendar-form {
+	background-color: #fff;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	width: 60vw;
+	margin: 0 auto;
+	display: block; /* Make sure the form is visible */
+	transition: opacity 0.3s ease-in-out;
+  }
+  
+  /* Header styling */
+  #calendar-header {
+	text-align: center;
+	font-size: 1.5em;
+	margin-bottom: 20px;
+	color: #333;
+  }
+  
+  /* Button styling */
+  .btn-form {
+	background-color: #f33f3f;
+	color: white;
+	border: none;
+	padding: 10px 15px;
+	font-size: 1em;
+	border-radius: 4px;
+	cursor: pointer;
+	width: 100%;
+	transition: background-color 0.3s;
+  }
+  
+  .btn-form:hover {
+	background-color: #d02d2d;
+  }
+  
+  /* Form input and textarea styling */
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+	width: 100%;
+	padding: 10px;
+	margin: 10px 0;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	font-size: 1em;
+  }
+  
+  /* Date input specific styling */
+  .form-group input[type="datetime-local"] {
+	padding: 10px;
+  }
+  
+  /* Optional: Add subtle focus effects to inputs */
+  .form-group input:focus,
+  .form-group textarea:focus {
+	border-color: #d02d2d;
+	outline: none;
+  }
+  
+  /* Optional: Add some background overlay styling if needed */
+  .calendar-form[data-visible="true"] {
+	opacity: 1;
+  }
+  
+  .calendar-form[data-visible="false"] {
+	opacity: 0;
+  }
+
+
+
+
+
+/*Forgot password page*/
+
+.forgot-pass-container {
+	padding-top: 50vh;
+}
+
+.password-confirm {
+	padding-top: 50vh;
+}
+
+.password-done {
+	padding-top: 50vh;
+}
+
+.password-complete {
+	padding-top: 50vh;
 }
 
 

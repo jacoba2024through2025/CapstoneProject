@@ -21,6 +21,7 @@ from app import views
 from django.conf import settings
 from django.conf.urls.static import static
 from app.views import SuccessView, ContactView
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path("", views.view_main_page, name="home"),
@@ -30,13 +31,22 @@ urlpatterns = [
     path("logout/", views.viewLogout, name="logout"),
     path("products/", views.viewProducts, name="products"),
     path("schedule/<str:username>/", views.view_schedule_page, name="schedule"),  
-    path('events/update/<int:event_id>/', views.update_event, name='update_event'),
-    
+    path('update_event/<int:event_id>/', views.update_event, name='update_event'),
+    path('get_class_calendar/<int:class_id>/', views.get_class_calendar, name='get_class_calendar'),
     path('create_class/', views.create_class, name='create_class'),
     path('edit_class/<int:class_id>/', views.edit_class, name='edit_class'),
-    
+    path('password_reset/', auth_views.PasswordResetView.as_view(template_name="password_reset_form.html"), name='password_reset'),
+    path('password_reset_done/', auth_views.PasswordResetDoneView.as_view(template_name="password_reset_done.html"), name='password_reset_done'),
+    path('password_reset_complete/', auth_views.PasswordResetCompleteView.as_view(template_name="password_reset_complete.html"), name='password_reset_complete'),
+    path('password_reset_confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name="password_reset_confirm.html"), name='password_reset_confirm'),
     path("contact/", ContactView.as_view(), name="contact"),
     path("success/", SuccessView.as_view(), name="success"),
+    path("adminpanel/", views.view_admin_page, name="adminpanel"),
+    path("adminpanel/chart/", views.view_admin_chart, name="chart"),
+    path("adminpanel/forms/", views.view_admin_forms, name="forms"),
+    path("adminpanel/tabs/", views.view_admin_tabs, name="tabs"),
+    path("adminpanel/ui/", views.view_admin_ui, name="ui"),
+    path("adminpanel/tables/", views.view_admin_tables, name="tables"),
     path("admin/", admin.site.urls),
 ]
 

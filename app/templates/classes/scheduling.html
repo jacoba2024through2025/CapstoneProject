@@ -11,63 +11,60 @@
     <div class="row">
       <div class="col-lg-12 col-12 text-center mb-5">
         <h6 data-aos="fade-up">Get A Perfect Body</h6>
-
         <h2 data-aos="fade-up" data-aos-delay="200">Our Training Classes</h2>
       </div>
-
+      
       {% if class_count > 3 %}
         <div class="class-scroll-container">
       {% endif %}
-
+      
       {% for class in coach_classes %}
-        <div class="col-lg-4 col-md-6 col-12" data-aos="fade-up" data-aos-delay="400">
+        <div class="col-lg-4 col-md-6 col-12 class-item" data-aos="fade-up" data-aos-delay="400">
           <div class="class-thumb">
-            <img src="{{ class.class_image.url }}" class="img-fluid class-image-schedule" alt="Class">
+            <div class="class-image-wrapper">
+              <img src="{{ class.class_image.url }}" class="img-fluid class-image-schedule" alt="Class">
+            </div>
             <div class="class-info">
               <h3 class="mb-1">{{ class.name }}</h3>
-
-              <span><strong>Trained by</strong> - {{ class.coach.name }}</span>
-
-              <span class="class-price">${{ class.price }}</span>
-
-              <p class="mt-3">
-                {{ class.description }}
-              </p>
-
+              {% comment %}<span><strong>Trained by</strong> - {{ class.coach.name }}</span>{% endcomment %}
+              <span class="class-price">Price: ${{ class.price }}</span>
+              <p class="mt-3">{{ class.description }}</p>
+              <button class="btn-form view-calendar" data-class-id="{{ class.id }}" data-class-name="{{ class.name }}">View Calendar</button>
             </div>
           </div>
-          
         </div>
       {% empty %}
         <p>No classes available for this user.</p>
       {% endfor %}
 
       {% if class_count > 3 %}
-        </div> 
+        </div>
       {% endif %}
-      
       
     </div>
   </div>
-
-  
 </section>
 
-<div class="calendar-form">
-  <h3>Create an Event</h3>
-  <form method="POST">
+
+
+<div class="calendar-form" style="display: none;">
+  <h3 id="calendar-header">Create an Event for </h3>
+  <form method="POST" class="event-form">
     {% csrf_token %}
-    {{ event_form.as_p }}  <!-- Render the event form -->
-    <button type="submit" name="create_event" class="btn btn-primary">Create Event</button>
+    <div class="form-group">
+      {{ event_form.as_p }}
+    </div>
+    
+    <input type="hidden" name="class_id" id="class_id" value="">
+    
+    <button type="submit" name="create_event" class="btn btn-form">Create Event</button>
   </form>
 </div>
 
-<div id="calendar">
 
-</div>
+<div id="calendar" style="display: none;"></div>
 
 
-<!-- Modal for editing event -->
 <div class="modal fade" id="eventEditModal" tabindex="-1" aria-labelledby="eventEditModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -103,16 +100,9 @@
   </div>
 </div>
 
-<!-- FullCalendar initialization -->
-<div id="calendar"></div>
-
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
-
-    // events from django model
-    var eventsFromBackend = {{ events|safe }}; 
-
     var calendar = new FullCalendar.Calendar(calendarEl, {
       initialView: 'listMonth',
       headerToolbar: {
@@ -120,63 +110,99 @@
         center: 'title',
         right: 'listMonth,dayGridMonth,agendaWeek,agendaDay'
       },
-      events: eventsFromBackend,
       eventClick: function(info) {
-        
-        var eventId = info.event.id;
-        var eventTitle = info.event.title;
-        var eventDescription = info.event.extendedProps.description;
-        var eventStartDate = info.event.start.toISOString().slice(0, 16);
-        var eventEndDate = info.event.end.toISOString().slice(0, 16);
+        // Open modal for editing event
+        var event = info.event;
 
-        
-        document.getElementById('eventId').value = eventId;
-        document.getElementById('eventTitle').value = eventTitle;
-        document.getElementById('eventDescription').value = eventDescription;
-        document.getElementById('eventStartDate').value = eventStartDate;
-        document.getElementById('eventEndDate').value = eventEndDate;
+        // Set the form values to the event details
+        document.getElementById('eventId').value = event.id;
+        document.getElementById('eventTitle').value = event.title;
+        document.getElementById('eventDescription').value = event.extendedProps.description;
+        document.getElementById('eventStartDate').value = event.start.toISOString().slice(0, 16);
+        document.getElementById('eventEndDate').value = event.end.toISOString().slice(0, 16);
 
-        
-        var myModal = new bootstrap.Modal(document.getElementById('eventEditModal'), {
-          keyboard: false
-        });
-        myModal.show();
+        // Show the modal
+        var modal = new bootstrap.Modal(document.getElementById('eventEditModal'));
+        modal.show();
       }
     });
 
+    // Render the calendar
     calendar.render();
 
-    
+    // Handle the "View Calendar" button click
+    document.querySelectorAll('.view-calendar').forEach(function(button) {
+      button.addEventListener('click', function() {
+        var classId = button.getAttribute('data-class-id');
+        var className = button.getAttribute('data-class-name');
+
+        // Set the class ID in the hidden input field
+        document.getElementById('class_id').value = classId;
+
+        // Update header with class name
+        document.getElementById('calendar-header').textContent = 'Create an Event for ' + className;
+
+        // Show the event form and calendar
+        document.querySelector('.calendar-form').style.display = 'block';
+        calendarEl.style.display = 'block';
+
+        // Send AJAX request to get the class-specific calendar events
+        fetch(`/get_class_calendar/${classId}/`)
+          .then(response => response.json())
+          .then(data => {
+            // Clear the current calendar
+            calendar.removeAllEvents();
+
+            // Add new events specific to the selected class
+            calendar.addEventSource(data.events);
+            calendar.render();
+          });
+      });
+    });
+
+    // Handle event form submission for editing an event
     document.getElementById('eventEditForm').addEventListener('submit', function(event) {
       event.preventDefault();
 
-      
+      // Get form data
       var formData = new FormData(this);
-
       
-      fetch('/events/update/' + document.getElementById('eventId').value + '/', {
+      // Send AJAX request to update the event
+      fetch(`/update_event/${formData.get('event_id')}/`, {
         method: 'POST',
-        body: formData,
         headers: {
-          'X-Requested-With': 'XMLHttpRequest',  
-        }
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: formData
       })
       .then(response => response.json())
       .then(data => {
         if (data.status === 'success') {
-          window.location.href = data.redirect_url;
+          // Close the modal and refresh the calendar
+          var modal = bootstrap.Modal.getInstance(document.getElementById('eventEditModal'));
+          modal.hide();
+
+          // Update the calendar to reflect the updated event
+          var eventId = formData.get('event_id');
+          var updatedEvent = calendar.getEventById(eventId);
+          updatedEvent.setProp('title', formData.get('title'));
+          updatedEvent.setExtendedProp('description', formData.get('description'));
+          updatedEvent.setStart(formData.get('start_date'));
+          updatedEvent.setEnd(formData.get('end_date'));
+        } else {
           
-          
-          var myModal = bootstrap.Modal.getInstance(document.getElementById('eventEditModal'));
-          myModal.hide();
-          
-          calendar.refetchEvents();
-        } 
+        }
       })
-      
+      .catch(error => {
+        console.error('Error:', error);
+        
+      });
     });
   });
 </script>
 
 {% endblock content %}
+
+
+
 

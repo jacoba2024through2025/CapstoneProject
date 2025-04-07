@@ -63,7 +63,7 @@
                             <p class="error-msg">{{ message }}</p>
                         {% endfor %}
               <div class="foot-lnk">
-                <a href="#forgot">Forgot Password?</a>
+                <a href="{% url 'password_reset' %}">Forgot Password?</a>
               </div>
             </form>
           </div>
@@ -79,6 +79,16 @@
                   id="{{ form.username.id_for_label }}"
                   class="input"
                   value="{{ form.username.value|default:'' }}"
+                />
+              </div>
+              <div class="group">
+                <label for="pass" class="label">Email</label>
+
+                <input
+                  type="email"
+                  name="email"
+                  id="{{ form.email.id_for_label }}"
+                  class="input"
                 />
               </div>
               <div class="group">

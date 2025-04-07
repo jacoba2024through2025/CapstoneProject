@@ -37,7 +37,12 @@ class Classes(models.Model):
     students = models.ManyToManyField(User, related_name='classes', blank=True)
     coach = models.ForeignKey(Coach, on_delete=models.CASCADE, blank=True, null=True)
 
+class ClassCalendar(models.Model):
+    class_name = models.OneToOneField(Classes, on_delete=models.CASCADE, related_name='calendar')
+    created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"Calendar for {self.class_name.name}"
 
 class Event(models.Model):
     
@@ -45,7 +50,7 @@ class Event(models.Model):
     description = models.TextField()
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
-
+    class_item = models.ForeignKey('Classes', on_delete=models.CASCADE, related_name='events', null=True, blank=True)
     def __str__(self):
         return self.title
   
