@@ -129,14 +129,14 @@ class Coach(models.Model):
         average_rating = Review.objects.filter(coach=self).aggregate(Avg('rating'))['rating__avg']
         return round(average_rating, 1) if average_rating else None
         
-class Classes(models.Model):
-    name = models.CharField(max_length=255)  
-    class_image = models.ImageField(upload_to='class_images', blank=True, null=True, default='default.jpg')
-    description = models.TextField()
-    price = models.IntegerField()
+# class Classes(models.Model):
+#     name = models.CharField(max_length=255)  
+#     class_image = models.ImageField(upload_to='class_images', blank=True, null=True, default='default.jpg')
+#     description = models.TextField()
+#     price = models.IntegerField()
     
-    students = models.ManyToManyField(User, related_name='classes', blank=True)
-    coach = models.ForeignKey(Coach, on_delete=models.CASCADE, blank=True, null=True)
+#     students = models.ManyToManyField(User, related_name='classes', blank=True)
+#     coach = models.ForeignKey(Coach, on_delete=models.CASCADE, blank=True, null=True)
 
 class ClassCalendar(models.Model):
     class_name = models.OneToOneField(Classes, on_delete=models.CASCADE, related_name='calendar')

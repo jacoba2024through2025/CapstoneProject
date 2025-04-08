@@ -47,3 +47,13 @@ class EventForm(forms.ModelForm):
             'start_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             'end_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
         }
+
+class CreateProductForm(forms.ModelForm):
+    class Meta:
+        model = Products
+        fields = ['name', 'description', 'price', 'image']
+        widgets = {
+            'name': forms.TextInput(attrs={'placeholder': 'Product Name'}),
+            'description': forms.Textarea(attrs={'placeholder': 'Product Description'}),
+            'price': forms.NumberInput(attrs={'placeholder': 'Price'}),
+        }

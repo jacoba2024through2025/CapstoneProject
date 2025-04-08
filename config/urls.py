@@ -55,6 +55,8 @@ urlpatterns = [
     path("contact/", ContactView.as_view(), name="contact"),
     path("success/", views.empty_cart, name="success"),
     path("cancelled/", views.cancel_payment, name="cancel"),
+
+    # Admin Panel
     path("adminpanel/", views.view_admin_page, name="adminpanel"),
     path("adminpanel/chart/", views.view_admin_chart, name="chart"),
     path("adminpanel/forms/", views.view_admin_forms, name="forms"),

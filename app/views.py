@@ -203,6 +203,17 @@ def viewOneProduct(request, product_id):
     }
     return render(request, 'store/apparel.html', context)
 
+def create_product(request):
+    if request.method == 'POST':
+        form = CreateProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Product created successfully!")
+            return redirect('products')  
+    else:
+        form = CreateProductForm()
+    return render(request, 'store/create_product.html', {'form': form})
+
 @login_required
 def add_to_cart(request, product_id):
     product = get_object_or_404(Products, id=product_id)
@@ -465,8 +476,3 @@ def edit_class(request, class_id):
 
     return render(request, 'classes/edit_class.html', {'form': form, 'class_instance': class_instance})
 
-
-
-        'user_role': user_role
-         
-    })
