@@ -31,6 +31,9 @@ https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js
       href="{% static 'store\images\Westletics.png' %}"
     />
 
+    <script src="{% static "store/js/payment.js" %}" defer></script>
+    <script src="https://js.stripe.com/v3/" defer></script>
+
     <title>{% block title %}{% endblock title %}</title>
 
   </head>
@@ -74,7 +77,7 @@ https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js
                       <a class="dropdown-item" href="{% url "profile" username=request.user.username %}"><i class="icon-spacing fa-regular fa-circle-user"></i>View Profile</a>
                       <a class="dropdown-item" href="{% url "schedule" username=request.user.username %}"><i class="icon-spacing fa-solid fa-calendar"></i>My Schedules</a>
                       <a class="dropdown-item" href="#"><i class="icon-spacing fa-solid fa-bell"></i></i>Notifications</a>
-                      <a class="dropdown-item" href="#"><i class="icon-spacing fa-solid fa-cart-shopping"></i></i></i>My Cart</a>
+                      <a class="dropdown-item" href="{% url "view_cart" %}"><i class="icon-spacing fa-solid fa-cart-shopping"></i></i></i>My Cart</a>
                     </div>
                   </li>
                 {% else %}

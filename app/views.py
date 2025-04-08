@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from app.forms import *
 from app.models import *
 from django.contrib.auth import authenticate, login, logout
@@ -13,41 +12,56 @@ from django.shortcuts import reverse
 from django.views.generic import TemplateView, FormView
 from django.http import HttpResponse
 from app.models import *
+from django.http import *
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.http import HttpResponseRedirect
 
 import os
 import requests
+from django.views.decorators.csrf import csrf_exempt
+import stripe
 
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
-@login_required
 def view_admin_page(request):
-    
-    return render(request, "bs-binary-admin/index.html")
-    
-def view_admin_chart(request):
+    return render(request, 'bs-binary-admin/index.html')
 
-    return render(request, "bs-binary-admin/chart.html")
+def view_admin_chart(request):
+    return render(request, 'bs-binary-admin/chart.html')
 
 def view_admin_forms(request):
-
-    return render(request, "bs-binary-admin/form.html")
+    return render(request, 'bs-binary-admin/form.html')
 
 def view_admin_tabs(request):
-    
-    return render(request, "bs-binary-admin/tab-panel.html")
+    return render(request, 'bs-binary-admin/tab-panel.html')
 
 def view_admin_ui(request):
-        
-    return render(request, "bs-binary-admin/ui.html")
+    return render(request, 'bs-binary-admin/ui.html')
 
 def view_admin_tables(request):
-    
-    return render(request, "bs-binary-admin/tables.html")
+    return render(request, 'bs-binary-admin/table.html')
+
 
 class SuccessView(TemplateView):
-    template_name = "success.html"
+    template_name = "store/success.html"
+
+def empty_cart(request):
+    cart_items = Cart.objects.filter(user=request.user)
+    for item in cart_items:
+        item.delete()
+    return redirect('home')
+
+def cancel_payment(request):
+    return redirect('view_cart')
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     session_id = self.request.GET.get('session_id')
+    #     if session_id:
+    #         session = stripe.checkout.Session.retrieve(session_id)
+    #         context['session'] = session
+    #     return context
 
 
 class ContactView(FormView):
@@ -118,11 +132,6 @@ def view_contact_page(request):
 
 
 def view_login(request):
-    
-    
-    
-
-    
     return render(request, 'register.html')
 
 def register(request):
@@ -184,8 +193,83 @@ def viewProducts(request):
     }
     return render(request, 'store/products.html', context)
 
-def addProducts(request):
+def viewOneProduct(request, product_id):
+    product = get_object_or_404(Products, id=product_id)
+    context = {
+        'product': product
+    }
+    return render(request, 'store/apparel.html', context)
+
+@login_required
+def add_to_cart(request, product_id):
+    product = get_object_or_404(Products, id=product_id)
+    cart_item, created = Cart.objects.get_or_create(user=request.user, product=product)
+    if not created:
+        cart_item.quantity += 1
+        cart_item.save()
+    return redirect('view_cart')
+
+@login_required
+def view_cart(request):
+    cart_items = Cart.objects.filter(user=request.user)
+    total_price = sum(item.get_total_price() for item in cart_items)
+    context = {
+        'cart_items': cart_items,
+        'total_price': total_price
+    }
+    return render(request, 'store/cart.html', context)
+
+def delete_cart_item(request, item_id):
     pass
+
+
+class StripeConfigView(TemplateView):
+    template_name = "store/cart.html"
+
+    
+@csrf_exempt
+def stripe_config(request):
+    stripe_config = {'publicKey': settings.STRIPE_PUBLIC_KEY}
+    return JsonResponse(stripe_config, safe=False)
+
+@csrf_exempt
+def create_checkout_session(request):
+    if request.method == 'GET':
+        domain_url = 'http://localhost:8000/'
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        cart_items = Cart.objects.filter(user=request.user)
+        line_items = []
+        for item in cart_items:
+                    line_items.append(
+                        {
+                        'price_data': {
+                            'currency': 'usd',
+                            'product_data': {
+                                'name': item.product.name,
+                                'metadata': {
+                                    'product_id': item.product.id,
+                                },
+                                'description': item.product.description,
+                                'images': [item.product.image],  # Optional: Include product image
+                            },
+                            'unit_amount': int(item.product.price * 100),  # Convert to cents
+                        },
+                        'quantity': item.quantity,
+                    }
+                )
+        try:
+            checkout_session = stripe.checkout.Session.create(
+                success_url=domain_url + 'success?session_id={CHECKOUT_SESSION_ID}',
+                cancel_url=domain_url + 'cancelled/',
+                payment_method_types=['card'],
+                mode='payment',
+                
+                line_items=line_items
+            )
+            return JsonResponse({'sessionId': checkout_session['id']})
+        except Exception as e:
+            print(f"Error creating checkout session: {e}")
+            return JsonResponse({'error': str(e)})
 
 
 
@@ -290,9 +374,11 @@ def update_event(request, event_id):
 
 
 
+
 def viewUserProfile(request, username):
     user = get_object_or_404(User, username=username)
 
+    
     profile, created = Profile.objects.get_or_create(user=user)
 
     
@@ -378,3 +464,4 @@ def edit_class(request, class_id):
 
 
 
+        

@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-3z4=8+96s%0s40x+x4%jzq0+74=dqb0859e7p&)_-7m0t@jyux
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 
@@ -33,8 +33,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    
-    
     'app',
     "django.contrib.admin",
     "django.contrib.auth",
@@ -151,3 +149,10 @@ EMAIL_HOST_USER = 'zombiejake2005@gmail.com'
 EMAIL_HOST_PASSWORD = 'oybq eyqm dvjm rrmr'
 DEFAULT_FROM_EMAIL = 'jacob.allen202324@gmail.com'
 CONTACT_EMAIL = 'zombiejake2005@gmail.com'
+
+STRIPE_PUBLIC_KEY = "pk_test_51R8jUoLJ4Bm15VyFg3FvKKgSePWYlEpTV4g2D9KzponPmrER7rP5Xmy4NnVtmgCDhDidRmAyVAt1aOFvEtHMgRx700PftdTMCN"
+STRIPE_SECRET_KEY = "sk_test_51R8jUoLJ4Bm15VyFCoHLVHC6lYViZ3JJIDAmSGgwWiRAczCNL7CpH0TB1opN17VRJBjmuQ6zdopUhphdZW7lmcFG00DrvIsXYV"
+
+BACKEND_DOMAIN = 'http://localhost:8000'
+PAYMENT_SUCCESS_URL = BACKEND_DOMAIN + '/success/'
+PAYMENT_CANCEL_URL = BACKEND_DOMAIN + '/cart/'
