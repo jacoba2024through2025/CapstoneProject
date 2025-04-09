@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{% static "store/css/flex-slider.css" %}"/>
     <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'store/vendor/bootstrap/css/bootstrap.min.css' %}">
+    
     <script src="
 https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js
 "></script>
@@ -28,6 +29,8 @@ https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js
 
     <script src="{% static "store/js/payment.js" %}" defer></script>
     <script src="https://js.stripe.com/v3/" defer></script>
+
+    {% block head %}{% endblock head %}
 
     <title>{% block title %}{% endblock title %}</title>
 
