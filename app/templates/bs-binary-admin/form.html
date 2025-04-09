@@ -5,6 +5,7 @@
       <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Free Bootstrap Admin Template : Binary Admin</title>
+    <link rel="stylesheet" href="{% static "store/css/styles.css" %}"/>
 	<!-- BOOTSTRAP STYLES-->
     <link rel="stylesheet" href="{% static "binary-admin/assets/css/bootstrap.css" %}"/>
      <!-- FONTAWESOME STYLES-->
@@ -24,7 +25,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index.html">Binary admin</a> 
+                <a class="navbar-brand" href='home'>Admin Panel</a>
             </div>
   <div style="color: white;
 padding: 15px 50px 5px 50px;
@@ -36,14 +37,16 @@ font-size: 16px;"> Last access : 30 May 2014 &nbsp; <a href="#" class="btn btn-d
             <div class="sidebar-collapse">
                 <ul class="nav" id="main-menu">
 				<li class="text-center">
-                    <img src="assets/img/find_user.png" class="user-image img-responsive"/>
+                    <div>
+                        <a href='home'><img src="{% static 'store/images/Westletics_logo.png' %}" alt="Westletics Logo" class="admin-project-logo" /></a>
+                    </div>
 					</li>
 				
 					
                     <li>
                         <a class="active-menu"  href="{% url 'adminpanel'%}"><i class="fa fa-dashboard fa-3x"></i> Dashboard</a>
                     </li>
-                      <li>
+                      {% comment %}<li>
                         <a  href="{% url 'ui' %}"><i class="fa fa-desktop fa-3x"></i> UI Elements</a>
                     </li>
                     <li>
@@ -51,12 +54,12 @@ font-size: 16px;"> Last access : 30 May 2014 &nbsp; <a href="#" class="btn btn-d
                     </li>
 						   <li  >
                             <a   href="{% url 'chart' %}"><i class="fa fa-bar-chart-o fa-3x"></i> Morris Charts</a>
-                    </li>	
-                      <li  >
-                        <a  href="{% url 'tables' %}"><i class="fa fa-table fa-3x"></i> Table Examples</a>
+                    </li>{% endcomment %}	
+                    <li  >
+                        <a  href="{% url 'tables' %}"><i class="fa fa-table fa-3x"></i> Manage Users/Coaches </a>
                     </li>
                     <li  >
-                        <a  href="{% url 'forms' %}"><i class="fa fa-edit fa-3x"></i> Forms </a>
+                        <a  href="{% url 'forms' %}"><i class="fa fa-edit fa-3x"></i> Manage Products </a>
                     </li>				
 					
 					                   
@@ -101,253 +104,160 @@ font-size: 16px;"> Last access : 30 May 2014 &nbsp; <a href="#" class="btn btn-d
                 <div class="row">
                     <div class="col-md-12">
                      <h2>Forms Page</h2>   
-                        <h5>Welcome Jhon Deo , Love to see you back. </h5>
+                        
                        
                     </div>
                 </div>
-                 <!-- /. ROW  -->
-                 <hr />
-               <div class="row">
+
                 <div class="col-md-12">
-                    <!-- Form Elements -->
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            Form Element Examples
+                    {% if messages %}
+                        <div class="alert alert-dismissible fade show {% if messages.0.level == 1 %}alert-success{% else %}alert-danger{% endif %}" role="alert">
+                            <ul>
+                                {% for message in messages %}
+                                    <li>{{ message }}</li>
+                                {% endfor %}
+                            </ul>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
                         </div>
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h3>Basic Form Examples</h3>
-                                    <form role="form">
-                                        <div class="form-group">
-                                            <label>Text Input</label>
-                                            <input class="form-control" />
-                                            <p class="help-block">Help text here.</p>
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Text Input with Placeholder</label>
-                                            <input class="form-control" placeholder="PLease Enter Keyword" />
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Just A Label Control</label>
-                                            <p class="form-control-static">info@yourdomain.com</p>
-                                        </div>
-                                        <div class="form-group">
-                                            <label>File input</label>
-                                            <input type="file" />
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Text area</label>
-                                            <textarea class="form-control" rows="3"></textarea>
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Checkboxes</label>
-                                            <div class="checkbox">
-                                                <label>
-                                                    <input type="checkbox" value="" />Checkbox Example One
-                                                </label>
-                                            </div>
-                                            <div class="checkbox">
-                                                <label>
-                                                    <input type="checkbox" value=""/>Checkbox Example Two
-                                                </label>
-                                            </div>
-                                            <div class="checkbox">
-                                                <label>
-                                                    <input type="checkbox" value=""/>Checkbox Example Three
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Inline Checkboxes Examples</label>
-                                            <label class="checkbox-inline">
-                                                <input type="checkbox"/> One
-                                            </label>
-                                            <label class="checkbox-inline">
-                                                <input type="checkbox"/> Two
-                                            </label>
-                                            <label class="checkbox-inline">
-                                                <input type="checkbox"/> Three
-                                            </label>
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Radio Button Examples</label>
-                                            <div class="radio">
-                                                <label>
-                                                    <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked />Radio Example One
-                                                </label>
-                                            </div>
-                                            <div class="radio">
-                                                <label>
-                                                    <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2"/>Radio Example Two
-                                                </label>
-                                            </div>
-                                            <div class="radio">
-                                                <label>
-                                                    <input type="radio" name="optionsRadios" id="optionsRadios3" value="option3"/>Radio Example Three
-                                                </label>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="form-group">
-                                            <label>Select Example</label>
-                                            <select class="form-control">
-                                                <option>One Vale</option>
-                                                <option>Two Vale</option>
-                                                <option>Three Vale</option>
-                                                <option>Four Vale</option>
-                                            </select>
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Multiple Select Example</label>
-                                            <select multiple class="form-control">
-                                                <option>One Vale</option>
-                                                <option>Two Vale</option>
-                                                <option>Three Vale</option>
-                                                <option>Four Vale</option>
-                                            </select>
-                                        </div>
-                                        <button type="submit" class="btn btn-default">Submit Button</button>
-                                        <button type="reset" class="btn btn-primary">Reset Button</button>
+                    {% endif %}
+                </div>
 
-                                    </form>
-                                    <br />
-                                      <h3>With radio & checkboxes</h3>
-                                    <form>
 
-    <div class="form-group input-group">
-      <span class="input-group-addon">
-        <input type="checkbox" />
-      </span>
-      <input type="text" class="form-control" />
-    </div>
-                                         <div class="form-group input-group">
-      <span class="input-group-addon">
-        <input type="radio" />
-      </span>
-      <input type="text" class="form-control" />
-    </div>
-                                    </form>
-
-                                 
-    </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Create A Product</div>
+                            <div class="panel-body">
+                                <form method="POST" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    
+                                    <div class="form-group">
+                                        <label for="id_name">Product Name</label>
+                                        <input type="text" name="name" id="id_name" class="form-control" placeholder="Product Name" value="{{ form.name.value }}">
+                                    </div>
                                 
-                                <div class="col-md-6">
-                                    <h3>Disabled Form State Examples</h3>
-                                    <form role="form">
-                                        <fieldset disabled="disabled">
-                                            <div class="form-group">
-                                                <label for="disabledSelect">Disabled input</label>
-                                                <input class="form-control" id="disabledInput" type="text" placeholder="Disabled input" disabled />
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="disabledSelect">Disabled select </label>
-                                                <select id="disabledSelect" class="form-control">
-                                                    <option>Disabled select</option>
-                                                </select>
-                                            </div>
-                                            <div class="checkbox">
-                                                <label>
-                                                    <input type="checkbox" />Disabled Checkbox
-                                                </label>
-                                            </div>
-                                            <button type="submit" class="btn btn-primary">Disabled Button</button>
-                                        </fieldset>
-                                    </form>
-                                    <h3>Validation State Examples</h3>
-                                    <form role="form">
-                                        <div class="form-group has-success">
-                                            <label class="control-label" for="inputSuccess">Input with success</label>
-                                            <input type="text" class="form-control" id="inputSuccess">
-                                        </div>
-                                        <div class="form-group has-warning">
-                                            <label class="control-label" for="inputWarning">Input with warning</label>
-                                            <input type="text" class="form-control" id="inputWarning">
-                                        </div>
-                                        <div class="form-group has-error">
-                                            <label class="control-label" for="inputError">Input with error</label>
-                                            <input type="text" class="form-control" id="inputError">
-                                        </div>
-                                    </form>
-                                    <h3>Input Group Examples</h3>
-                                    <form role="form">
-                                        <div class="form-group input-group">
-                                            <span class="input-group-addon">@</span>
-                                            <input type="text" class="form-control" placeholder="Username">
-                                        </div>
-                                        <div class="form-group input-group">
-                                            <input type="text" class="form-control">
-                                            <span class="input-group-addon">.00</span>
-                                        </div>
-                                        <div class="form-group input-group">
-                                            <span class="input-group-addon"><i class="fa fa-eur"></i>
-                                            </span>
-                                            <input type="text" class="form-control" placeholder="Font Awesome Icon">
-                                        </div>
-                                        <div class="form-group input-group">
+                                    <div class="form-group">
+                                        <label for="id_description">Product Description</label>
+                                        <textarea name="description" id="id_description" class="form-control" placeholder="Product Description">{{ form.description.value }}</textarea>
+                                    </div>
+                                
+                                    <div class="form-group">
+                                        <label for="id_price">Price</label>
+                                        <div class="input-group">
                                             <span class="input-group-addon">$</span>
-                                            <input type="text" class="form-control">
+                                            <input type="text" class="form-control" name="price" id="id_price" value="{{ form.price.value|default_if_none:'' }}">
                                             <span class="input-group-addon">.00</span>
                                         </div>
-                                        <div class="form-group input-group">
-                                            <input type="text" class="form-control">
-                                            <span class="input-group-btn">
-                                                <button class="btn btn-default" type="button"><i class="fa fa-search"></i>
-                                                </button>
-                                            </span>
-                                        </div>
-                                    </form>
-                                    <h3>Different Size Input Groups</h3>
-                                     <form role="form">
-  <div class=" form-group input-group input-group-lg">
-  <span class="input-group-addon">@</span>
-  <input type="text" class="form-control" placeholder="Username" />
-</div>
-
-<div class="form-group input-group">
-  <span class="input-group-addon">@</span>
-  <input type="text" class="form-control" placeholder="Username" />
-</div>
-
-<div class="form-group input-group input-group-sm">
-  <span class="input-group-addon">@</span>
-  <input type="text" class="form-control" placeholder="Username" />
-</div>
-                                         
-                                     </form>
-                                    <h3>Different Size Input Groups</h3>
-                                     <form role="form">
-                                  <div class="input-group">
-      <span class="form-group input-group-btn">
-        <button class="btn btn-default" type="button">Go!</button>
-      </span>
-      <input type="text" class="form-control" />
-    </div>
-<br />
-                                           <div class="input-group">
-     
-      <input type="text" class="form-control" />
-                                                <span class="form-group input-group-btn">
-        <button class="btn btn-default" type="button">Go!</button>
-      </span>
-    </div>
-                                         </form>
-                                </div>
+                                    </div>
+                                
+                                    <div class="form-group">
+                                        <label for="id_image">Image</label>
+                                        <input type="file" name="image" id="id_image" class="form-control">
+                                    </div>
+                                
+                                    <button type="submit" name="create_product" class="btn btn-primary">Create Product</button>
+                                </form>
+                                
                             </div>
                         </div>
                     </div>
-                     <!-- End Form Elements -->
                 </div>
-            </div>
-                <!-- /. ROW  -->
+
                 <div class="row">
                     <div class="col-md-12">
-                        <h3>More Customization</h3>
-                         <p>
-                        For more customization for this template or its components please visit official bootstrap website i.e getbootstrap.com or <a href="http://getbootstrap.com/components/" target="_blank">click here</a> . We hope you will enjoy our template. This template is easy to use, light weight and made with love by binarycart.com 
-                        </p>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Edit Existing Products</div>
+                            <div class="panel-body">
+                                <form method="POST" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    
+                                    {% if form.errors %}
+                                        <div class="alert alert-danger">
+                                            <ul>
+                                                {% for field in form %}
+                                                    {% for error in field.errors %}
+                                                        <li>{{ error }}</li>
+                                                    {% endfor %}
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    {% endif %}
+                                
+                                    
+                                    <div class="form-group">
+                                        <label for="id_product">Select Product to Edit</label>
+                                        <select name="product_id" id="id_product" class="form-control" onchange="this.form.submit()">
+                                            <option value="">-- Select a Product --</option>
+                                            {% for product in products %}
+                                                <option value="{{ product.id }}" {% if product.id == selected_product_id %}selected{% endif %}>{{ product.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                
+                                    {% if selected_product %}
+                                        <input type="text" name="product_id" id="id_id" class="form-control" placeholder="Product ID" value="{{ selected_product.id }}" readonly>
+                                        <div class="form-group">
+                                            <label for="id_name">Product Name</label>
+                                            <input type="text" name="name" id="id_name" class="form-control" placeholder="Product Name" value="{{ selected_product.name }}">
+                                        </div>
+                                
+                                        <div class="form-group">
+                                            <label for="id_description">Product Description</label>
+                                            <textarea name="description" id="id_description" class="form-control" placeholder="Product Description">{{ selected_product.description }}</textarea>
+                                        </div>
+                                
+                                        <div class="form-group">
+                                            <label for="id_price">Price</label>
+                                            <div class="input-group">
+                                                <span class="input-group-addon">$</span>
+                                                <input type="text" class="form-control" name="price" id="id_price" value="{{ selected_product.price }}">
+                                                <span class="input-group-addon">.00</span>
+                                            </div>
+                                        </div>
+                                
+                                        <div class="form-group">
+                                            <label for="id_image">Image</label>
+                                            <input type="file" name="image" id="id_image" class="form-control">
+                                            {% if selected_product.image %}
+                                                <img src="{{ selected_product.image.url }}" alt="Product Image" style="max-width: 100px; margin-top: 10px;">
+                                            {% endif %}
+                                        </div>
+                                
+                                        <button type="submit" name="edit_product" class="btn btn-primary">Save Changes</button>
+                                    {% else %}
+                                        <p>Please select a product to edit from the dropdown above.</p>
+                                    {% endif %}
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Delete Existing Products</div>
+                            <div class="panel-body">
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <div class="form-group">
+                                        <label for="product_id">Select Product to Delete</label>
+                                        <select name="product_id" class="form-control">
+                                            {% for product in products %}
+                                                <option value="{{ product.id }}">{{ product.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <button type="submit" name="delete_product" class="btn btn-danger">Delete Product</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                 
                 <!-- /. ROW  -->
     </div>
              <!-- /. PAGE INNER  -->

@@ -53,13 +53,19 @@ urlpatterns = [
     # Schedule and Contact
     path("schedule/", views.view_schedule_page, name="schedule"),
     path("contact/", ContactView.as_view(), name="contact"),
-    path("success/", SuccessView.as_view(), name="success"),
+    path("success/", views.empty_cart, name="success"),
+    path("cancelled/", views.cancel_payment, name="cancel"),
+
+    # Admin Panel
+
     path("adminpanel/", views.view_admin_page, name="adminpanel"),
     path("chart/", views.view_admin_chart, name="chart"),
     path("forms/", views.view_admin_forms, name="forms"),
+    
     path("tabs/", views.view_admin_tabs, name="tabs"),
     path("ui/", views.view_admin_ui, name="ui"),
     path("tables/", views.view_admin_tables, name="tables"),
+    path('admin/add-remove-coaches/', views.admin_add_remove_coaches, name='admin_add_remove_coaches'),
     path("success/", views.empty_cart, name="success"),
     path("cancelled/", views.cancel_payment, name="cancel"),
     path("admin/", admin.site.urls),

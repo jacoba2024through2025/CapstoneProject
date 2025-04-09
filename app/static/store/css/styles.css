@@ -15,12 +15,19 @@ body {
     
 }
 
+.admin-project-logo {
+	width: 9vw;
+	height: 10vh;
+}
+
 .west-h2 {
 	margin-top: 2vh;
 	margin-left: 1.5vw;
 }
 
-
+.right-image {
+	box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.3);
+}
 
 p {
 	margin-bottom: 0px;
@@ -69,7 +76,7 @@ ul.social-icons li a:hover {
 }
 
 a.filled-button {
-	background-color: #f33f3f;
+	background-color: #CA152C;
 	color: #fff;
 	font-size: 14px;
 	text-transform: capitalize;
@@ -89,7 +96,7 @@ a.filled-button:hover {
 	
 	text-align: left;
 	margin-bottom: 60px;
-	border-bottom: 1px solid #eee;
+	border-bottom: 3px solid #056BA3;
 }
 
 .section-heading h2 {
@@ -120,7 +127,7 @@ a.filled-button:hover {
 }
 
 .page-heading .text-content h4 {
-	color: #f33f3f;
+	color: #CA152C;
 	font-size: 22px;
 	text-transform: uppercase;
 	font-weight: 700;
@@ -295,7 +302,7 @@ header .navbar {
 .navbar .navbar-nav .show>.nav-link {
 	color: #fff;
 	padding-bottom: 25px;
-	border-bottom: 3px solid #f33f3f;
+	border-bottom: 3px solid #CA152C;
 }
 .navbar .navbar-toggler-icon {
 	background-image: none;
@@ -385,7 +392,7 @@ header .navbar {
 }
 
 .banner .text-content h4 {
-	color: #f33f3f;
+	color: #CA152C;
 	font-size: 22px;
 	text-transform: uppercase;
 	font-weight: 700;
@@ -509,7 +516,7 @@ header .navbar {
 }
 
 .about-features p {
-	border-bottom: 1px solid #eee;
+	border-bottom: 3px solid #056BA3;
 	padding-bottom: 20px;
 }
 
@@ -523,7 +530,7 @@ header .navbar {
 }
 
 .best-features .container .row {
-	border-bottom: 1px solid #eee;
+	border-bottom: 3px solid #056BA3;
 	padding-bottom: 60px;
 }
 
@@ -622,7 +629,7 @@ footer {
 }
 
 footer .inner-content {
-	border-top: 1px solid #eee;
+	border-top: 3px solid #056BA3;
 	margin-top: 60px;
 	padding: 60px 0px;
 }
@@ -647,7 +654,7 @@ footer .inner-content p a {
 
 .products .filters {
 	text-align: center;
-	border-bottom: 1px solid #eee;
+	border-bottom: 3px solid #056BA3;
 	padding-bottom: 10px;
 	margin-bottom: 60px;
 }
@@ -849,7 +856,7 @@ footer .inner-content p a {
 }
 
 .find-us p {
-	border-bottom: 1px solid #eee;
+	border-bottom: 3px solid #056BA3;
 	padding-bottom: 30px;
 	margin-bottom: 30px;
 }
@@ -1113,7 +1120,7 @@ footer .inner-content p a {
 
 .logged-in-user span a {
 	color: white;
-	background: #f33f3f;
+	background: #CA152C;
 	padding: 7px;
 	border-radius: 5%;
 	

@@ -16,6 +16,16 @@
 
             <p>Permissions: {{ user_role }}</p>
 
+            {% if user_role == 'Admin' %}
+                <a href="{% url 'adminpanel' %}" class="filled-button">Admin Page</a>
+            {% endif %}
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
             <!-- Profile form -->
             <form method="POST" enctype="multipart/form-data" class="profile-form">
                 {% csrf_token %}
