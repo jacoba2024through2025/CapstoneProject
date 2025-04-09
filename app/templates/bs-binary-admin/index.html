@@ -5,6 +5,7 @@
       <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Free Bootstrap Admin Template : Binary Admin</title>
+    <link rel="stylesheet" href="{% static "store/css/styles.css" %}"/>
 	<!-- BOOTSTRAP STYLES-->
     
     <link rel="stylesheet" href="{% static "binary-admin/assets/css/bootstrap.css" %}"/>
@@ -31,7 +32,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index.html">Binary admin</a> 
+                <a class="navbar-brand" href='home'>Admin Panel</a> 
             </div>
   <div style="color: white;
 padding: 15px 50px 5px 50px;
@@ -43,14 +44,16 @@ font-size: 16px;"> Last access : 30 May 2014 &nbsp; <a href="#" class="btn btn-d
             <div class="sidebar-collapse">
                 <ul class="nav" id="main-menu">
 				<li class="text-center">
-                    <img src="assets/img/find_user.png" class="user-image img-responsive"/>
+                    <div>
+                        <a href='home'><img src="{% static 'store/images/Westletics_logo.png' %}" alt="Westletics Logo" class="admin-project-logo" /></a>
+                    </div>
 					</li>
 				
 					
                     <li>
                         <a class="active-menu"  href="{% url 'adminpanel'%}"><i class="fa fa-dashboard fa-3x"></i> Dashboard</a>
                     </li>
-                     <li>
+                     {% comment %}<li>
                         <a  href="{% url 'ui' %}"><i class="fa fa-desktop fa-3x"></i> UI Elements</a>
                     </li>
                     <li>
@@ -58,12 +61,12 @@ font-size: 16px;"> Last access : 30 May 2014 &nbsp; <a href="#" class="btn btn-d
                     </li>
 						   <li>
                         <a   href="{% url 'chart' %}"><i class="fa fa-bar-chart-o fa-3x"></i> Morris Charts</a>
-                    </li>	
+                    </li> {%endcomment%}	
                       <li  >
-                        <a  href="{% url 'tables' %}"><i class="fa fa-table fa-3x"></i> Table Examples</a>
+                        <a  href="{% url 'tables' %}"><i class="fa fa-table fa-3x"></i> Manage Users/Coaches </a>
                     </li>
                     <li  >
-                        <a  href="{% url 'forms' %}"><i class="fa fa-edit fa-3x"></i> Forms </a>
+                        <a  href="{% url 'forms' %}"><i class="fa fa-edit fa-3x"></i> Manage Products </a>
                     </li>				
 					
 					                   
@@ -108,7 +111,7 @@ font-size: 16px;"> Last access : 30 May 2014 &nbsp; <a href="#" class="btn btn-d
                 <div class="row">
                     <div class="col-md-12">
                      <h2>Admin Dashboard</h2>   
-                        <h5>Welcome Jhon Deo , Love to see you back. </h5>
+                        
                     </div>
                 </div>              
                  <!-- /. ROW  -->

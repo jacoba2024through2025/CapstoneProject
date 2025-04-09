@@ -10,8 +10,14 @@ from django.conf import settings
 from .forms import ContactForm
 from django.shortcuts import reverse
 from django.views.generic import TemplateView, FormView
+from django.http import HttpResponse
+from app.models import *
 from django.http import *
 from django.core.paginator import Paginator
+from django.http import JsonResponse
+from django.http import HttpResponseRedirect
+from .decorators import admin_required
+from django.contrib.auth.models import Group
 import os
 import requests
 from django.views.decorators.csrf import csrf_exempt
@@ -19,32 +25,147 @@ import stripe
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
-
-
-@login_required
+@admin_required
 def view_admin_page(request):
-    
-    return render(request, "bs-binary-admin/index.html")
-    
+    return render(request, 'bs-binary-admin/index.html')
+
+@admin_required
 def view_admin_chart(request):
+    return render(request, 'bs-binary-admin/chart.html')
 
-    return render(request, "bs-binary-admin/chart.html")
-
+@admin_required
 def view_admin_forms(request):
-
-    return render(request, "bs-binary-admin/form.html")
-
-def view_admin_tabs(request):
     
-    return render(request, "bs-binary-admin/tab-panel.html")
+    products = Products.objects.all()
 
-def view_admin_ui(request):
+    selected_product = None
+    selected_product_id = request.POST.get('product_id') or request.GET.get('product_id')
+
+    
+    if selected_product_id:
+        selected_product = get_object_or_404(Products, id=selected_product_id)
+
+    
+    form = None
+
+    if request.method == 'POST':
+        if 'edit_product' in request.POST:
+            product_id = request.POST.get('product_id')
+            
+            if not product_id:
+                messages.error(request, "Please select a product to edit.")
+                return redirect('forms')
+
+            
+            product = get_object_or_404(Products, id=product_id)
+            form = CreateProductForm(request.POST, request.FILES, instance=product)
+
+            if form.is_valid():
+                print("Form is valid, saving product.")
+                form.save()
+                messages.success(request, "Product updated successfully!")
+                
+                return redirect('forms')  
+            else:
+                print("Form errors:", form.errors)
+                print(form.errors)
+                messages.error(request, "There was an error updating the product. Please check the form.")
         
-    return render(request, "bs-binary-admin/ui.html")
+        
+        elif 'delete_product' in request.POST:
+            product_id = request.POST.get('product_id')
+            if not product_id:
+                messages.error(request, "Please select a product to delete.")
+                return redirect('forms') 
 
-def view_admin_tables(request):
+            
+            product = get_object_or_404(Products, id=product_id)
+            product.delete()
+            messages.success(request, "Product deleted successfully!")
+            return redirect('forms')
+        elif 'create_product' in request.POST:
+            form = CreateProductForm(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Product created successfully!")
+                return redirect('forms')  
+            else:
+                messages.error(request, "There was an error creating the product. Please check the form.") 
+
+    else:
+        
+        form = CreateProductForm()
+
     
-    return render(request, "bs-binary-admin/tables.html")
+    return render(request, 'bs-binary-admin/form.html', {
+        'form': form,
+        'products': products,
+        'selected_product_id': selected_product_id,  
+        'selected_product': selected_product, 
+    })
+
+@admin_required
+def view_admin_tabs(request):
+    return render(request, 'bs-binary-admin/tab-panel.html')
+
+@admin_required
+def view_admin_ui(request):
+    return render(request, 'bs-binary-admin/ui.html')
+
+@admin_required
+def view_admin_tables(request):
+    # Get all users (excluding superusers, you can adjust this filter as needed)
+    users = User.objects.all()
+
+    # Get all coaches
+    coaches = Coach.objects.all()
+
+    return render(request, 'bs-binary-admin/table.html', {
+        'users': users,
+        'coaches': coaches,
+    })
+
+@admin_required
+def admin_add_remove_coaches(request):
+    if request.method == 'POST':
+        # Check if the 'selected_users' or 'selected_coaches' form was submitted
+        selected_users_ids = request.POST.getlist('selected_users')
+        selected_coaches_ids = request.POST.getlist('selected_coaches')
+
+        try:
+            coaches_group = Group.objects.get(name='Coaches')
+        except Group.DoesNotExist:
+            messages.error(request, "Coaches group does not exist!")
+            return redirect('tables')
+
+        # Add new users to the coaches group
+        for user_id in selected_users_ids:
+            user = User.objects.get(id=user_id)
+            
+            if coaches_group not in user.groups.all():
+                user.groups.add(coaches_group)
+                Coach.objects.get_or_create(user=user)
+                messages.success(request, f"{user.username} has been added as a coach.")
+            else:
+                messages.info(request, f"{user.username} is already a coach.")
+
+        # Remove selected coaches from the coaches group
+        for coach_id in selected_coaches_ids:
+            coach = Coach.objects.get(id=coach_id)
+            user = coach.user
+
+            if coaches_group in user.groups.all():
+                user.groups.remove(coaches_group)
+                coach.delete()
+                messages.success(request, f"{user.username} has been removed from coaches.")
+            else:
+                messages.info(request, f"{user.username} was not a coach.")
+
+        return redirect('tables')  # Redirect to the table page after submission
+
+    else:
+        return redirect('tables')
+
 
 class SuccessView(TemplateView):
     template_name = "store/success.html"
@@ -106,7 +227,27 @@ class ContactView(FormView):
 
 
 def view_main_page(request):
-    return render(request, "mainpage.html")
+
+    if request.user.is_authenticated:
+        user = request.user
+        user_role = 'User'
+        try:
+            coach = Coach.objects.get(user=user)
+            
+            user_role = 'Coach'
+            
+        except Coach.DoesNotExist:
+            user_role = 'User'
+
+        return render(request, "mainpage.html", {
+            'user': user,
+            'user_role': user_role,
+        })
+    else:
+        return render(request, "mainpage.html")
+
+    
+    
 
 def view_contact_page(request):
     if request.method == "POST":
@@ -402,6 +543,7 @@ def viewUserProfile(request, username):
 
     try:
         coach = Coach.objects.get(user=user)
+        
         user_role = 'Coach'  
         coach_classes = Classes.objects.filter(coach=coach)
         class_count = coach_classes.count() 
@@ -409,6 +551,9 @@ def viewUserProfile(request, username):
         
         if user.is_superuser:
             user_role = 'Superuser'
+
+        if user.groups.filter(name='Admin').exists():
+            user_role = 'Admin'
     
     if request.method == 'POST':
         form = ProfileImageForm(request.POST, request.FILES, instance=profile)
@@ -476,3 +621,6 @@ def edit_class(request, class_id):
 
     return render(request, 'classes/edit_class.html', {'form': form, 'class_instance': class_instance})
 
+
+
+        

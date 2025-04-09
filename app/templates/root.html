@@ -41,7 +41,7 @@ https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js
         <nav class="navbar navbar-expand-lg">
           <div class="container">
             <div>
-              <a href="index.html"><img src="{% static 'store/images/Westletics_logo.png' %}" alt="Westletics Logo" class="project-logo" /></a>
+              <a href='home'><img src="{% static 'store/images/Westletics_logo.png' %}" alt="Westletics Logo" class="project-logo" /></a>
             </div>
             <a class="navbar-brand" href="index.html"><h2 class="west-h2">Westletics</h2></a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,7 +73,13 @@ https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js
                     </a>
                     <div class="dropdown-menu sliding-dropdown" aria-labelledby="navbarDropdown">
                       <a class="dropdown-item" href="{% url "profile" username=request.user.username %}"><i class="icon-spacing fa-regular fa-circle-user"></i>View Profile</a>
-                      <a class="dropdown-item" href="{% url "schedule" username=request.user.username %}"><i class="icon-spacing fa-solid fa-calendar"></i>My Schedules</a>
+                      
+                      {% if user_role == 'Coach' %}
+                        <a class="dropdown-item" href="{% url "schedule" username=request.user.username %}"><i class="icon-spacing fa-solid fa-calendar"></i>My Schedules</a>
+                      {% elif user_role == 'User' %}
+                        <a class="dropdown-item" href="{% url "schedule" username=request.user.username %}"><i class="fa-solid fa-comments"></i></i>Find A Coach</a>
+                        
+                      {% endif %}
                       <a class="dropdown-item" href="#"><i class="icon-spacing fa-solid fa-bell"></i></i>Notifications</a>
                       <a class="dropdown-item" href="{% url "view_cart" %}"><i class="icon-spacing fa-solid fa-cart-shopping"></i></i></i>My Cart</a>
                     </div>
@@ -106,9 +112,9 @@ https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js
         <div class="row">
           <div class="col-md-12">
             <div class="inner-content">
-              <p>Copyright &copy; 2020 Sixteen Clothing Co., Ltd.
+              <p>© 2025, Westletics Powered by Shopify
             
-            - Design: <a rel="nofollow noopener" href="https://templatemo.com" target="_blank">TemplateMo</a></p>
+            </p>
             </div>
           </div>
         </div>

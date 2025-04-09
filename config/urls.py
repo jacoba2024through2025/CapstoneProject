@@ -34,15 +34,6 @@ urlpatterns = [
 
     # Products and Cart
     path("products/", views.viewProducts, name="products"),
-    path("products/<int:product_id>/", views.viewOneProduct, name="product_detail"),
-    path("cart/add/<int:product_id>/", views.add_to_cart, name="add_to_cart"),
-    path("cart/", views.view_cart, name="view_cart"),
-    path('config/', views.stripe_config, name='stripe_config'),
-    path('checkout/', views.create_checkout_session, name='create_checkout_session'),
-
-
-    # Schedule and Contact
-    path("schedule/", views.view_schedule_page, name="schedule"),
     path("schedule/<str:username>/", views.view_schedule_page, name="schedule"),  
     path('update_event/<int:event_id>/', views.update_event, name='update_event'),
     path('get_class_calendar/<int:class_id>/', views.get_class_calendar, name='get_class_calendar'),
@@ -52,17 +43,31 @@ urlpatterns = [
     path('password_reset_done/', auth_views.PasswordResetDoneView.as_view(template_name="password_reset_done.html"), name='password_reset_done'),
     path('password_reset_complete/', auth_views.PasswordResetCompleteView.as_view(template_name="password_reset_complete.html"), name='password_reset_complete'),
     path('password_reset_confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name="password_reset_confirm.html"), name='password_reset_confirm'),
+    path("products/<int:product_id>/", views.viewOneProduct, name="product_detail"),
+    path("cart/add/<int:product_id>/", views.add_to_cart, name="add_to_cart"),
+    path("cart/", views.view_cart, name="view_cart"),
+    path('config/', views.stripe_config, name='stripe_config'),
+    path('checkout/', views.create_checkout_session, name='create_checkout_session'),
+
+
+    # Schedule and Contact
+    path("schedule/", views.view_schedule_page, name="schedule"),
     path("contact/", ContactView.as_view(), name="contact"),
     path("success/", views.empty_cart, name="success"),
     path("cancelled/", views.cancel_payment, name="cancel"),
 
     # Admin Panel
+
     path("adminpanel/", views.view_admin_page, name="adminpanel"),
-    path("adminpanel/chart/", views.view_admin_chart, name="chart"),
-    path("adminpanel/forms/", views.view_admin_forms, name="forms"),
-    path("adminpanel/tabs/", views.view_admin_tabs, name="tabs"),
-    path("adminpanel/ui/", views.view_admin_ui, name="ui"),
-    path("adminpanel/tables/", views.view_admin_tables, name="tables"),
+    path("chart/", views.view_admin_chart, name="chart"),
+    path("forms/", views.view_admin_forms, name="forms"),
+    
+    path("tabs/", views.view_admin_tabs, name="tabs"),
+    path("ui/", views.view_admin_ui, name="ui"),
+    path("tables/", views.view_admin_tables, name="tables"),
+    path('admin/add-remove-coaches/', views.admin_add_remove_coaches, name='admin_add_remove_coaches'),
+    path("success/", views.empty_cart, name="success"),
+    path("cancelled/", views.cancel_payment, name="cancel"),
     path("admin/", admin.site.urls),
 ]
 
