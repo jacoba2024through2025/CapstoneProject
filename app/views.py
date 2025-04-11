@@ -479,7 +479,49 @@ def view_schedule_page(request, username):
         'events': event_data,
     })
 
+@login_required
+def find_coach(request):
+    approved_classes = request.user.classes.all()
+    return render(request, 'classes/find_coach.html', {
+        'approved_classes': approved_classes
+    })
 
+def search_coaches(request):
+    query = request.GET.get('q', '')
+    
+    # Filter coaches based on the query
+    coaches = Coach.objects.filter(user__username__icontains=query)
+    results = []
+
+    for coach in coaches:
+        # Get the average rating from the get_average_rating method
+        average_rating = coach.get_average_rating()
+
+        # Get the classes associated with this coach
+        coach_classes = Classes.objects.filter(coach=coach)
+
+        # Prepare the coach data to return, including the classes information
+        class_info = []
+        for coach_class in coach_classes:
+            class_info.append({
+                'class_id': coach_class.id,
+                'class_name': coach_class.name,
+                'class_description': coach_class.description,
+                'class_price': coach_class.price,
+                'class_image': coach_class.class_image.url if coach_class.class_image else '/media/class_images/default.jpg'
+            })
+
+        results.append({
+            'name': coach.user.username,
+            'rating': average_rating if average_rating is not None else 'N/A',
+            'experience_years': coach.experience_years,
+            'expertise': coach.expertise or 'N/A',
+            'state': coach.state or 'N/A',  # Include state
+            'school': coach.school or 'N/A',  # Include school
+            'classes': class_info  # Include classes information
+        })
+
+    return JsonResponse(results, safe=False)
 
 def get_class_calendar(request, class_id):
     # Get the class object based on the class_id
@@ -532,11 +574,10 @@ def update_event(request, event_id):
 
 def viewUserProfile(request, username):
     user = get_object_or_404(User, username=username)
-
     
+    # Create or get the user's profile
     profile, created = Profile.objects.get_or_create(user=user)
 
-    
     user_role = 'User'  
     coach_classes = []  
     class_count = 0  
@@ -544,34 +585,93 @@ def viewUserProfile(request, username):
     try:
         coach = Coach.objects.get(user=user)
         
+        # If the user is a coach, set the role and load coach-specific data
         user_role = 'Coach'  
         coach_classes = Classes.objects.filter(coach=coach)
         class_count = coach_classes.count() 
     except Coach.DoesNotExist:
-        
+        # Handle if the user is not a coach, check if they are an Admin or Superuser
         if user.is_superuser:
             user_role = 'Superuser'
 
         if user.groups.filter(name='Admin').exists():
             user_role = 'Admin'
     
+    # Handle form submission for profile image and coach data
     if request.method == 'POST':
+        # Handle profile image form submission
         form = ProfileImageForm(request.POST, request.FILES, instance=profile)
         
-        if form.is_valid():
-            form.save()  
-            return redirect('profile', username=username)  
+        # Handle coach-specific data form submission
+        coach_form = None
+        if user_role == 'Coach':
+            coach_form = CoachProfileForm(request.POST, instance=coach)
+        
+        # Save both profile image and coach data if forms are valid
+        if form.is_valid() and (not coach_form or coach_form.is_valid()):
+            form.save()  # Save the profile image
+            if coach_form:
+                coach_form.save()  # Save coach-specific data
+            
+            return redirect('profile', username=username)
     else:
         form = ProfileImageForm(instance=profile)
+        coach_form = None
+        if user_role == 'Coach':
+            coach_form = CoachProfileForm(instance=coach)
 
+    # Return the profile page with both forms (profile image and coach form)
     return render(request, 'profile.html', {
         'form': form,
+        'coach_form': coach_form,  # Pass the coach form to the template
         'user': user,
         'profile': profile,
         'user_role': user_role,
         'coach_classes': coach_classes,
         'class_count': class_count,
     })
+
+@login_required
+def request_class_access(request):
+    if request.method == 'POST':
+        class_id = request.POST.get('class_id')
+        try:
+            selected_class = Classes.objects.get(id=class_id)
+            coach_user = selected_class.coach.user
+
+            message = f"User {request.user.username} has requested access to your class named '{selected_class.name}'"
+
+            Notification.objects.create(
+                user=coach_user,
+                message=message,
+                related_class=selected_class,
+                requester=request.user
+            )
+
+            return JsonResponse({'status': 'success', 'message': 'Request sent!'})
+        except Classes.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Class not found'})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+@login_required
+def approve_class_access(request, notification_id):
+    notification = get_object_or_404(Notification, id=notification_id, user=request.user)
+
+    if notification.related_class and notification.requester:
+        class_obj = notification.related_class
+        class_obj.students.add(notification.requester)  # Give access
+        notification.is_read = True
+        notification.save()
+        messages.success(request, f"{notification.requester.username} has been granted access to {class_obj.name}.")
+    else:
+        messages.error(request, "Unable to approve this request.")
+
+    return redirect('notifications')
+
+@login_required
+def notifications_view(request):
+    notifications = request.user.notifications.all().order_by('-timestamp')
+    return render(request, 'store/notifications.html', {'notifications': notifications})
 
 @login_required
 def create_class(request):

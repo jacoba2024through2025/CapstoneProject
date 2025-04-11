@@ -51,10 +51,15 @@ urlpatterns = [
 
 
     # Schedule and Contact
+    path('request_class_access/', views.request_class_access, name='request_class_access'),
     path("schedule/", views.view_schedule_page, name="schedule"),
+    path("findcoach/", views.find_coach, name="find_coach"),
+    path('search_coaches/', views.search_coaches, name='search_coaches'),
     path("contact/", ContactView.as_view(), name="contact"),
     path("success/", views.empty_cart, name="success"),
     path("cancelled/", views.cancel_payment, name="cancel"),
+    path('notifications/', views.notifications_view, name='notifications'),
+    path('approve_class_access/<int:notification_id>/', views.approve_class_access, name='approve_class_access'),
 
     # Admin Panel
 

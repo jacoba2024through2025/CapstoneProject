@@ -27,7 +27,11 @@
             <div class="class-info">
               <h3 class="mb-1">{{ class.name }}</h3>
               {% comment %}<span><strong>Trained by</strong> - {{ class.coach.name }}</span>{% endcomment %}
-              <span class="class-price">Price: ${{ class.price }}</span>
+              {% if class.price > 0 %}
+                <span class="class-price">Price: ${{ class.price }}</span>
+              {% else %}
+                <span class="class-price">Price: Free</span>
+              {% endif %}
               <p class="mt-3">{{ class.description }}</p>
               <button class="btn-form view-calendar" data-class-id="{{ class.id }}" data-class-name="{{ class.name }}">View Calendar</button>
             </div>

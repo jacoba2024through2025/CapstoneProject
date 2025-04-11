@@ -12,8 +12,7 @@
                      class="profile-image">
             </div>
 
-            <h2 class="users-email">Email: {{user.email}}</h2>
-
+            <h2 class="users-email">Email: {{ user.email }}</h2>
             <p>Permissions: {{ user_role }}</p>
 
             {% if user_role == 'Admin' %}
@@ -26,10 +25,9 @@
                 {% endfor %}
             {% endif %}
 
-            <!-- Profile form -->
+            <!-- Profile image form -->
             <form method="POST" enctype="multipart/form-data" class="profile-form">
                 {% csrf_token %}
-                
                 <div class="form-fields">
                     <div class="form-field">
                         {{ form.image.label }}
@@ -44,6 +42,19 @@
                 <button type="submit" class="save-button">Save Changes</button>
             </form>
 
+            <!-- Coach-specific form -->
+            {% if user_role == 'Coach' %}
+                <h2>Coach Profile</h2>
+
+                <!-- Coach Profile Form for Expertise, Experience, State, and School -->
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ coach_form.as_p }}  <!-- Render the coach-specific form fields -->
+
+                    <button type="submit" class="save-button">Save Coach Info</button>
+                </form>
+            {% endif %}
+
             {% if user_role == 'Coach' %}
                 {% if class_count == 1 %}
                     <h2>You have 1 class</h2>
@@ -53,11 +64,7 @@
                     <h2>You have no classes</h2>
                 {% endif %}
 
-                
-
-                
                 {% if coach_classes %}
-                    
                     <ul>
                         {% for class in coach_classes %}
                             <li>
@@ -69,15 +76,13 @@
                                         <img src="/media/class_images/default.jpg" alt="Default Class Image" class="class-image">
                                     {% endif %}
                                 </div>
-                                <p>Description: {{class.description}}</p>
+                                <p>Description: {{ class.description }}</p>
                             </li>
                             <a href="{% url 'edit_class' class.id %}" class="filled-button">Edit Details</a>
                         {% endfor %}
-
                         <a href="{% url 'create_class' %}" class="filled-button">Create Another Class</a>
                     </ul>
                 {% else %}
-                    
                     <a href="{% url 'create_class' %}" class="filled-button">Create One Now</a>
                 {% endif %}
             {% endif %}

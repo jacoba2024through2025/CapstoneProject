@@ -1,0 +1,30 @@
+{% extends 'root.html' %}
+{% block content %}
+
+<div class="container mt-4">
+    {% if unread_count > 0 %}
+        <h3>Your Notifications: <span class="badge badge-pill badge-danger">{{ unread_count }}</span></h3>
+    {% else %}
+        <h3>Your Notifications</h3>
+    {% endif %}
+
+    <ul class="list-group mt-3">
+        {% for notification in notifications %}
+        <li class="list-group-item {% if not notification.is_read %}font-weight-bold{% endif %}">
+            {{ notification.message }}<br>
+            <small class="text-muted">{{ notification.timestamp|date:"F j, Y, g:i a" }}</small>
+
+            {% if notification.related_class and notification.requester %}
+                <form action="{% url 'approve_class_access' notification.id %}" method="post" class="mt-2">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-success">Approve Access</button>
+                </form>
+            {% endif %}
+        </li>
+        {% empty %}
+        <li class="list-group-item">You have no notifications right now.</li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% endblock %}
