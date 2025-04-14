@@ -75,7 +75,8 @@ class Coach(models.Model):
     experience_years = models.IntegerField(default=0)
     expertise = models.CharField(max_length=255, blank=True, null=True)
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE, blank=True, null=True)
-
+    first_name = models.CharField(max_length=255, blank=True, null=True)
+    last_name = models.CharField(max_length=255, blank=True, null=True)
     state = models.CharField(max_length=2, choices=US_STATES, blank=True, null=True)
     school = models.CharField(max_length=255, blank=True, null=True)
 

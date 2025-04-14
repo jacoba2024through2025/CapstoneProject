@@ -61,10 +61,11 @@ class CreateProductForm(forms.ModelForm):
 class CoachProfileForm(forms.ModelForm):
     class Meta:
         model = Coach
-        fields = ['expertise', 'experience_years', 'state', 'school']
+        fields = ['first_name', 'last_name', 'expertise', 'experience_years', 'state', 'school']
 
-        
         widgets = {
+            'first_name': forms.TextInput(attrs={'placeholder': 'Enter first name'}),
+            'last_name': forms.TextInput(attrs={'placeholder': 'Enter last name'}),
             'expertise': forms.TextInput(attrs={'placeholder': 'Enter expertise'}),
             'experience_years': forms.NumberInput(attrs={'placeholder': 'Years of experience'}),
             'state': forms.Select(attrs={'class': 'state-select'}),

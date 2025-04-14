@@ -1,0 +1,17 @@
+{% extends 'root.html' %}
+{% load static %}
+{% block content %}
+<h2>Class Dashboard</h2>
+
+{% if approved_classes %}
+  <p>You're approved for the following classes:</p>
+  <ul>
+    {% for class in approved_classes %}
+      <li><strong>{{ class.name }}</strong>: {{ class.description }}</li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>You haven’t been approved for any classes yet.</p>
+{% endif %}
+
+{% endblock %}
