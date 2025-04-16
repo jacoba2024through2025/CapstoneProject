@@ -127,6 +127,8 @@ class Event(models.Model):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     class_item = models.ForeignKey('Classes', on_delete=models.CASCADE, related_name='events', null=True, blank=True)
+    color = models.CharField(max_length=7, default="#ff7c00")
+    
     def __str__(self):
         return self.title
   

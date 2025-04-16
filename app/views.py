@@ -465,6 +465,7 @@ def view_schedule_page(request, username):
 
             if event_form.is_valid():
                 event = event_form.save(commit=False)
+                print("Color from form:", event_form.cleaned_data.get('color'))
                 event.class_item = Classes.objects.get(id=class_id)  # Link event to class
                 event.save()
                 messages.success(request, "Event created successfully!")
@@ -481,7 +482,7 @@ def view_schedule_page(request, username):
             'start': event.start_date.isoformat(),
             'end': event.end_date.isoformat(),
             'description': event.description,
-            'color': '#ff7c00',
+            'color': event.color,
         })
 
     return render(request, 'classes/scheduling.html', {
@@ -510,10 +511,7 @@ def search_coaches(request):
     query = request.GET.get('q', '')
     state_filter = request.GET.get('state')
     school_filter = request.GET.get('school')
-    free_classes = request.GET.get('free_classes') == 'true'
-    paid_classes = request.GET.get('paid_classes') == 'true'
 
-    # Base query
     coaches = Coach.objects.filter(
         Q(user__username__icontains=query) |
         Q(first_name__icontains=query) |
@@ -526,7 +524,6 @@ def search_coaches(request):
     if school_filter:
         coaches = coaches.filter(school=school_filter)
 
-    # Get class filtering context
     approved_class_ids = request.user.classes.values_list('id', flat=True)
     pending_notifications = Notification.objects.filter(
         requester=request.user,
@@ -537,15 +534,7 @@ def search_coaches(request):
 
     for coach in coaches:
         average_rating = coach.get_average_rating()
-
-        # Apply class-level filtering
         coach_classes = Classes.objects.filter(coach=coach)
-
-        if free_classes and not paid_classes:
-            coach_classes = coach_classes.filter(price=0)
-        elif paid_classes and not free_classes:
-            coach_classes = coach_classes.filter(price__gt=0)
-        # if both selected, no need to filter
 
         class_info = []
         for coach_class in coach_classes:
@@ -623,7 +612,7 @@ def get_class_calendar(request, class_id):
             'start': event.start_date.isoformat(),
             'end': event.end_date.isoformat(),
             'description': event.description,
-            'color': '#ff7c00',  # Optional color styling
+            'color': event.color,  # Optional color styling
         })
     
     return JsonResponse({'events': event_data})

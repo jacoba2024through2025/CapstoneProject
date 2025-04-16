@@ -56,26 +56,12 @@
                   {% endfor %}
                 </select>
               </div>
-
-              <!-- Free Classes -->
-              <label>
-                <input type="checkbox" name="free_classes" id="free-classes" />
-                Free Classes
-              </label>
-            </div>
-
-            <div class="row second">
-              <!-- Paid Classes -->
-              <label>
-                <input type="checkbox" name="paid_classes" id="paid-classes" />
-                Paid Classes
-              </label>
             </div>
 
             <div class="row third">
               <div class="input-field">
                 <button class="btn-search" type="button" id="search-button">Search</button>
-                <button class="btn-delete" id="delete">Delete</button>
+                <button class="btn-delete" id="delete">Clear Results</button>
               </div>
             </div>
           </div>
@@ -94,8 +80,6 @@
     const coachSearchInput = document.getElementById('search');
     const stateSelect = document.getElementById('state-select');
     const schoolSelect = document.getElementById('school-select');
-    const freeCheckbox = document.getElementById('free-classes');
-    const paidCheckbox = document.getElementById('paid-classes');
     const resultsDiv = document.getElementById('results');
     const resultCount = document.getElementById('result-count-number');
     const deleteBtn = document.getElementById('delete');
@@ -105,15 +89,11 @@
       const query = coachSearchInput.value.trim();
       const state = stateSelect.value;
       const school = schoolSelect.value;
-      const free = freeCheckbox.checked;
-      const paid = paidCheckbox.checked;
 
       const params = new URLSearchParams({
         q: query,
         state: state,
-        school: school,
-        free_classes: free,
-        paid_classes: paid
+        school: school
       });
 
       fetch(`/search_coaches/?${params.toString()}`)
@@ -172,18 +152,15 @@
                 const classDiv = document.createElement('div');
                 classDiv.classList.add('class-card');
 
-                const isFree = classInfo.class_price <= 0;
-                const priceDisplay = isFree ? 'Free' : `$${classInfo.class_price}`;
-
+                const priceDisplay = classInfo.class_price <= 0 ? 'Free' : `$${classInfo.class_price}`;
                 let buttonHTML = '';
+
                 if (classInfo.has_access) {
                   buttonHTML = `<a href="/class_dashboard/${classInfo.class_id}/" class="class-action-button go-to-class">Go to Class</a>`;
                 } else if (classInfo.is_pending) {
                   buttonHTML = `<button class="class-action-button request-access" data-class-id="${classInfo.class_id}" disabled>Request Sent</button>`;
-                } else if (isFree) {
-                  buttonHTML = `<button class="class-action-button request-access" data-class-id="${classInfo.class_id}">Request Access</button>`;
                 } else {
-                  buttonHTML = `<button class="class-action-button pay-class" data-class-id="${classInfo.class_id}">Pay For Class</button>`;
+                  buttonHTML = `<button class="class-action-button request-access" data-class-id="${classInfo.class_id}">Request Access</button>`;
                 }
 
                 classDiv.innerHTML = `
@@ -211,8 +188,6 @@
       coachSearchInput.value = '';
       stateSelect.value = '';
       schoolSelect.value = '';
-      freeCheckbox.checked = false;
-      paidCheckbox.checked = false;
       resultsDiv.innerHTML = '';
       resultCount.textContent = '0';
     });
@@ -250,6 +225,7 @@
 </body>
 </html>
 {% endblock %}
+
 
 
 

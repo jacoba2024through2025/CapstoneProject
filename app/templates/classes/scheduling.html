@@ -10,7 +10,10 @@
     <div class="row">
       <div class="col-lg-12 col-12 text-center mb-5">
         <h2 data-aos="fade-up">Welcome to the Scheduling Page</h2>
-        <h6 data-aos="fade-up" data-aos-delay="200">You can create a schedule for your class by using the Create Event form. Select any event to update/delete it.</h6>
+        <h6 data-aos="fade-up" data-aos-delay="200">
+          You can create a schedule for your class by using the Create Event form.
+          Select any event to update/delete it.
+        </h6>
       </div>
 
       {% if class_count > 3 %}
@@ -31,7 +34,9 @@
                 <span class="class-price">Price: Free</span>
               {% endif %}
               <p class="mt-3">{{ class.description }}</p>
-              <button class="btn-form view-calendar" data-class-id="{{ class.id }}" data-class-name="{{ class.name }}">View Calendar</button>
+              <button class="btn-form view-calendar" data-class-id="{{ class.id }}" data-class-name="{{ class.name }}">
+                View Calendar
+              </button>
             </div>
           </div>
         </div>
@@ -52,7 +57,24 @@
   <form method="POST" class="event-form">
     {% csrf_token %}
     <div class="form-group">
-      {{ event_form.as_p }}
+      <label for="{{ event_form.title.id_for_label }}">Title</label>
+      {{ event_form.title }}
+    </div>
+    <div class="form-group">
+      <label for="{{ event_form.description.id_for_label }}">Description</label>
+      {{ event_form.description }}
+    </div>
+    <div class="form-group">
+      <label for="{{ event_form.start_date.id_for_label }}">Start Date</label>
+      {{ event_form.start_date }}
+    </div>
+    <div class="form-group">
+      <label for="{{ event_form.end_date.id_for_label }}">End Date</label>
+      {{ event_form.end_date }}
+    </div>
+    <div class="form-group">
+      <label for="{{ event_form.color.id_for_label }}">Event Color</label>
+      {{ event_form.color }}
     </div>
 
     <input type="hidden" name="class_id" id="class_id" value="">
@@ -63,6 +85,7 @@
 
 <div id="calendar" style="display: none;"></div>
 
+<!-- Modal for Editing Events -->
 <div class="modal fade" id="eventEditModal" tabindex="-1" aria-labelledby="eventEditModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -89,6 +112,11 @@
           <div class="form-group">
             <label for="eventEndDate">End Date</label>
             <input type="datetime-local" id="eventEndDate" name="end_date" class="form-control" required>
+          </div>
+          <!-- Optional: Add color field to update modal -->
+          <div class="form-group">
+            <label for="eventColor">Event Color</label>
+            <input type="color" id="eventColor" name="color" class="form-control">
           </div>
           <button type="submit" class="btn btn-primary">Update Event</button>
           <button type="button" id="deleteEventBtn" class="btn btn-danger mt-3">Delete Event</button>
@@ -117,6 +145,7 @@
         document.getElementById('eventDescription').value = event.extendedProps.description;
         document.getElementById('eventStartDate').value = event.start.toISOString().slice(0, 16);
         document.getElementById('eventEndDate').value = event.end.toISOString().slice(0, 16);
+        document.getElementById('eventColor').value = event.backgroundColor;
 
         var modal = new bootstrap.Modal(document.getElementById('eventEditModal'));
         modal.show();
@@ -146,7 +175,6 @@
       });
     });
 
-    // Handle event update
     document.getElementById('eventEditForm').addEventListener('submit', function(event) {
       event.preventDefault();
       var formData = new FormData(this);
@@ -161,11 +189,9 @@
       .then(response => response.json())
       .then(data => {
         if (data.status === 'success') {
-          // Optional: Close modal
           var modal = bootstrap.Modal.getInstance(document.getElementById('eventEditModal'));
           modal.hide();
 
-          // Redirect to simulate a refresh
           if (data.redirect_url) {
             window.location.href = data.redirect_url;
           }
@@ -178,7 +204,6 @@
       });
     });
 
-    // Handle event deletion
     document.getElementById('deleteEventBtn').addEventListener('click', function() {
       const eventId = document.getElementById('eventId').value;
 

@@ -42,10 +42,11 @@ class ClassEditForm(forms.ModelForm):
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
-        fields = ['title', 'description', 'start_date', 'end_date']
+        fields = ['title', 'description', 'start_date', 'end_date', 'color']
         widgets = {
             'start_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             'end_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'color': forms.TextInput(attrs={'type': 'color'}),  # color input
         }
 
 class CreateProductForm(forms.ModelForm):
