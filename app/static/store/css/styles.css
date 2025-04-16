@@ -913,7 +913,7 @@ footer .inner-content p a {
 }
 
 .contact-form button.filled-button {
-	background-color: #f33f3f;
+	background-color: #CA152C;
 	color: #fff;
 	font-size: 14px;
 	text-transform: capitalize;
@@ -928,7 +928,7 @@ footer .inner-content p a {
 }
 
 .contact-form button.filled-button:hover {
-	background-color: #121212;
+	background-color: #f33f3f;
 	color: #fff;
 }
 
@@ -1139,6 +1139,7 @@ footer .inner-content p a {
 	display: none;
 	opacity: 0;
 	transform: translateY(-20px);
+
 	transition: opacity 0.3s ease, transform 0.3s ease;
   }
   
@@ -1169,7 +1170,7 @@ footer .inner-content p a {
 
 /* Profile form container */
 .profile-form-content {
-	
+	box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.5);
     max-width: 800px;
     margin: 30px;
     padding: 2rem;
@@ -1262,6 +1263,76 @@ footer .inner-content p a {
 
 .save-button:hover {
     background-color: #d02d2d;
+}
+
+.toggle-button {
+    margin-bottom: 1rem;
+    background-color: #444;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+.toggle-button:hover {
+    background-color: #222;
+}
+
+/* Coach section container */
+.coach-section {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid #ddd;
+}
+
+/* Class list styling */
+.coach-classes {
+    margin-top: 2rem;
+}
+
+.class-list {
+    max-height: 400px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-right: 1rem;
+}
+
+.class-card {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+.class-card h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1.3rem;
+    color: #333;
+}
+
+.class-image-container {
+    margin-bottom: 0.8rem;
+}
+
+.class-image {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* Section separation */
+.user-role {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #777;
+    font-style: italic;
 }
 
 /* Responsive styling */
@@ -1468,5 +1539,81 @@ footer .inner-content p a {
 }
 
 
-
+/* Sidebar content */
+.dashboard-container {
+	display: flex;
+	min-height: 100vh;
+	background-color: #f4f6f9;
+	font-family: poppins, sans-serif;
+  }
+  
+  .sidebar {
+	width: 250px;
+	background-color: #182441;
+	color: #fff;
+	padding: 20px;
+	box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+  }
+  
+  .sidebar h2 {
+	margin-bottom: 20px;
+	font-size: 22px;
+	color: #056BA3;
+	border-bottom: 3px solid #056BA3;
+  }
+  
+  .sidebar-menu {
+	list-style-type: none;
+	padding: 0;
+  }
+  
+  .sidebar-menu li {
+	margin-bottom: 15px;
+  }
+  
+  .sidebar-menu a {
+	color: #CA152C;
+	text-decoration: none;
+	font-size: 16px;
+	display: block;
+	transition: color 0.3s ease;
+  }
+  
+  .sidebar-menu a:hover {
+	color: #d02d2d;
+  }
+  
+  .dropdown-content {
+	display: none;
+	list-style-type: none;
+	padding-left: 15px;
+  }
+  
+  .dropdown:hover .dropdown-content {
+	display: block;
+  }
+  
+  .dropbtn {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	cursor: pointer;
+  }
+  
+  .arrow {
+	margin-left: 8px;
+	transition: transform 0.3s ease;
+	display: inline-block;
+  }
+  
+  .dropdown:hover .arrow {
+	transform: rotate(180deg);
+  }
+  
+  .main-content {
+	flex-grow: 1;
+	padding: 30px;
+  }
+  
+  
 

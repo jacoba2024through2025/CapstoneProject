@@ -1,50 +1,66 @@
 {% extends 'root.html' %}
 
 {% block content %}
-    <div class="profile-page">
-        <div class="profile-form-content">
-            <h1 class="profile-heading">Welcome to {{ user.username }}'s Profile</h1>
+<div class="profile-page">
+    <div class="profile-form-content">
+        <h1 class="profile-heading">Your Profile</h1>
 
-            <!-- Display the profile image -->
-            <div class="profile-image-container">
-                <img src="{% if profile.image %}{{ profile.image.url }}{% else %}/media/profile_pics/default.jpg{% endif %}" 
-                     alt="{{ user.username }}'s Profile Picture" 
-                     class="profile-image">
+        <!-- Profile Image -->
+        <div class="profile-image-container">
+            <img src="{% if profile.image %}{{ profile.image.url }}{% else %}/media/profile_pics/default.jpg{% endif %}"
+                 alt="{{ user.username }}'s Profile Picture"
+                 class="profile-image">
+        </div>
+        
+        <h2 class="users-email">Email: {{ user.email }}</h2>
+        <p class="users-email">Username: {{ user.username }}</p>
+        <p class="user-role">Permissions: {{ user_role }}</p>
+
+        {% if user_role == 'Admin' %}
+            <a href="{% url 'adminpanel' %}" class="filled-button">Admin Page</a>
+        {% endif %}
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Profile Form -->
+        <form method="POST" enctype="multipart/form-data" class="profile-form">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="profile">
+
+            <div class="form-fields">
+                <div class="form-field">
+                    {{ form.image.label }}
+                    {{ form.image }}
+                </div>
+                <div class="form-field">
+                    {{ form.bio.label }}
+                    {{ form.bio }}
+                </div>
             </div>
 
-            <h2 class="users-email">Email: {{user.email}}</h2>
+            <button type="submit" class="save-button">Save Changes</button>
+        </form>
 
-            <p>Permissions: {{ user_role }}</p>
+        <!-- Coach Form -->
+        {% if user_role == 'Coach' %}
+            <div class="coach-section">
+                <h3>Your Coach Information</h3>
+                <button id="toggleCoachForm" class="toggle-button">Edit Coach Info</button>
 
-            {% if user_role == 'Admin' %}
-                <a href="{% url 'adminpanel' %}" class="filled-button">Admin Page</a>
-            {% endif %}
+                <form method="POST" class="coach-form" style="display: none;">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="coach">
+                    {{ coach_form.as_p }}
+                    <button type="submit" class="save-button">Save Coach Info</button>
+                </form>
+            </div>
 
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-
-            <!-- Profile form -->
-            <form method="POST" enctype="multipart/form-data" class="profile-form">
-                {% csrf_token %}
-                
-                <div class="form-fields">
-                    <div class="form-field">
-                        {{ form.image.label }}
-                        {{ form.image }}
-                    </div>
-                    <div class="form-field">
-                        {{ form.bio.label }}
-                        {{ form.bio }}
-                    </div>
-                </div>
-
-                <button type="submit" class="save-button">Save Changes</button>
-            </form>
-
-            {% if user_role == 'Coach' %}
+            <!-- Class List -->
+            <div class="coach-classes">
                 {% if class_count == 1 %}
                     <h2>You have 1 class</h2>
                 {% elif class_count > 1 %}
@@ -53,34 +69,44 @@
                     <h2>You have no classes</h2>
                 {% endif %}
 
-                
-
-                
                 {% if coach_classes %}
-                    
-                    <ul>
+                    <div class="class-list">
                         {% for class in coach_classes %}
-                            <li>
-                                <strong>Class Name: {{ class.name }}</strong>
+                            <div class="class-card">
+                                <h3>{{ class.name }}</h3>
                                 <div class="class-image-container">
                                     {% if class.class_image %}
-                                        <img src="{{ class.class_image.url }}" alt="{{ class.name }}'s Image" class="class-image">
+                                        <img src="{{ class.class_image.url }}" alt="{{ class.name }} Image" class="class-image">
                                     {% else %}
                                         <img src="/media/class_images/default.jpg" alt="Default Class Image" class="class-image">
                                     {% endif %}
                                 </div>
-                                <p>Description: {{class.description}}</p>
-                            </li>
-                            <a href="{% url 'edit_class' class.id %}" class="filled-button">Edit Details</a>
+                                <p>{{ class.description }}</p>
+                                <a href="{% url 'edit_class' class.id %}" class="filled-button">Edit Details</a>
+                            </div>
                         {% endfor %}
-
-                        <a href="{% url 'create_class' %}" class="filled-button">Create Another Class</a>
-                    </ul>
+                    </div>
+                    <a href="{% url 'create_class' %}" class="filled-button">Create Another Class</a>
                 {% else %}
-                    
                     <a href="{% url 'create_class' %}" class="filled-button">Create One Now</a>
                 {% endif %}
-            {% endif %}
-        </div>
+            </div>
+        {% endif %}
     </div>
+</div>
+
+<script>
+    // Toggle Coach Form
+    const toggleBtn = document.getElementById('toggleCoachForm');
+    const coachForm = document.querySelector('.coach-form');
+    toggleBtn?.addEventListener('click', () => {
+        if (coachForm.style.display === 'none') {
+            coachForm.style.display = 'block';
+            toggleBtn.textContent = 'Hide Coach Info';
+        } else {
+            coachForm.style.display = 'none';
+            toggleBtn.textContent = 'Edit Coach Info';
+        }
+    });
+</script>
 {% endblock %}

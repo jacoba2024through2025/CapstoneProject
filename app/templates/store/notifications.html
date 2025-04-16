@@ -1,0 +1,87 @@
+{% extends 'root.html' %}
+{% block content %}
+
+<div class="container mt-4">
+
+  <!-- Message Alerts -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <h3>Your Notifications 
+    {% if unread_count > 0 %}
+      <span class="badge badge-danger">{{ unread_count }}</span>
+    {% endif %}
+  </h3>
+
+  <!-- Nav Tabs -->
+  <ul class="nav nav-tabs mt-3" id="notificationTabs" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" id="unread-tab" data-toggle="tab" href="#unread" role="tab" aria-controls="unread" aria-selected="true">
+        Unread <span class="badge badge-danger">{{ unread_count }}</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="read-tab" data-toggle="tab" href="#read" role="tab" aria-controls="read" aria-selected="false">
+        Read
+      </a>
+    </li>
+  </ul>
+
+  <!-- Tab Content -->
+  <div class="tab-content mt-3" id="notificationTabContent">
+
+    <!-- Unread Notifications Tab -->
+    <div class="tab-pane fade show active" id="unread" role="tabpanel" aria-labelledby="unread-tab">
+      <ul class="list-group">
+        {% for notification in unread_notifications %}
+          <li class="list-group-item font-weight-bold">
+            {{ notification.message }}<br>
+            <small class="text-muted">{{ notification.timestamp|date:"F j, Y, g:i a" }}</small>
+
+            {% if notification.related_class and notification.requester %}
+              <div class="mt-2">
+                <form action="{% url 'approve_class_access' notification.id %}" method="post" class="d-inline">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-success">Approve Access</button>
+                </form>
+
+                <form action="{% url 'deny_class_access' notification.id %}" method="post" class="d-inline ml-2">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-danger">Deny Access</button>
+                </form>
+              </div>
+            {% endif %}
+          </li>
+        {% empty %}
+          <li class="list-group-item">No unread notifications.</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Read Notifications Tab -->
+    <div class="tab-pane fade" id="read" role="tabpanel" aria-labelledby="read-tab">
+      <ul class="list-group">
+        {% for notification in read_notifications %}
+          <li class="list-group-item">
+            {{ notification.message }}<br>
+            <small class="text-muted">{{ notification.timestamp|date:"F j, Y, g:i a" }}</small>
+          </li>
+        {% empty %}
+          <li class="list-group-item">No read notifications.</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+

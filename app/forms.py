@@ -57,3 +57,18 @@ class CreateProductForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'placeholder': 'Product Description'}),
             'price': forms.NumberInput(attrs={'placeholder': 'Price'}),
         }
+
+class CoachProfileForm(forms.ModelForm):
+    class Meta:
+        model = Coach
+        fields = ['first_name', 'last_name', 'expertise', 'experience_years', 'state', 'school', 'linked_in']
+
+        widgets = {
+            'first_name': forms.TextInput(attrs={'placeholder': 'Enter first name'}),
+            'last_name': forms.TextInput(attrs={'placeholder': 'Enter last name'}),
+            'expertise': forms.TextInput(attrs={'placeholder': 'Enter expertise'}),
+            'experience_years': forms.NumberInput(attrs={'placeholder': 'Years of experience'}),
+            'state': forms.Select(attrs={'class': 'state-select'}),
+            'school': forms.TextInput(attrs={'placeholder': 'Enter school name (optional)'}),
+            'linked_in': forms.URLInput(attrs={'placeholder': 'Enter LinkedIn profile URL (optional)'}),
+        }

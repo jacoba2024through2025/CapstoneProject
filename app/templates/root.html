@@ -4,34 +4,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="{% static "store/css/styles.css" %}"/>
-    <link rel="stylesheet" href="{% static "store/css/owl.css" %}"/>
-    <link rel="stylesheet" href="{% static "store/css/fontawesome.css" %}"/>
-    <link rel="stylesheet" href="{% static "store/css/flex-slider.css" %}"/>
+    <link rel="stylesheet" href="{% static 'store/css/styles.css' %}" />
+    <link rel="stylesheet" href="{% static 'store/css/owl.css' %}" />
+    <link rel="stylesheet" href="{% static 'store/css/fontawesome.css' %}" />
+    <link rel="stylesheet" href="{% static 'store/css/flex-slider.css' %}" />
     <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'store/vendor/bootstrap/css/bootstrap.min.css' %}">
-    
-    <script src="
-https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js
-"></script>
-<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.15/index.global.min.js"></script>
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-      rel="stylesheet"
-    />
 
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.15/index.global.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
 
-    <link
-      rel="icon"
-      type="image/x-icon"
-      href="{% static 'store\images\Westletics.png' %}"
-    />
-
-    <script src="{% static "store/js/payment.js" %}" defer></script>
+    <link rel="icon" type="image/x-icon" href="{% static 'store/images/Westletics.png' %}" />
+    <script src="{% static 'store/js/payment.js' %}" defer></script>
     <script src="https://js.stripe.com/v3/" defer></script>
 
     {% block head %}{% endblock head %}
-
     <title>{% block title %}{% endblock title %}</title>
 
   </head>
@@ -58,7 +46,7 @@ https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js
                   <a class="nav-link" href="{% url 'products' %}"><i class="icon-spacing fa-solid fa-bag-shopping"></i>Our Products</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="{% url "contact" %}"><i class="icon-spacing fa-solid fa-envelope"></i>Contact Us</a>
+                  <a class="nav-link" href="{% url 'contact' %}"><i class="icon-spacing fa-solid fa-envelope"></i>Contact Us</a>
                 </li>
                 {% if request.user.is_authenticated %}
                   <li class="nav-item">
@@ -72,22 +60,27 @@ https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js
                       <i class="fa-solid fa-bars"></i>
                     </a>
                     <div class="dropdown-menu sliding-dropdown" aria-labelledby="navbarDropdown">
-                      <a class="dropdown-item" href="{% url "profile" username=request.user.username %}"><i class="icon-spacing fa-regular fa-circle-user"></i>View Profile</a>
+                      <a class="dropdown-item" href="{% url 'profile' username=request.user.username %}"><i class="icon-spacing fa-regular fa-circle-user"></i>View Profile</a>
                       
                       {% if user_role == 'Coach' %}
-                        <a class="dropdown-item" href="{% url "schedule" username=request.user.username %}"><i class="icon-spacing fa-solid fa-calendar"></i>My Schedules</a>
+                        <a class="dropdown-item" href="{% url 'schedule' username=request.user.username %}"><i class="icon-spacing fa-solid fa-calendar"></i>My Schedules</a>
                       {% elif user_role == 'User' %}
-                        <a class="dropdown-item" href="{% url "schedule" username=request.user.username %}"><i class="fa-solid fa-comments"></i></i>Find A Coach</a>
-                        
+                        <a class="dropdown-item" href="{% url 'find_coach' %}"><i class="fa-solid fa-comments"></i>Find A Coach</a>
                       {% endif %}
-                      <a class="dropdown-item" href="#"><i class="icon-spacing fa-solid fa-bell"></i></i>Notifications</a>
-                      <a class="dropdown-item" href="{% url "view_cart" %}"><i class="icon-spacing fa-solid fa-cart-shopping"></i></i></i>My Cart</a>
+                     
+                      <a class="dropdown-item" href="{% url 'notifications' %}">
+                        <i class="icon-spacing fa-solid fa-bell"></i> Notifications
+                        {% if unread_count > 0 %}
+                          <span class="badge badge-pill badge-danger">{{ unread_count }}</span>
+                        {% endif %}
+                      </a>
+                      <a class="dropdown-item" href="{% url 'view_cart' %}"><i class="icon-spacing fa-solid fa-cart-shopping"></i>My Cart</a>
                     </div>
                   </li>
                 {% else %}
                   <div class="logged-in-user">
                     <p>Not Logged In</p>
-                    <span><a href="{% url 'register' %}"></i>Sign Up</a></span>
+                    <span><a href="{% url 'register' %}">Sign Up</a></span>
                   </div>
                 {% endif %}
               </ul>
@@ -111,16 +104,14 @@ https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js
       <div class="container">
         <div class="row">
           <div class="col-md-12">
+            <h1> New Store Products </h1>
             <div class="inner-content">
-              <p>© 2025, Westletics Powered by Shopify
-            
-            </p>
+              <p>© 2025, Westletics Powered by Stripe</p>
             </div>
           </div>
         </div>
       </div>
     </footer>
-
 
     <script src="{% static 'store/vendor/jquery/jquery.min.js' %}"></script>
     <script src="{% static 'store/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
@@ -133,8 +124,7 @@ https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js
     <script src="{% static 'store/js/accordions.js' %}"></script>
     <script src="{% static 'store/js/apparel.js' %}" defer></script>
 
-
-    <script language = "text/Javascript"> 
+    <script language="text/Javascript"> 
       cleared[0] = cleared[1] = cleared[2] = 0; //set a cleared flag for each field
       function clearField(t){                   //declaring the array outside of the
       if(! cleared[t.id]){                      // function makes it static and global
@@ -151,6 +141,7 @@ https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js
     <script src="schedule/js/aos.js"></script>
     <script src="schedule/js/smoothscroll.js"></script>
     <script src="schedule/js/custom.js"></script>
-    
+
   </body>
 </html>
+

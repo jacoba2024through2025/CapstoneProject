@@ -41,6 +41,7 @@ urlpatterns = [
     path("products/", views.viewProducts, name="products"),
     path("schedule/<str:username>/", views.view_schedule_page, name="schedule"),  
     path('update_event/<int:event_id>/', views.update_event, name='update_event'),
+    path('delete_event/<int:event_id>/', views.delete_event, name='delete_event'),
     path('get_class_calendar/<int:class_id>/', views.get_class_calendar, name='get_class_calendar'),
     path('create_class/', views.create_class, name='create_class'),
     path('edit_class/<int:class_id>/', views.edit_class, name='edit_class'),
@@ -53,10 +54,20 @@ urlpatterns = [
 
 
     # Schedule and Contact
+    path('request_class_access/', views.request_class_access, name='request_class_access'),
     path("schedule/", views.view_schedule_page, name="schedule"),
+    path("findcoach/", views.find_coach, name="find_coach"),
+    path('search_coaches/', views.search_coaches, name='search_coaches'),
     path("contact/", ContactView.as_view(), name="contact"),
     path("success/", views.empty_cart, name="success"),
     path("cancelled/", views.cancel_payment, name="cancel"),
+    path('notifications/', views.notifications_view, name='notifications'),
+    path('approve_class_access/<int:notification_id>/', views.approve_class_access, name='approve_class_access'),
+    path('deny_access/<int:notification_id>/', views.deny_class_access, name='deny_class_access'),
+    path('class_dashboard/<int:class_id>/', views.class_dashboard, name='class_dashboard'),
+    
+    # ... other paths
+    path('approved-classes/', views.approved_classes_view, name='approved_classes'),
 
     # Admin Panel
 
