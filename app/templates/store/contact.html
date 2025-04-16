@@ -4,53 +4,43 @@
 {% block title %}Contact Me{% endblock title %}
 
 {% block content %}
-    <div class="page-heading contact-heading header-text">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-12">
-            <div class="text-content">
-              <h4>contact us</h4>
-              <h2>let’s get in touch</h2>
-            </div>
-          </div>
+<div class="page-heading contact-heading header-text">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="text-content">
+          <h4>contact us</h4>
+          <h2>let’s get in touch</h2>
         </div>
       </div>
     </div>
-
-    <div class="send-message">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-12">
-            <!-- <div class="section-heading">
-              <h2>Send us a Message</h2>
-              {% if message_sent %}
-                <p>Your message has been sent successfully. Thank you!</p>
-              {% else %}
-                <p>Your message failed to send</p>
-              {% endif %}
-            </div> -->
-          </div>
-          <div class="col-md-8">
-            <div class="contact-form">
-    <h1>Contact Us</h1>
-<form form id="contact" action=""  method="post">
-  {% csrf_token %}
-  {{ form }}
-  <div class="form-actions">
-    <button
-    type="submit"
-    id="form-submit"
-    class="filled-button"
-  >
-    Send Message
-  </button>
   </div>
-</form>
 </div>
+
+<div class="send-message">
+  <div class="container">
+    <div class="row">
+      <!-- Contact Form -->
+      <div class="col-md-8">
+        <div class="contact-form">
+          <h1>Contact Us</h1>
+          <form id="contact" action="" method="post">
+            {% csrf_token %}
+            {{ form }}
+            <div class="form-actions">
+              <button type="submit" id="form-submit" class="filled-button">
+                Send Message
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Image to the right -->
+      <div class="col-md-4 d-flex align-items-center justify-content-center">
+        <img src="{% static 'store/images/MattWestlake_logo.png' %}" alt="Logo" class="img-fluid">
+      </div>
+    </div>
+  </div>
 </div>
-</div>
-</div>
-</div>
-  </body>
-</html>
 {% endblock %}

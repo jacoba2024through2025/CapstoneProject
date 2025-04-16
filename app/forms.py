@@ -61,7 +61,7 @@ class CreateProductForm(forms.ModelForm):
 class CoachProfileForm(forms.ModelForm):
     class Meta:
         model = Coach
-        fields = ['first_name', 'last_name', 'expertise', 'experience_years', 'state', 'school']
+        fields = ['first_name', 'last_name', 'expertise', 'experience_years', 'state', 'school', 'linked_in']
 
         widgets = {
             'first_name': forms.TextInput(attrs={'placeholder': 'Enter first name'}),
@@ -70,4 +70,5 @@ class CoachProfileForm(forms.ModelForm):
             'experience_years': forms.NumberInput(attrs={'placeholder': 'Years of experience'}),
             'state': forms.Select(attrs={'class': 'state-select'}),
             'school': forms.TextInput(attrs={'placeholder': 'Enter school name (optional)'}),
+            'linked_in': forms.URLInput(attrs={'placeholder': 'Enter LinkedIn profile URL (optional)'}),
         }

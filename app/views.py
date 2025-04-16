@@ -22,6 +22,7 @@ import os
 import requests
 from django.views.decorators.csrf import csrf_exempt
 import stripe
+import json
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -199,6 +200,7 @@ class ContactView(FormView):
         email = form.cleaned_data.get("email")
         subject = form.cleaned_data.get("subject")
         message = form.cleaned_data.get("message")
+        
 
         full_message = f"""
             Received message below from {email}, {subject}
@@ -208,6 +210,7 @@ class ContactView(FormView):
             {message}
             """
         try:
+            print("Calling send_mail full")
             send_mail(
                 subject="Received contact form submission",
                 message=full_message,
@@ -255,9 +258,10 @@ def view_contact_page(request):
         message_email = request.POST['message-email']
         message_subject = request.POST['message-subject']
         message = request.POST['message']
-
+        
         # Send the email
         send_mail(
+            
             subject=message_subject,  # Subject of the email
             message=message,          # Body of the email
             from_email=message_email, # From the email entered in the form
@@ -482,46 +486,118 @@ def view_schedule_page(request, username):
 @login_required
 def find_coach(request):
     approved_classes = request.user.classes.all()
+    coach_states = Coach.objects.exclude(state__isnull=True).exclude(state='').values_list('state', flat=True).distinct()
+    coach_schools = Coach.objects.exclude(school__isnull=True).exclude(school='').values_list('school', flat=True).distinct()
     return render(request, 'classes/find_coach.html', {
-        'approved_classes': approved_classes
+        'approved_classes': approved_classes,
+        'coach_states': coach_states,
+        'coach_schools': coach_schools,
     })
 
+from django.db.models import Q
+
+@login_required
 def search_coaches(request):
     query = request.GET.get('q', '')
-    
-    # Filter coaches based on the query
-    coaches = Coach.objects.filter(user__username__icontains=query)
+    state_filter = request.GET.get('state')
+    school_filter = request.GET.get('school')
+    free_classes = request.GET.get('free_classes') == 'true'
+    paid_classes = request.GET.get('paid_classes') == 'true'
+
+    # Base query
+    coaches = Coach.objects.filter(
+        Q(user__username__icontains=query) |
+        Q(first_name__icontains=query) |
+        Q(last_name__icontains=query)
+    )
+
+    if state_filter:
+        coaches = coaches.filter(state=state_filter)
+
+    if school_filter:
+        coaches = coaches.filter(school=school_filter)
+
+    # Get class filtering context
+    approved_class_ids = request.user.classes.values_list('id', flat=True)
+    pending_notifications = Notification.objects.filter(
+        requester=request.user,
+        is_read=False
+    ).values_list('related_class', flat=True)
+
     results = []
 
     for coach in coaches:
-        # Get the average rating from the get_average_rating method
         average_rating = coach.get_average_rating()
 
-        # Get the classes associated with this coach
+        # Apply class-level filtering
         coach_classes = Classes.objects.filter(coach=coach)
 
-        # Prepare the coach data to return, including the classes information
+        if free_classes and not paid_classes:
+            coach_classes = coach_classes.filter(price=0)
+        elif paid_classes and not free_classes:
+            coach_classes = coach_classes.filter(price__gt=0)
+        # if both selected, no need to filter
+
         class_info = []
         for coach_class in coach_classes:
+            has_access = coach_class.id in approved_class_ids
+            is_pending = coach_class.id in pending_notifications
+
             class_info.append({
                 'class_id': coach_class.id,
                 'class_name': coach_class.name,
                 'class_description': coach_class.description,
                 'class_price': coach_class.price,
-                'class_image': coach_class.class_image.url if coach_class.class_image else '/media/class_images/default.jpg'
+                'class_image': coach_class.class_image.url if coach_class.class_image else '/media/class_images/default.jpg',
+                'has_access': has_access,
+                'is_pending': is_pending
             })
 
         results.append({
-            'name': coach.user.username,
+            'username': coach.user.username,
             'rating': average_rating if average_rating is not None else 'N/A',
+            'profile_image': coach.user.profile.image.url if hasattr(coach.user, 'profile') and coach.user.profile.image else '/media/profile_pics/default.jpg',
+            'linked_in': coach.linked_in or 'N/A',
             'experience_years': coach.experience_years,
             'expertise': coach.expertise or 'N/A',
-            'state': coach.state or 'N/A',  # Include state
-            'school': coach.school or 'N/A',  # Include school
-            'classes': class_info  # Include classes information
+            'first_name': coach.first_name or 'N/A',
+            'last_name': coach.last_name or 'N/A',
+            'email': coach.user.email or 'N/A',
+            'state': coach.state or 'N/A',
+            'school': coach.school or 'N/A',
+            'classes': class_info
         })
 
     return JsonResponse(results, safe=False)
+
+
+from django.core.serializers.json import DjangoJSONEncoder
+import json
+
+def class_dashboard(request, class_id):
+    class_obj = get_object_or_404(Classes, pk=class_id)
+
+    # Check if the user is enrolled in the class
+    if request.user not in class_obj.students.all():
+        return render(request, 'classes/class_dashboard.html', {
+            'class_obj': class_obj,
+            'error_message': "You are not authorized to access this class."
+        })
+
+    # Get all events for this class
+    events = class_obj.events.all()
+    event_data = [{
+        'id': event.id,
+        'title': event.title,
+        'start': event.start_date.isoformat(),
+        'end': event.end_date.isoformat(),
+        'description': event.description,
+    } for event in events]
+
+    return render(request, 'classes/class_dashboard.html', {
+        'class_obj': class_obj,
+        'events_json': json.dumps(event_data, cls=DjangoJSONEncoder),
+    })
 
 def get_class_calendar(request, class_id):
     # Get the class object based on the class_id
@@ -546,28 +622,37 @@ def get_class_calendar(request, class_id):
 
 from django.urls import reverse
 
+from django.views.decorators.http import require_POST
+
+@require_POST
+def delete_event(request, event_id):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        try:
+            event = Event.objects.get(pk=event_id)
+            event.delete()
+            return JsonResponse({'status': 'success', 'message': 'Event deleted successfully'})
+        except Event.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Event not found'})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+
 def update_event(request, event_id):
     if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        print("Event ID:", event_id)
-        print("POST data:", request.POST)
-
         event = get_object_or_404(Event, id=event_id)
         form = EventForm(request.POST, instance=event)
 
         if form.is_valid():
-            print("Form is valid, saving event.")
             form.save()
-              # Update this if needed
+            # Build a redirect URL (assuming you pass username in your schedule page URL)
+            username = request.user.username
+            redirect_url = reverse('schedule', args=[username])
             return JsonResponse({
                 'status': 'success',
                 'message': 'Event updated successfully!',
-                
+                'redirect_url': redirect_url
             })
         else:
-            print("Form errors:", form.errors)
             return JsonResponse({'status': 'error', 'message': 'There was an error updating the event.'})
-    else:
-        return JsonResponse({'status': 'error', 'message': 'Invalid request'})
 
 
 
@@ -578,52 +663,49 @@ def viewUserProfile(request, username):
     # Create or get the user's profile
     profile, created = Profile.objects.get_or_create(user=user)
 
-    user_role = 'User'  
-    coach_classes = []  
-    class_count = 0  
+    user_role = 'User'
+    coach_classes = []
+    class_count = 0
 
     try:
         coach = Coach.objects.get(user=user)
-        
-        # If the user is a coach, set the role and load coach-specific data
-        user_role = 'Coach'  
+        user_role = 'Coach'
         coach_classes = Classes.objects.filter(coach=coach)
-        class_count = coach_classes.count() 
+        class_count = coach_classes.count()
     except Coach.DoesNotExist:
-        # Handle if the user is not a coach, check if they are an Admin or Superuser
         if user.is_superuser:
             user_role = 'Superuser'
-
         if user.groups.filter(name='Admin').exists():
             user_role = 'Admin'
-    
-    # Handle form submission for profile image and coach data
+
+    # Handle form submissions
     if request.method == 'POST':
-        # Handle profile image form submission
-        form = ProfileImageForm(request.POST, request.FILES, instance=profile)
-        
-        # Handle coach-specific data form submission
-        coach_form = None
-        if user_role == 'Coach':
+        form_type = request.POST.get('form_type')
+
+        # Process profile image form
+        if form_type == 'profile':
+            form = ProfileImageForm(request.POST, request.FILES, instance=profile)
+            coach_form = CoachProfileForm(instance=coach) if user_role == 'Coach' else None
+
+            if form.is_valid():
+                form.save()
+                return redirect('profile', username=username)
+
+        # Process coach info form
+        elif form_type == 'coach' and user_role == 'Coach':
             coach_form = CoachProfileForm(request.POST, instance=coach)
-        
-        # Save both profile image and coach data if forms are valid
-        if form.is_valid() and (not coach_form or coach_form.is_valid()):
-            form.save()  # Save the profile image
-            if coach_form:
-                coach_form.save()  # Save coach-specific data
-            
-            return redirect('profile', username=username)
+            form = ProfileImageForm(instance=profile)
+
+            if coach_form.is_valid():
+                coach_form.save()
+                return redirect('profile', username=username)
     else:
         form = ProfileImageForm(instance=profile)
-        coach_form = None
-        if user_role == 'Coach':
-            coach_form = CoachProfileForm(instance=coach)
+        coach_form = CoachProfileForm(instance=coach) if user_role == 'Coach' else None
 
-    # Return the profile page with both forms (profile image and coach form)
     return render(request, 'profile.html', {
         'form': form,
-        'coach_form': coach_form,  # Pass the coach form to the template
+        'coach_form': coach_form,
         'user': user,
         'profile': profile,
         'user_role': user_role,
@@ -634,44 +716,77 @@ def viewUserProfile(request, username):
 @login_required
 def request_class_access(request):
     if request.method == 'POST':
-        class_id = request.POST.get('class_id')
-        try:
-            selected_class = Classes.objects.get(id=class_id)
-            coach_user = selected_class.coach.user
+        data = json.loads(request.body)
+        class_id = data.get('class_id')
+        
+        # Get the class and coach
+        class_obj = Classes.objects.get(id=class_id)
+        coach = class_obj.coach.user
+        
+        # Create a notification for the coach
+        Notification.objects.create(
+            user=coach,  # The coach receives the notification
+            message=f"{request.user.username} has requested access to your class: {class_obj.name}.",
+            related_class=class_obj,
+            requester=request.user
+        )
+        
+        return JsonResponse({'status': 'success', 'message': 'Request sent to the coach.'})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
 
-            message = f"User {request.user.username} has requested access to your class named '{selected_class.name}'"
+def approve_class_access(request, notification_id):
+    notification = get_object_or_404(Notification, id=notification_id)
 
-            Notification.objects.create(
-                user=coach_user,
-                message=message,
-                related_class=selected_class,
-                requester=request.user
-            )
+    if notification.user != request.user:
+        return JsonResponse({'status': 'error', 'message': 'You are not authorized to approve this request.'})
 
-            return JsonResponse({'status': 'success', 'message': 'Request sent!'})
-        except Classes.DoesNotExist:
-            return JsonResponse({'status': 'error', 'message': 'Class not found'})
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+    class_obj = notification.related_class
+    requester = notification.requester
+
+    
+    requester.classes.add(class_obj)
+
+    
+    notification.is_read = True
+    notification.save()
+
+    #return JsonResponse({'status': 'success', 'message': 'successfully approved class access.'})
+    return redirect('notifications')
 
 @login_required
-def approve_class_access(request, notification_id):
-    notification = get_object_or_404(Notification, id=notification_id, user=request.user)
+def deny_class_access(request, notification_id):
+    notification = get_object_or_404(Notification, id=notification_id)
 
-    if notification.related_class and notification.requester:
-        class_obj = notification.related_class
-        class_obj.students.add(notification.requester)  # Give access
-        notification.is_read = True
-        notification.save()
-        messages.success(request, f"{notification.requester.username} has been granted access to {class_obj.name}.")
-    else:
-        messages.error(request, "Unable to approve this request.")
+    if notification.user != request.user:
+        messages.error(request, 'You are not authorized to deny this request.')
+        return redirect('notifications')
 
+    # Mark the notification as read but do not add class to requester
+    notification.is_read = True
+    notification.save()
+
+    messages.info(request, 'You denied the class access request.')
     return redirect('notifications')
 
 @login_required
 def notifications_view(request):
-    notifications = request.user.notifications.all().order_by('-timestamp')
-    return render(request, 'store/notifications.html', {'notifications': notifications})
+    unread_notifications = request.user.notifications.filter(is_read=False).order_by('-timestamp')
+    read_notifications = request.user.notifications.filter(is_read=True).order_by('-timestamp')
+    
+    return render(request, 'store/notifications.html', {
+        'unread_notifications': unread_notifications,
+        'read_notifications': read_notifications,
+        'unread_count': unread_notifications.count(),
+    })
+
+@login_required
+def approved_classes_view(request):
+    approved_classes = request.user.classes.all()  # Assuming ManyToManyField
+    return render(request, 'store/approved_classes.html', {
+        'approved_classes': approved_classes
+    })
+
+
 
 @login_required
 def create_class(request):

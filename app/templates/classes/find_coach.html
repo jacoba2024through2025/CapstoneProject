@@ -1,216 +1,259 @@
+
 {% extends 'root.html' %}
 {% load static %}
+
 {% block content %}
 <html>
-  <head>
-    <link rel="stylesheet" href="{% static "store/css/sidebar.css" %}"/>
-  </head>
-  <body>
-    {% if approved_classes %}
-      <p>You’ve been approved for the following classes:</p>
-      <ul>
-        {% for class in approved_classes %}
-          <li>{{ class.name }}</li>
-          <li>{{ class.description}} </li>
-          
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p>You haven’t been approved for any classes yet ❌</p>
-    {% endif %}
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="author" content="colorlib.com">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,700" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'findcoach/css/main.css' %}" />
+</head>
 
-    <h1>Find a Coach</h1>
-    <input type="text" id="searchInput" placeholder="Search for a coach..." autocomplete="off">
-    <div id="results"></div>
+<body>
+  <div class="s007">
+    <div class="form-wrapper">
+      <h3 class="search-title">Use Our Search Bar To Connect With Experienced Coaches</h3>
+      <form>
+        <div class="inner-form">
+          <div class="basic-search">
+            <div class="input-field">
+              <div class="icon-wrap">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
+                  <path d="..."></path>
+                </svg>
+              </div>
+              <input id="search" type="text" placeholder="Search for a coach..." autocomplete="off" />
+              <div class="result-count">
+                <span id="result-count-number">0</span> results
+              </div>
+            </div>
+          </div>
 
-    <script>
-      const searchInput = document.getElementById('searchInput');
-      const resultsDiv = document.getElementById('results');
+          <!-- Advanced Search -->
+          <div class="advance-search">
+            <span class="desc">Advanced Search</span>
+            <div class="row">
+              <!-- State Dropdown -->
+              <div class="input-field">
+                <select name="state" id="state-select">
+                  <option value="">All States</option>
+                  {% for state_code in coach_states %}
+                    <option value="{{ state_code }}">{{ state_code }}</option>
+                  {% endfor %}
+                </select>
+              </div>
 
-      searchInput.addEventListener('input', function () {
-        const query = searchInput.value;
-        if (query.length === 0) {
+              <!-- School Dropdown -->
+              <div class="input-field">
+                <select name="school" id="school-select">
+                  <option value="">All Schools</option>
+                  {% for school in coach_schools %}
+                    <option value="{{ school }}">{{ school }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <!-- Free Classes -->
+              <label>
+                <input type="checkbox" name="free_classes" id="free-classes" />
+                Free Classes
+              </label>
+            </div>
+
+            <div class="row second">
+              <!-- Paid Classes -->
+              <label>
+                <input type="checkbox" name="paid_classes" id="paid-classes" />
+                Paid Classes
+              </label>
+            </div>
+
+            <div class="row third">
+              <div class="input-field">
+                <button class="btn-search" type="button" id="search-button">Search</button>
+                <button class="btn-delete" id="delete">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div id="results" class="results-wrapper"></div>
+
+  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+  <script src="{% static 'findcoach/js/extention/choices.js' %}"></script>
+  <script>
+    const coachSearchInput = document.getElementById('search');
+    const stateSelect = document.getElementById('state-select');
+    const schoolSelect = document.getElementById('school-select');
+    const freeCheckbox = document.getElementById('free-classes');
+    const paidCheckbox = document.getElementById('paid-classes');
+    const resultsDiv = document.getElementById('results');
+    const resultCount = document.getElementById('result-count-number');
+    const deleteBtn = document.getElementById('delete');
+    const searchBtn = document.getElementById('search-button');
+
+    function performSearch() {
+      const query = coachSearchInput.value.trim();
+      const state = stateSelect.value;
+      const school = schoolSelect.value;
+      const free = freeCheckbox.checked;
+      const paid = paidCheckbox.checked;
+
+      const params = new URLSearchParams({
+        q: query,
+        state: state,
+        school: school,
+        free_classes: free,
+        paid_classes: paid
+      });
+
+      fetch(`/search_coaches/?${params.toString()}`)
+        .then(response => response.json())
+        .then(data => {
           resultsDiv.innerHTML = '';
-          return;
-        }
+          resultCount.textContent = data.length;
 
-        fetch(`/search_coaches/?q=${query}`)
-          .then(response => response.json())
-          .then(data => {
-            resultsDiv.innerHTML = '';
-            data.forEach(coach => {
-              const div = document.createElement('div');
-              div.classList.add('coach-result');
-              div.innerHTML = `
-                <strong>${coach.name}</strong><br>
-                Rating: ${coach.rating}<br>
-                Experience: ${coach.experience_years} years<br>
-                Expertise: ${coach.expertise}<br>
-                State: ${coach.state}<br>
-                School: ${coach.school}<br><br>
-              `;
-
-              if (coach.classes.length > 0) {
-                const classesContainer = document.createElement('div');
-                classesContainer.classList.add('coach-classes-container');
-                classesContainer.style.display = 'none';
-
-                const viewClassesButton = document.createElement('button');
-                viewClassesButton.classList.add('view-classes-button');
-                viewClassesButton.textContent = 'View Classes';
-                viewClassesButton.addEventListener('click', function () {
-                  const isVisible = classesContainer.style.display !== 'none';
-                  classesContainer.style.display = isVisible ? 'none' : 'block';
-                  viewClassesButton.textContent = isVisible ? 'View Classes' : 'Hide Classes';
-                });
-
-                div.appendChild(viewClassesButton);
-                div.appendChild(classesContainer);
-
-                coach.classes.forEach(classInfo => {
-                  const classDiv = document.createElement('div');
-                  classDiv.classList.add('class-info');
-
-                  const isFree = classInfo.class_price <= 0;
-                  const priceDisplay = isFree ? 'Free' : `$${classInfo.class_price}`;
-
-                  const buttonHTML = isFree
-                    ? `<button class="class-action-button request-access" data-class-id="${classInfo.class_id}">Request Access</button>`
-                    : `<button class="class-action-button pay-class" data-class-id="${classInfo.class_id}">Pay For Class</button>`;
-
-                  classDiv.innerHTML = `
-                    <strong>${classInfo.class_name} <span style="color: gray;">(ID: ${classInfo.class_id})</span></strong><br>
-                    ${classInfo.class_description}<br>
-                    Price: ${priceDisplay}<br>
-                    <img src="${classInfo.class_image}" alt="${classInfo.class_name}" class="class-image"><br>
-                    ${buttonHTML}
-                  `;
-
-                  classesContainer.appendChild(classDiv);
-                });
-              }
-
-              resultsDiv.appendChild(div);
-            });
-          });
-      });
-
-      // CSRF Token helper
-      function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-          const cookies = document.cookie.split(';');
-          for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-              break;
-            }
+          if (data.length === 0) {
+            resultsDiv.innerHTML = '<p>No results found.</p>';
+            return;
           }
-        }
-        return cookieValue;
-      }
 
-      // Handle Request Access click
-      document.addEventListener('click', function (e) {
-        if (e.target && e.target.classList.contains('request-access')) {
-          const classId = e.target.getAttribute('data-class-id');
+          data.forEach(coach => {
+            const div = document.createElement('div');
+            div.classList.add('coach-result-card');
+            div.innerHTML = `
+              <div class="coach-header">
+                <img src="${coach.profile_image}" alt="${coach.first_name}" class="coach-image">
+                <div class="coach-info">
+                  <h4 class="coach-name">${coach.first_name} ${coach.last_name}</h4>
+                  <p class="coach-username"><strong>Username:</strong> ${coach.username}</p>
+                  <p class="coach-email"><strong>Email:</strong> ${coach.email}</p>
+                  <p class="coach-rating"><strong>Rating:</strong> ${coach.rating}</p>
+                </div>
+              </div>
+              <div class="coach-details">
+                <p><strong>Experience:</strong> ${coach.experience_years} years</p>
+                <p><strong>Expertise:</strong> ${coach.expertise}</p>
+                <p><strong>State:</strong> ${coach.state}</p>
+                <p><strong>School:</strong> ${coach.school}</p>
+              </div>
+              <div class="coach-actions">
+                <a href="${coach.linked_in}" target="_blank" class="linkedin-profile">LinkedIn Profile</a>
+              </div>
+            `;
 
-          fetch('/request_class_access/', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-              'X-CSRFToken': getCookie('csrftoken')
-            },
-            body: `class_id=${classId}`
-          })
-          .then(response => response.json())
-          .then(data => {
-            alert(data.message); // Optional user feedback
+            if (coach.classes.length > 0) {
+              const classesContainer = document.createElement('div');
+              classesContainer.classList.add('coach-classes-container');
+              classesContainer.style.display = 'none';
+
+              const viewClassesButton = document.createElement('button');
+              viewClassesButton.classList.add('view-classes-button');
+              viewClassesButton.textContent = 'View Classes';
+              viewClassesButton.addEventListener('click', function () {
+                const isVisible = classesContainer.style.display !== 'none';
+                classesContainer.style.display = isVisible ? 'none' : 'block';
+                viewClassesButton.textContent = isVisible ? 'View Classes' : 'Hide Classes';
+              });
+
+              div.appendChild(viewClassesButton);
+              div.appendChild(classesContainer);
+
+              coach.classes.forEach(classInfo => {
+                const classDiv = document.createElement('div');
+                classDiv.classList.add('class-card');
+
+                const isFree = classInfo.class_price <= 0;
+                const priceDisplay = isFree ? 'Free' : `$${classInfo.class_price}`;
+
+                let buttonHTML = '';
+                if (classInfo.has_access) {
+                  buttonHTML = `<a href="/class_dashboard/${classInfo.class_id}/" class="class-action-button go-to-class">Go to Class</a>`;
+                } else if (classInfo.is_pending) {
+                  buttonHTML = `<button class="class-action-button request-access" data-class-id="${classInfo.class_id}" disabled>Request Sent</button>`;
+                } else if (isFree) {
+                  buttonHTML = `<button class="class-action-button request-access" data-class-id="${classInfo.class_id}">Request Access</button>`;
+                } else {
+                  buttonHTML = `<button class="class-action-button pay-class" data-class-id="${classInfo.class_id}">Pay For Class</button>`;
+                }
+
+                classDiv.innerHTML = `
+                  <strong>${classInfo.class_name}</strong><br>
+                  <p>${classInfo.class_description}</p>
+                  <p><strong>Price:</strong> ${priceDisplay}</p>
+                  <img src="${classInfo.class_image}" alt="${classInfo.class_name}" class="class-image"><br>
+                  ${buttonHTML}
+                `;
+
+                classesContainer.appendChild(classDiv);
+              });
+            }
+
+            resultsDiv.appendChild(div);
           });
-        }
-      });
-    </script>
+        });
+    }
 
-    <style>
-      #results {
-        margin-top: 10px;
-        background: #f4f4f4;
-        padding: 10px;
-        border-radius: 5px;
-      }
+    coachSearchInput.addEventListener('input', performSearch);
+    searchBtn.addEventListener('click', performSearch);
 
-      .coach-result {
-        border-bottom: 1px solid #ccc;
-        padding: 5px 0;
-      }
+    deleteBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      coachSearchInput.value = '';
+      stateSelect.value = '';
+      schoolSelect.value = '';
+      freeCheckbox.checked = false;
+      paidCheckbox.checked = false;
+      resultsDiv.innerHTML = '';
+      resultCount.textContent = '0';
+    });
 
-      .view-classes-button {
-        background-color: #4CAF50;
-        color: white;
-        padding: 10px;
-        border: none;
-        cursor: pointer;
-        margin-top: 10px;
-        font-size: 16px;
-        border-radius: 5px;
-      }
+    document.addEventListener('click', function (e) {
+      if (e.target && e.target.classList.contains('request-access')) {
+        const button = e.target;
+        const classId = button.getAttribute('data-class-id');
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-      .view-classes-button:hover {
-        background-color: #45a049;
+        fetch('/request_class_access/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+          },
+          body: JSON.stringify({ class_id: classId })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            button.textContent = 'Request Sent';
+            button.disabled = true;
+          } else {
+            alert(data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Something went wrong. Please try again.');
+        });
       }
-
-      .coach-classes-container {
-        margin-top: 10px;
-        padding-left: 15px;
-        max-height: 300px;
-        overflow-y: auto;
-        background: #f0f0f0;
-        border-radius: 5px;
-        padding: 10px;
-      }
-
-      .class-info {
-        border-top: 1px solid #ccc;
-        padding: 10px 0;
-      }
-
-      .class-image {
-        width: 100px;
-        height: auto;
-      }
-
-      .class-action-button {
-        margin-top: 10px;
-        padding: 8px 12px;
-        font-size: 14px;
-        border-radius: 4px;
-        cursor: pointer;
-      }
-
-      .request-access {
-        background-color: #007BFF;
-        color: white;
-        border: none;
-      }
-
-      .pay-class {
-        background-color: #FF5733;
-        color: white;
-        border: none;
-      }
-
-      .request-access:hover {
-        background-color: #0056b3;
-      }
-
-      .pay-class:hover {
-        background-color: #cc4627;
-      }
-    </style>
-  </body>
+    });
+  </script>
+</body>
 </html>
 {% endblock %}
+
+
+
+
 
 
 
