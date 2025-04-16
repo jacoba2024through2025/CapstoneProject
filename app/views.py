@@ -175,7 +175,7 @@ def empty_cart(request):
     cart_items = Cart.objects.filter(user=request.user)
     for item in cart_items:
         item.delete()
-    return redirect('home')
+    return redirect('view_cart')
 
 def cancel_payment(request):
     return redirect('view_cart')
@@ -361,25 +361,34 @@ def create_product(request):
 
 @login_required
 def add_to_cart(request, product_id):
+    print(request.POST["JStoPython"])
     product = get_object_or_404(Products, id=product_id)
     cart_item, created = Cart.objects.get_or_create(user=request.user, product=product)
-    if not created:
-        cart_item.quantity += 1
-        cart_item.save()
+    print(cart_item)
+    print(created)
+    cart_item.quantity += int(request.POST["JStoPython"])
+    cart_item.save()
     return redirect('view_cart')
 
 @login_required
 def view_cart(request):
     cart_items = Cart.objects.filter(user=request.user)
     total_price = sum(item.get_total_price() for item in cart_items)
+    cart_count = 0
+    for item in cart_items:
+        cart_count += item.quantity
     context = {
         'cart_items': cart_items,
-        'total_price': total_price
+        'total_price': total_price,
+        "cart_count": cart_count,
     }
     return render(request, 'store/cart.html', context)
 
-def delete_cart_item(request, item_id):
-    pass
+def delete_cart_item(request, product_id):
+    cart_item = get_object_or_404(Cart, user=request.user, product_id=product_id)
+    cart_item.delete()
+    messages.success(request, "Item removed from cart.")
+    return redirect('view_cart')
 
 
 class StripeConfigView(TemplateView):

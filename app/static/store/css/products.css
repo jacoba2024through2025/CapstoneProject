@@ -34,7 +34,7 @@ img {
   margin: auto;
   margin-top: 5%;
   padding: 2.5em 0;
-  min-width: 600px;
+  min-width: 850px;
   background-color: white;
   border-radius: 5px;
 }
@@ -71,7 +71,7 @@ img {
 }
 .photo-main img {
   position: absolute;
-  left: -1.5em;
+  left: -1em;
   top: 2em;
   max-width: 110%;
   filter: saturate(150%) contrast(120%) hue-rotate(10deg) drop-shadow(1px 20px 10px rgba(0, 0, 0, 0.3));
@@ -137,7 +137,7 @@ img {
   cursor: pointer;
 }
 .variant li:first-child, .variant li:hover {
-  border: 1px solid #a6a6a6;
+  border: 1px solid #4c4c4c;
 }
 .variant li:not(:first-child) {
   margin-left: 0.1em;
@@ -187,4 +187,30 @@ footer a {
 }
 footer a:hover {
   color: #ff3f40;
+}
+
+.quantity_btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 50%;
+}
+.quantity_btn p {
+  border: 1px solid #a6a6a6;
+  padding: 15px;
+  font-size: 1.2em;
+  font-weight: 700;
+}
+
+.number-arrow {
+  padding: 10px;
+  border: 1px solid #a6a6a6;
+  border-radius: 12px;
+  background-color: #fff;
+}
+.number-arrow i {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
 }/*# sourceMappingURL=products.css.map */

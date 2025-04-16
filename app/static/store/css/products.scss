@@ -38,7 +38,7 @@ img {
   margin: auto;
   margin-top: 5%;
   padding: 2.5em 0;
-  min-width: 600px;
+  min-width: 850px;
   background-color: white;
   border-radius: 5px;
 }
@@ -77,7 +77,7 @@ img {
 
   img {
     position: absolute;
-    left: -1.5em;
+    left: -1em;
     top: 2em;
     max-width: 110%;
     filter: saturate(150%) contrast(120%) hue-rotate(10deg)
@@ -153,7 +153,7 @@ img {
 
     &:first-child,
     &:hover {
-      border: 1px solid $color-secondary;
+      border: 1px solid $color-primary;
     }
   }
 
@@ -211,5 +211,33 @@ footer {
     &:hover {
       color: $color-highlight;
     }
+  }
+}
+
+.quantity_btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 50%;
+
+  p {
+    border: 1px solid $color-secondary;
+    padding: 15px;
+    font-size: 1.2em;
+    font-weight: 700;
+  }
+}
+
+.number-arrow {
+  padding: 10px;
+  border: 1px solid $color-secondary;
+  border-radius: 12px;
+  background-color: #fff;
+
+  i {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
   }
 }
