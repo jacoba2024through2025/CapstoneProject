@@ -31,6 +31,11 @@ urlpatterns = [
     path("register/", views.register, name="register"),
     path("profile/<str:username>/", views.viewUserProfile, name="profile"),
     path("logout/", views.viewLogout, name="logout"),
+    path('password_reset/', auth_views.PasswordResetView.as_view(template_name="password_reset_form.html"), name='password_reset'),
+    path('password_reset_done/', auth_views.PasswordResetDoneView.as_view(template_name="password_reset_done.html"), name='password_reset_done'),
+    path('password_reset_complete/', auth_views.PasswordResetCompleteView.as_view(template_name="password_reset_complete.html"), name='password_reset_complete'),
+    path('password_reset_confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name="password_reset_confirm.html"), name='password_reset_confirm'),
+    
 
     # Products and Cart
     path("products/", views.viewProducts, name="products"),
@@ -39,12 +44,9 @@ urlpatterns = [
     path('get_class_calendar/<int:class_id>/', views.get_class_calendar, name='get_class_calendar'),
     path('create_class/', views.create_class, name='create_class'),
     path('edit_class/<int:class_id>/', views.edit_class, name='edit_class'),
-    path('password_reset/', auth_views.PasswordResetView.as_view(template_name="password_reset_form.html"), name='password_reset'),
-    path('password_reset_done/', auth_views.PasswordResetDoneView.as_view(template_name="password_reset_done.html"), name='password_reset_done'),
-    path('password_reset_complete/', auth_views.PasswordResetCompleteView.as_view(template_name="password_reset_complete.html"), name='password_reset_complete'),
-    path('password_reset_confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name="password_reset_confirm.html"), name='password_reset_confirm'),
     path("products/<int:product_id>/", views.viewOneProduct, name="product_detail"),
     path("cart/add/<int:product_id>/", views.add_to_cart, name="add_to_cart"),
+    path("cart/remove/<int:product_id>/", views.delete_cart_item, name="delete_cart_item"),
     path("cart/", views.view_cart, name="view_cart"),
     path('config/', views.stripe_config, name='stripe_config'),
     path('checkout/', views.create_checkout_session, name='create_checkout_session'),

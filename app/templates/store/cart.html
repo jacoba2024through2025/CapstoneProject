@@ -14,7 +14,15 @@
       <div class="col-lg-10 offset-lg-1">
         <div class="cart_container">
           <div class="cart_title">
-            Shopping Cart<small> (1 item in your cart) </small>
+            {% if cart_count > 1 %}
+            Shopping Cart<small> ({{cart_count}} items in your cart) </small>
+            {% endif %}
+            {% if cart_count == 1 %}
+            Shopping Cart<small> ({{cart_count}} item in your cart) </small>
+            {% endif %}
+            {% if cart_count == 0 %}
+            <h2>Your cart is empty</h2>
+            {% endif %}
           </div>
           {% for item in cart_items %}
           <div class="cart_items">
@@ -47,6 +55,15 @@
                   <div class="cart_item_total cart_info_col">
                     <div class="cart_item_title">Total</div>
                     <div class="cart_item_text">${{ item.get_total_price }}</div>
+                  </div>
+                  <div class="cart_item_total cart_info_col">
+                    <div class="cart_item_title">Remove</div>
+                    <div class="cart_item_text">
+                      <form method="POST" action="{% url 'delete_cart_item' item.product.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Remove</button>
+                      </form>
+                    </div>
                   </div>
                 </div>
               </li>
