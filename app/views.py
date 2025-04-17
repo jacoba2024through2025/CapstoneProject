@@ -268,10 +268,10 @@ def view_contact_page(request):
             recipient_list=['zombiejake2005@gmail.com'],  # To the admin's email
         )
 
-        # Return a success message or render a thank you page
+        
         return render(request, 'contact.html', {
             "message_name": message_name,
-            "message_sent": True,  # Flag to indicate success
+            "message_sent": True,  
         })
 
     else:
@@ -289,7 +289,7 @@ def register(request):
     form = CreateUserForm()
 
     # Handling the registration form
-    if request.method == "POST" and "password1" in request.POST:  # Registration form
+    if request.method == "POST" and "password1" in request.POST:  
         form = CreateUserForm(request.POST)
         if form.is_valid():
             form.save()
@@ -298,12 +298,12 @@ def register(request):
 
     context = {'form': form}
 
-    # Handling the login form
-    if request.method == "POST" and "password" in request.POST:  # Login form
+    
+    if request.method == "POST" and "password" in request.POST:  
         username = request.POST.get('username')
         password = request.POST.get('password')
         email = request.POST.get('email')
-        keep_signed_in = request.POST.get('keep_signed_in')  # Check if 'Keep me signed in' was checked
+        keep_signed_in = request.POST.get('keep_signed_in')  
 
         print(f"Attempting to authenticate with Username: {username} and Password: {password}")
 
@@ -332,7 +332,8 @@ def viewLogout(request):
     return redirect('register')
 
 def viewProducts(request):
-    products = Products.objects.all()
+    
+    products = Products.objects.filter(hidden=False)
     paginator = Paginator(products, 6)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -453,7 +454,7 @@ def view_schedule_page(request, username):
         class_count = 0
         messages.error(request, "This user does not have any classes")
 
-    # Check if the calendar exists for each class
+    
     for class_item in coach_classes:
         if not hasattr(class_item, 'calendar'):
             ClassCalendar.objects.create(class_name=class_item)
@@ -569,20 +570,20 @@ def search_coaches(request):
     return JsonResponse(results, safe=False)
 
 
+
 from django.core.serializers.json import DjangoJSONEncoder
 import json
 
+@login_required
 def class_dashboard(request, class_id):
     class_obj = get_object_or_404(Classes, pk=class_id)
 
-    # Check if the user is enrolled in the class
     if request.user not in class_obj.students.all():
         return render(request, 'classes/class_dashboard.html', {
             'class_obj': class_obj,
             'error_message': "You are not authorized to access this class."
         })
 
-    # Get all events for this class
     events = class_obj.events.all()
     event_data = [{
         'id': event.id,
@@ -592,17 +593,56 @@ def class_dashboard(request, class_id):
         'description': event.description,
     } for event in events]
 
+    form = MeetingForm()
+
     return render(request, 'classes/class_dashboard.html', {
         'class_obj': class_obj,
         'events_json': json.dumps(event_data, cls=DjangoJSONEncoder),
+        'form': form
     })
 
+@login_required
+def schedule_meeting_from_dashboard(request, class_id):
+    if request.method == 'POST':
+        form = MeetingForm(request.POST)
+        if form.is_valid():
+            meeting = form.save(commit=False)
+            meeting.price = 45.00 
+            meeting.save()
+
+            
+            product, created = Products.objects.get_or_create(
+                name="Meeting Session",
+                defaults={
+                    'price': 45.00,
+                    'description': 'One-on-one coaching session',
+                    'image': 'default.jpg', 
+                    'hidden': True
+                }
+            )
+
+            
+            if not created and not product.hidden:
+                product.hidden = True
+                product.save()
+
+            cart_item, _ = Cart.objects.get_or_create(
+                user=request.user,
+                product=product
+            )
+            
+            cart_item.save()
+
+            return redirect('view_cart')
+
+    return redirect('class_dashboard', class_id=class_id)
+
 def get_class_calendar(request, class_id):
-    # Get the class object based on the class_id
+    
     class_item = get_object_or_404(Classes, id=class_id)
     
-    # Retrieve all events related to this class
-    events = Event.objects.filter(class_item=class_item)  # Assuming your Event model has a relation to Classes
+    
+    events = Event.objects.filter(class_item=class_item)  
     
     event_data = []
     for event in events:
@@ -612,7 +652,7 @@ def get_class_calendar(request, class_id):
             'start': event.start_date.isoformat(),
             'end': event.end_date.isoformat(),
             'description': event.description,
-            'color': event.color,  # Optional color styling
+            'color': event.color,  
         })
     
     return JsonResponse({'events': event_data})
@@ -641,7 +681,7 @@ def update_event(request, event_id):
 
         if form.is_valid():
             form.save()
-            # Build a redirect URL (assuming you pass username in your schedule page URL)
+           
             username = request.user.username
             redirect_url = reverse('schedule', args=[username])
             return JsonResponse({
@@ -658,7 +698,7 @@ def update_event(request, event_id):
 def viewUserProfile(request, username):
     user = get_object_or_404(User, username=username)
     
-    # Create or get the user's profile
+    
     profile, created = Profile.objects.get_or_create(user=user)
 
     user_role = 'User'
@@ -676,11 +716,11 @@ def viewUserProfile(request, username):
         if user.groups.filter(name='Admin').exists():
             user_role = 'Admin'
 
-    # Handle form submissions
+    
     if request.method == 'POST':
         form_type = request.POST.get('form_type')
 
-        # Process profile image form
+        
         if form_type == 'profile':
             form = ProfileImageForm(request.POST, request.FILES, instance=profile)
             coach_form = CoachProfileForm(instance=coach) if user_role == 'Coach' else None
@@ -689,7 +729,7 @@ def viewUserProfile(request, username):
                 form.save()
                 return redirect('profile', username=username)
 
-        # Process coach info form
+        
         elif form_type == 'coach' and user_role == 'Coach':
             coach_form = CoachProfileForm(request.POST, instance=coach)
             form = ProfileImageForm(instance=profile)
@@ -717,13 +757,13 @@ def request_class_access(request):
         data = json.loads(request.body)
         class_id = data.get('class_id')
         
-        # Get the class and coach
+        
         class_obj = Classes.objects.get(id=class_id)
         coach = class_obj.coach.user
         
-        # Create a notification for the coach
+        
         Notification.objects.create(
-            user=coach,  # The coach receives the notification
+            user=coach,  
             message=f"{request.user.username} has requested access to your class: {class_obj.name}.",
             related_class=class_obj,
             requester=request.user
@@ -748,7 +788,7 @@ def approve_class_access(request, notification_id):
     notification.is_read = True
     notification.save()
 
-    #return JsonResponse({'status': 'success', 'message': 'successfully approved class access.'})
+    
     return redirect('notifications')
 
 @login_required
@@ -759,7 +799,7 @@ def deny_class_access(request, notification_id):
         messages.error(request, 'You are not authorized to deny this request.')
         return redirect('notifications')
 
-    # Mark the notification as read but do not add class to requester
+    
     notification.is_read = True
     notification.save()
 
@@ -779,7 +819,7 @@ def notifications_view(request):
 
 @login_required
 def approved_classes_view(request):
-    approved_classes = request.user.classes.all()  # Assuming ManyToManyField
+    approved_classes = request.user.classes.all()  
     return render(request, 'store/approved_classes.html', {
         'approved_classes': approved_classes
     })

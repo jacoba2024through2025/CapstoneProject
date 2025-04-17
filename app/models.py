@@ -149,10 +149,22 @@ class Products(models.Model):
     image = models.ImageField(upload_to='product_pics')
     name = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    hidden = models.BooleanField(default=False)
     description = models.TextField()
     
     def __str__(self):
         return f"{self.name} - {self.price}"
+    
+class Meeting(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=45.00)
+    hidden = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.name} ({self.start_date} - {self.end_date})"
     
 class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

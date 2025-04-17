@@ -49,6 +49,15 @@ class EventForm(forms.ModelForm):
             'color': forms.TextInput(attrs={'type': 'color'}),  # color input
         }
 
+class MeetingForm(forms.ModelForm):
+    class Meta:
+        model = Meeting
+        fields = ['name', 'description', 'start_date', 'end_date']
+        widgets = {
+            'start_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'end_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }
+
 class CreateProductForm(forms.ModelForm):
     class Meta:
         model = Products

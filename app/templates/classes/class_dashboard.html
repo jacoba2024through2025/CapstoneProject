@@ -24,21 +24,28 @@
           </li>
           <li><a href="/chatroom">Chat Room</a></li>
           <li><a href="/reminders">Reminders</a></li>
-          <li><a href="/milestones">Milestones</a></li>
         </ul>
       </div>
 
       <div class="main-content">
-        <h1>Dashboard for {{ class_obj.name }}</h1>
+        <h1>{{ class_obj.name }} Class</h1>
         <h3>Coach: {{ class_obj.coach.first_name }} {{ class_obj.coach.last_name }}</h3>
         <hr>
 
         <h4>Class Schedule</h4>
         <div id="student-calendar" style="max-width: 900px; margin: 20px auto;"></div>
+
+        <hr>
+        <h4>Schedule a Paid Meeting</h4>
+        <form method="POST" action="{% url 'schedule_meeting_from_dashboard' class_obj.id %}">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <button type="submit" class="btn btn-success">Pay & Schedule ($45)</button>
+        </form>
       </div>
     </div>
 
-    
+    <!-- Event Modal -->
     <div class="modal fade" id="eventViewModal" tabindex="-1" aria-labelledby="eventViewModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -56,7 +63,7 @@
       </div>
     </div>
 
-    <!-- FullCalendar and Bootstrap JS -->
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
