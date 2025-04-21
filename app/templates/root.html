@@ -28,7 +28,7 @@
       <header class="">
         <nav class="navbar navbar-expand-lg">
           <div class="container">
-            <div>
+            <div class="logo-container">
               <a href='home'><img src="{% static 'store/images/Westletics_logo.png' %}" alt="Westletics Logo" class="project-logo" /></a>
             </div>
             <a class="navbar-brand" href="index.html"><h2 class="west-h2">Westletics</h2></a>
@@ -100,16 +100,20 @@
 
     {% block content %}{% endblock content %}
     
-    <footer>
-      <div class="container">
-        <div class="row">
-          <div class="col-md-12">
-            
-            <div class="inner-content">
-              <p>© 2025, Westletics Powered by Stripe</p>
-            </div>
-          </div>
+    <footer class="footer">
+      <div class="container text-center">
+        <h3>Our Socials</h3>
+        <div class="social-icons">
+          <a href="https://www.tiktok.com/@westletics45" target="_blank" class="social-icon">
+            TikTok
+            <i class="fab fa-tiktok"></i>
+          </a>
+          <a href="https://www.instagram.com/Westletics45/" target="_blank" class="social-icon">
+            Instagram
+            <i class="fab fa-instagram"></i>
+          </a>
         </div>
+        <p>© 2025, Westletics Powered by Stripe</p>
       </div>
     </footer>
 

@@ -77,6 +77,9 @@ urlpatterns = [
     # Admin Panel
 
     path("adminpanel/", views.view_admin_page, name="adminpanel"),
+    ##Google analytics
+    
+
     path("chart/", views.view_admin_chart, name="chart"),
     path("forms/", views.view_admin_forms, name="forms"),
     

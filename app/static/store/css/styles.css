@@ -107,15 +107,58 @@ a.filled-button:hover {
 }
 
 .products-heading {
-	background-image: url(../images/products-heading.jpg);
+	background-image: url(../images/products.jpg);
+	background-size: cover;
+	background-position: center;
+	position: relative; /* Needed to position ::after absolutely inside this container */
 }
+
+.products-heading::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5); /* Dark overlay */
+	z-index: 1;
+}
+
+.products-heading .text-content {
+	position: relative;
+	z-index: 2; /* Puts text above the overlay */
+	color: white; /* Optional: to make the text pop */
+}
+
+
+
 
 .about-heading {
 	background-image: url(../images/about-heading.jpg);
 }
 
 .contact-heading {
-	background-image: url(../images/contact-heading.jpg);
+	background-image: url(../images/contacts.jpg);
+	background-size: cover;
+	background-position: center;
+	position: relative;
+}
+
+.contact-heading::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.3); /* Dark overlay */
+	z-index: 1;
+}
+
+.products-heading .text-content {
+	position: relative;
+	z-index: 2; 
+	color: white; 
 }
 
 .page-heading {
@@ -389,6 +432,8 @@ header .navbar {
 	transform: translateY(-50%);
 	text-align: center;
 	width: 100%;
+	
+	
 }
 
 .banner .text-content h4 {
@@ -404,6 +449,14 @@ header .navbar {
 	font-size: 62px;
 	text-transform: uppercase;
 	letter-spacing: 5px;
+}
+
+.banner .text-content h4,
+.banner .text-content h6 {
+    background: #212529;
+    display: inline-block;
+    padding: 0.5rem 1rem;
+	border-radius: 3%;
 }
 
 .owl-banner .owl-dots .owl-dot {
@@ -974,6 +1027,7 @@ footer .inner-content p a {
 	}
 	.banner .text-content h4 {
 		font-size: 22px;
+		
 	}
 
 	.banner .text-content h2 {
@@ -1615,9 +1669,55 @@ footer .inner-content p a {
 	padding: 30px;
   }
   
+  /* Footer */
+  .footer {
+	background-color: #000; /* black footer */
+	color: #fff;
+	padding: 20px 0;
+	margin-top: 50px;
+  }
   
+  .footer .social-icons {
+	margin-bottom: 10px;
+  }
+  
+  .footer .social-icon {
+	color: #fff;
+	font-size: 24px;
+	margin: 0 10px;
+	transition: color 0.3s ease;
+  }
+  
+  .footer .social-icon:hover {
+	color: #CA152C; /* nice pink for hover effect */
+  }
 
-/* Mobile friendly
+  .footer p {
+	color: #fff;
+  }
+
+/* Mobile friendly*/
+@media (max-width: 768px) {
+	.project-logo {
+		width: 10vw;
+		height: 8vh;
+	}
+
+	.container {
+		width: 75%;
+	}
+
+
+	.navbar .navbar-brand {
+		position: absolute;
+		left: 100px;
+		top: 19px;
+	}
+}
+
+
+
+
 
 /*For larger screens*/
 @media (min-width: 1279px)  {
