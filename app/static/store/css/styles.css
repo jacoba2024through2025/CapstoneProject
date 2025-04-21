@@ -1617,3 +1617,20 @@ footer .inner-content p a {
   
   
 
+/* Mobile friendly
+
+/*For larger screens*/
+@media (min-width: 1279px)  {
+  /*.navbar-expand-lg .container {
+	
+  }*/
+
+  .project-logo {
+	width: 10vw;
+    height: 8vh;
+  }
+
+
+  
+  
+}

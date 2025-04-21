@@ -18,11 +18,11 @@
             </a>
             <ul class="dropdown-content">
               <li><a href="#">Weekly Schedule</a></li>
-              <li><a href="#">Upcoming Sessions</a></li>
+              <li><a href="{% url 'upcoming_events' class_id=class_obj.id %}">Upcoming Sessions</a></li>
               <li><a href="#">Past Sessions</a></li>
             </ul>
           </li>
-          <li><a href="/chatroom">Chat Room</a></li>
+          <li><a href="{% url 'chat_room' class_obj.id %}">Chat Room</a></li>
           <li><a href="/reminders">Reminders</a></li>
         </ul>
       </div>
@@ -30,18 +30,30 @@
       <div class="main-content">
         <h1>{{ class_obj.name }} Class</h1>
         <h3>Coach: {{ class_obj.coach.first_name }} {{ class_obj.coach.last_name }}</h3>
-        <hr>
 
+        {% if user.coach %}
+          <div class="alert alert-primary mt-3">
+            You are viewing this dashboard as the coach: <strong>{{ user.coach.first_name }} {{ user.coach.last_name }}</strong>
+          </div>
+        {% endif %}
+
+        <hr>
         <h4>Class Schedule</h4>
         <div id="student-calendar" style="max-width: 900px; margin: 20px auto;"></div>
 
         <hr>
-        <h4>Schedule a Paid Meeting</h4>
-        <form method="POST" action="{% url 'schedule_meeting_from_dashboard' class_obj.id %}">
-          {% csrf_token %}
-          {{ form.as_p }}
-          <button type="submit" class="btn btn-success">Pay & Schedule ($45)</button>
-        </form>
+
+        {% if not user.coach %}
+          <!-- Player View: Show Meeting Form -->
+          <h4>Schedule a Paid Meeting</h4>
+          <form method="POST" action="{% url 'schedule_meeting_from_dashboard' class_obj.id %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-success">Pay & Schedule ($45)</button>
+          </form>
+        {% else %}
+          
+        {% endif %}
       </div>
     </div>
 
@@ -101,5 +113,6 @@
     </script>
   {% endif %}
 {% endblock %}
+
 
 

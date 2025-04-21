@@ -18,6 +18,7 @@ from django.http import JsonResponse
 from django.http import HttpResponseRedirect
 from .decorators import admin_required
 from django.contrib.auth.models import Group
+from django.utils import timezone
 import os
 import requests
 from django.views.decorators.csrf import csrf_exempt
@@ -578,20 +579,41 @@ import json
 def class_dashboard(request, class_id):
     class_obj = get_object_or_404(Classes, pk=class_id)
 
-    if request.user not in class_obj.students.all():
+    # Access Control: Allow if user is a student OR the coach assigned to this class
+    is_student = request.user in class_obj.students.all()
+    is_coach = hasattr(request.user, 'coach') and class_obj.coach and class_obj.coach.user == request.user
+
+    if not (is_student or is_coach):
         return render(request, 'classes/class_dashboard.html', {
             'class_obj': class_obj,
             'error_message': "You are not authorized to access this class."
         })
 
+    # Collect events and meetings for calendar
     events = class_obj.events.all()
-    event_data = [{
-        'id': event.id,
-        'title': event.title,
-        'start': event.start_date.isoformat(),
-        'end': event.end_date.isoformat(),
-        'description': event.description,
-    } for event in events]
+    meetings = class_obj.meetings.filter(hidden=False)
+
+    event_data = []
+
+    for event in events:
+        event_data.append({
+            'id': event.id,
+            'title': event.title,
+            'start': event.start_date.isoformat(),
+            'end': event.end_date.isoformat(),
+            'description': event.description,
+            'color': event.color,
+        })
+
+    for meeting in meetings:
+        event_data.append({
+            'id': f"meeting-{meeting.id}",
+            'title': f"Meeting: {meeting.name}",
+            'start': meeting.start_date.isoformat(),
+            'end': meeting.end_date.isoformat(),
+            'description': f"{meeting.description} (Player: {meeting.player.first_name})",
+            'color': '#007bff',  # Blue for meetings
+        })
 
     form = MeetingForm()
 
@@ -602,26 +624,49 @@ def class_dashboard(request, class_id):
     })
 
 @login_required
+def upcoming_events(request, class_id):
+    # Get the class object based on the class_id
+    class_obj = get_object_or_404(Classes, pk=class_id)
+
+    # Get the current time
+    now = timezone.now()
+
+    # Get upcoming events and meetings for the specific class
+    events = class_obj.events.filter(start_date__gte=now).order_by('start_date')
+    meetings = class_obj.meetings.filter(start_date__gte=now, hidden=False).order_by('start_date')
+
+    # Combine both sets of events and meetings
+    upcoming_events = list(events) + list(meetings)
+
+    return render(request, 'classes/upcoming_events.html', {
+        'class_obj': class_obj,
+        'upcoming_events': upcoming_events
+    })
+
+@login_required
 def schedule_meeting_from_dashboard(request, class_id):
+    class_obj = get_object_or_404(Classes, id=class_id)
+
     if request.method == 'POST':
         form = MeetingForm(request.POST)
         if form.is_valid():
             meeting = form.save(commit=False)
+            meeting.class_item = class_obj
+            meeting.coach = class_obj.coach
+            meeting.player = request.user
             meeting.price = 45.00 
             meeting.save()
 
-            
             product, created = Products.objects.get_or_create(
                 name="Meeting Session",
                 defaults={
                     'price': 45.00,
                     'description': 'One-on-one coaching session',
-                    'image': 'default.jpg', 
+                    'image': 'default.jpg',
                     'hidden': True
                 }
             )
 
-            
             if not created and not product.hidden:
                 product.hidden = True
                 product.save()
@@ -630,12 +675,46 @@ def schedule_meeting_from_dashboard(request, class_id):
                 user=request.user,
                 product=product
             )
-            
             cart_item.save()
 
             return redirect('view_cart')
 
     return redirect('class_dashboard', class_id=class_id)
+
+@login_required
+def chat_room(request, class_id):
+    class_obj = get_object_or_404(Classes, id=class_id)
+
+    # Only allow access to students or the coach
+    if request.user not in class_obj.students.all() and request.user != class_obj.coach.user:
+        return HttpResponseForbidden("You're not authorized to view this chat.")
+
+    messages = ChatMessage.objects.filter(class_obj=class_obj).order_by('timestamp')
+
+    # Process each message to check if the attachment is an image
+    for msg in messages:
+        if msg.attachment:
+            # Check if the file is an image based on the extension
+            msg.is_image = msg.attachment.url.lower().endswith(('.jpg', '.jpeg', '.png', '.gif'))
+        else:
+            msg.is_image = False
+
+    if request.method == 'POST':
+        form = ChatMessageForm(request.POST, request.FILES)
+        if form.is_valid():
+            chat_message = form.save(commit=False)
+            chat_message.user = request.user
+            chat_message.class_obj = class_obj
+            chat_message.save()
+            return redirect('chat_room', class_id=class_obj.id)
+    else:
+        form = ChatMessageForm()
+
+    return render(request, 'classes/chat_room.html', {
+        'form': form,
+        'messages': messages,
+        'class_obj': class_obj
+    })
 
 def get_class_calendar(request, class_id):
     

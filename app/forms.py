@@ -58,6 +58,18 @@ class MeetingForm(forms.ModelForm):
             'end_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
         }
 
+class ChatMessageForm(forms.ModelForm):
+    class Meta:
+        model = ChatMessage
+        fields = ['message', 'attachment']
+        widgets = {
+            'message': forms.Textarea(attrs={
+                'rows': 2,
+                'placeholder': 'Type a message...',
+                'class': 'form-control'
+            }),
+        }
+
 class CreateProductForm(forms.ModelForm):
     class Meta:
         model = Products

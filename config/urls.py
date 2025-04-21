@@ -68,6 +68,8 @@ urlpatterns = [
     path('approve_class_access/<int:notification_id>/', views.approve_class_access, name='approve_class_access'),
     path('deny_access/<int:notification_id>/', views.deny_class_access, name='deny_class_access'),
     path('class_dashboard/<int:class_id>/', views.class_dashboard, name='class_dashboard'),
+    path('class_chat/<int:class_id>/', views.chat_room, name='chat_room'),
+    path('class/<int:class_id>/upcoming-events/', views.upcoming_events, name='upcoming_events'),
     
     # ... other paths
     path('approved-classes/', views.approved_classes_view, name='approved_classes'),

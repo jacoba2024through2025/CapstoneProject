@@ -37,6 +37,9 @@
               <button class="btn-form view-calendar" data-class-id="{{ class.id }}" data-class-name="{{ class.name }}">
                 View Calendar
               </button>
+              <a href="{% url 'class_dashboard' class.id %}" class="btn-form">
+                Go To Class Dashboard
+              </a>
             </div>
           </div>
         </div>
