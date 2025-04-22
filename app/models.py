@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from datetime import datetime
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import Avg
-
+from datetime import timedelta
 US_STATES = [
     ('AL', 'Alabama'),
     ('AK', 'Alaska'),
@@ -64,6 +64,8 @@ class Profile(models.Model):
     image = models.ImageField(default='default.jpg', upload_to='profile_pics')
     bio = models.CharField(max_length=200, blank=True, null=True)
 
+    
+
     def __str__(self):
         return f'{self.user.username} Profile'
     
@@ -109,7 +111,7 @@ class Classes(models.Model):
      class_image = models.ImageField(upload_to='class_images', blank=True, null=True, default='default.jpg')
      description = models.TextField()
      price = models.IntegerField()
-    
+     
      students = models.ManyToManyField(User, related_name='classes', blank=True)
      coach = models.ForeignKey(Coach, on_delete=models.CASCADE, blank=True, null=True)
 
@@ -156,21 +158,113 @@ class Products(models.Model):
         return f"{self.name} - {self.price}"
     
 class Meeting(models.Model):
+    PHASE_CHOICES = [
+        ('phase_1', 'Phase 1: Introduction & Basics'),
+        ('phase_2', 'Phase 2: Skill Reinforcement'),
+    ]
+    
+    GRADE_RANGE_CHOICES = [
+        ('prek_4th', 'PreK - 4th Grade'),
+        ('5th_7th', '5th - 7th Grade'),
+        ('8th_10th', '8th - 10th Grade'),
+        ('11th_12th_college', '11th - 12th Grade & College Students'),
+    ]
+
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('completed', 'Completed'),
+    ]
+
     name = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(blank=True, null=True)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     price = models.DecimalField(max_digits=10, decimal_places=2, default=45.00)
     hidden = models.BooleanField(default=False)
 
-
-    ##new fields for meeting model:
+    phase = models.CharField(max_length=10, choices=PHASE_CHOICES, default='phase_1')
+    grade_range = models.CharField(max_length=20, choices=GRADE_RANGE_CHOICES, default='prek_4th')
+    
     class_item = models.ForeignKey(Classes, on_delete=models.CASCADE, related_name='meetings', null=True, blank=True)
     coach = models.ForeignKey(Coach, on_delete=models.SET_NULL, null=True, blank=True)
     player = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+
+    def mark_as_completed(self):
+        self.status = 'completed'
+        self.save()
+
     def __str__(self):
         return f"{self.name} ({self.start_date} - {self.end_date})"
+
+    def auto_generate_description(self):
+        lesson_plan = {
+            'prek_4th': {
+                'phase_1': {
+                    'meeting_1': "Stick Handling: Basic grip and cradle introduction.",
+                    'meeting_2': "Passing and Catching: Short-distance throwing and basic catching techniques.",
+                },
+                'phase_2': {
+                    'meeting_1': "Ground Balls: Proper stance and basic scooping mechanics.",
+                    'meeting_2': "Game Concepts: Introduction to team collaboration and basic game rules in simplified game scenarios.",
+                },
+            },
+            '5th_7th': {
+                'phase_1': {
+                    'meeting_1': "Position-Specific Skills: Fundamental responsibilities and skills specific to attack, midfield, or defense positions.",
+                    'meeting_2': "Ambidexterity: Initial practice of basic skills using a non-dominant hand.",
+                },
+                'phase_2': {
+                    'meeting_1': "Game Situations: Understanding intermediate strategies and developing decision-making in controlled game scenarios.",
+                    'meeting_2': "Athletic Conditioning: Emphasis on agility, speed, and overall fitness improvement.",
+                },
+            },
+            '8th_10th': {
+                'phase_1': {
+                    'meeting_1': "Advanced Positional Skills: Mastering advanced techniques and positional responsibilities.",
+                    'meeting_2': "Game IQ Development: Initial strategy analysis and scenario anticipation.",
+                },
+                'phase_2': {
+                    'meeting_1': "Physical Conditioning: Tailored training for improved strength, speed, and injury prevention.",
+                    'meeting_2': "Mental Preparation: Developing mental toughness, resilience, and strategies for competitive pressure.",
+                },
+            },
+            '11th_12th_college': {
+                'phase_1': {
+                    'meeting_1': "Position Mastery: Refinement of advanced positional tactics and elite skill execution.",
+                    'meeting_2': "Tactical Understanding: Deepening knowledge of complex strategies and adaptive gameplay.",
+                },
+                'phase_2': {
+                    'meeting_1': "Leadership & Communication: Developing effective team leadership, on-field communication, and decision-making.",
+                    'meeting_2': "Strength & Conditioning: Comprehensive and tailored fitness and nutrition plans suitable for college-level play.",
+                },
+            },
+        }
+
+        # Fetch all completed meetings for this player in the same class, grade range, and phase
+        completed_meetings = Meeting.objects.filter(
+            class_item=self.class_item,
+            player=self.player,
+            grade_range=self.grade_range,
+            phase=self.phase,
+            status='completed'
+        ).count()
+
+        # Determine which meeting (1 or 2) this is
+        meeting_key = f"meeting_{completed_meetings + 1}"
+
+        phase_lessons = lesson_plan.get(self.grade_range, {}).get(self.phase, {})
+        return phase_lessons.get(meeting_key, "Lesson description not found.")
+
+    def save(self, *args, **kwargs):
+        if not self.description:
+            self.description = self.auto_generate_description()
+
+        if not self.end_date and self.start_date:
+            self.end_date = self.start_date + timedelta(hours=1)
+
+        super().save(*args, **kwargs)
     
 class ChatMessage(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

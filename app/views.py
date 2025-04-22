@@ -18,7 +18,9 @@ from django.http import JsonResponse
 from django.http import HttpResponseRedirect
 from .decorators import admin_required
 from django.contrib.auth.models import Group
+from django.views.decorators.http import require_POST
 from django.utils import timezone
+from datetime import timedelta
 import os
 import requests
 from django.views.decorators.csrf import csrf_exempt
@@ -577,6 +579,55 @@ def search_coaches(request):
 from django.core.serializers.json import DjangoJSONEncoder
 import json
 
+
+def get_phase_and_meetings_by_grade_range(grade_range):
+    lesson_plan = {
+        'prek_4th': {
+            'phase_1': {
+                'meeting_1': 'Stick Handling: Basic grip and cradle introduction.',
+                'meeting_2': 'Passing and Catching: Short-distance throwing and basic catching techniques.',
+            },
+            'phase_2': {
+                'meeting_1': 'Ground Balls: Proper stance and basic scooping mechanics.',
+                'meeting_2': 'Game Concepts: Introduction to team collaboration and basic game rules.',
+            },
+        },
+        '5th_7th': {
+            'phase_1': {
+                'meeting_1': 'Position-Specific Skills: Responsibilities and skills for attack, midfield, or defense positions.',
+                'meeting_2': 'Ambidexterity: Practice of basic skills with the non-dominant hand.',
+            },
+            'phase_2': {
+                'meeting_1': 'Game Situations: Intermediate strategies and decision-making.',
+                'meeting_2': 'Athletic Conditioning: Focus on agility, speed, and fitness.',
+            },
+        },
+        '8th_10th': {
+            'phase_1': {
+                'meeting_1': 'Advanced Positional Skills: Mastering advanced techniques and positional responsibilities.',
+                'meeting_2': 'Game IQ Development: Initial strategy analysis and scenario anticipation.',
+            },
+            'phase_2': {
+                'meeting_1': 'Physical Conditioning: Strength, speed, and injury prevention training.',
+                'meeting_2': 'Mental Preparation: Building mental toughness and resilience.',
+            },
+        },
+        '11th_12th_college': {
+            'phase_1': {
+                'meeting_1': 'Position Mastery: Refinement of advanced positional tactics.',
+                'meeting_2': 'Tactical Understanding: Advanced strategies and adaptive gameplay.',
+            },
+            'phase_2': {
+                'meeting_1': 'Leadership & Communication: On-field leadership and decision-making.',
+                'meeting_2': 'Strength & Conditioning: Tailored fitness and nutrition for college-level play.',
+            },
+        },
+    }
+    
+    # Retrieve the phase and meetings for the selected grade range
+    phase_data = lesson_plan.get(grade_range, {})
+    return phase_data
+
 @login_required
 def class_dashboard(request, class_id):
     class_obj = get_object_or_404(Classes, pk=class_id)
@@ -591,12 +642,17 @@ def class_dashboard(request, class_id):
             'error_message': "You are not authorized to access this class."
         })
 
+    # Get the grade range and retrieve the corresponding phase and meetings
+      # Modify according to your actual model
+    
+
     # Collect events and meetings for calendar
     events = class_obj.events.all()
     meetings = class_obj.meetings.filter(hidden=False)
 
     event_data = []
 
+    # Adding events
     for event in events:
         event_data.append({
             'id': event.id,
@@ -607,12 +663,14 @@ def class_dashboard(request, class_id):
             'color': event.color,
         })
 
+    # Adding meetings with dynamically calculated end_date
     for meeting in meetings:
+        end_time = meeting.start_date + timedelta(hours=1)  # Calculate end time by adding 1 hour to start_date
         event_data.append({
             'id': f"meeting-{meeting.id}",
             'title': f"Meeting: {meeting.name}",
             'start': meeting.start_date.isoformat(),
-            'end': meeting.end_date.isoformat(),
+            'end': end_time.isoformat(),  # Use dynamically calculated end_time
             'description': f"{meeting.description} (Player: {meeting.player.first_name})",
             'color': '#007bff',  # Blue for meetings
         })
@@ -622,7 +680,8 @@ def class_dashboard(request, class_id):
     return render(request, 'classes/class_dashboard.html', {
         'class_obj': class_obj,
         'events_json': json.dumps(event_data, cls=DjangoJSONEncoder),
-        'form': form
+        'form': form,
+        
     })
 
 @login_required
@@ -645,6 +704,29 @@ def upcoming_events(request, class_id):
         'upcoming_events': upcoming_events
     })
 
+from django.http import JsonResponse
+from .models import Meeting
+
+@require_POST
+def delete_meeting(request):
+    try:
+        data = json.loads(request.body)
+        meeting_id = data.get('meeting_id')
+
+        if not meeting_id:
+            return JsonResponse({'status': 'error', 'message': 'Missing meeting ID'})
+
+        meeting = Meeting.objects.get(id=int(meeting_id))
+        meeting.delete()
+
+        return JsonResponse({'status': 'success', 'meeting_id': meeting_id})
+    
+    except Meeting.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Meeting not found'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
+
+
 @login_required
 def schedule_meeting_from_dashboard(request, class_id):
     class_obj = get_object_or_404(Classes, id=class_id)
@@ -652,13 +734,18 @@ def schedule_meeting_from_dashboard(request, class_id):
     if request.method == 'POST':
         form = MeetingForm(request.POST)
         if form.is_valid():
+            # Save the meeting
             meeting = form.save(commit=False)
             meeting.class_item = class_obj
             meeting.coach = class_obj.coach
             meeting.player = request.user
-            meeting.price = 45.00 
+            meeting.price = 45.00  # Set price
+
+            # Use the dynamically set description from the form (hidden input)
+            meeting.description = request.POST['description']
             meeting.save()
 
+            # Handle products and cart creation
             product, created = Products.objects.get_or_create(
                 name="Meeting Session",
                 defaults={
@@ -679,9 +766,15 @@ def schedule_meeting_from_dashboard(request, class_id):
             )
             cart_item.save()
 
-            return redirect('view_cart')
+            return redirect('view_cart')  # Redirect after saving the meeting
 
-    return redirect('class_dashboard', class_id=class_id)
+    else:
+        form = MeetingForm()
+
+    return render(request, 'classes/class_dashboard.html', {
+        'class_obj': class_obj,
+        'form': form,
+    })
 
 @login_required
 def chat_room(request, class_id):

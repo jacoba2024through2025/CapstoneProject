@@ -2,10 +2,32 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
 from app.models import *
+
 class ProfileImageForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['image', 'bio']
+
+class ProfileImageForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['image', 'bio']
+
+# Grade Range Selection Form
+class GradeRangeSelection(forms.Form):
+    GRADE_CHOICES = [
+        ('prek_4th', 'PreK - 4th Grade'),
+        ('5th_7th', '5th - 7th Grade'),
+        ('8th_10th', '8th - 10th Grade'),
+        ('11th_12th_college', '11th - 12th Grade & College Students'),
+    ]
+
+    grade_range = forms.ChoiceField(
+        choices=GRADE_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label="Select Grade Range"
+    )
+
 
 class CreateUserForm(UserCreationForm):
     
@@ -52,11 +74,18 @@ class EventForm(forms.ModelForm):
 class MeetingForm(forms.ModelForm):
     class Meta:
         model = Meeting
-        fields = ['name', 'description', 'start_date', 'end_date']
+        fields = ['name', 'description', 'start_date', 'price']
         widgets = {
             'start_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
-            'end_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Optionally set a default description based on phase if not pre-populated
+        if not self.instance.description:
+            self.instance.description = self.instance.auto_generate_description()
+
 
 class ChatMessageForm(forms.ModelForm):
     class Meta:
