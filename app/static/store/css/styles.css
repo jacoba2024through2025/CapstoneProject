@@ -301,7 +301,7 @@ header .navbar {
 .navbar .navbar-nav .nav-link.show,
 .navbar .navbar-nav .show>.nav-link {
 	color: #fff;
-	padding-bottom: 25px;
+	/* padding-bottom: 25px; */
 	border-bottom: 3px solid #CA152C;
 }
 .navbar .navbar-toggler-icon {

@@ -38,7 +38,7 @@
                     {% for product in products %}
                     <div class="col-lg-4 col-md-4 all dev">
                       <div class="product-item">
-                        <a href="#"><img src="{{product.image.url}}" alt=""></a>
+                        <a href="{% url "product_detail" product.id %}"><img src="{{product.image.url}}" alt=""></a>
                         <div class="down-content">
                           <a href="{% url "product_detail" product.id %}"><h4>{{product.name}}</h4></a>
                           <h6>${{product.price}}</h6>
