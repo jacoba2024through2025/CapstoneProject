@@ -1,0 +1,27 @@
+{% extends 'root.html' %}
+
+{% block content %}
+  <div class="container">
+    <h1>Upcoming Events</h1>
+
+    {% if upcoming_events %}
+      <ul>
+        {% for event in upcoming_events %}
+          <li>
+            <strong>{{ event.title }}</strong><br>
+            <em>{{ event.start_date|date:"F j, Y, g:i a" }} - {{ event.end_date|date:"F j, Y, g:i a" }}</em><br>
+            <p>{{ event.description }}</p>
+            {% if event.class_item %}
+              <p><strong>Class:</strong> {{ event.class_item.name }}</p>
+            {% endif %}
+            {% if event.coach %}
+              <p><strong>Coach:</strong> {{ event.coach.user.first_name }} {{ event.coach.user.last_name }}</p>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No upcoming events found.</p>
+    {% endif %}
+  </div>
+{% endblock %}

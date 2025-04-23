@@ -18,6 +18,9 @@ from django.http import JsonResponse
 from django.http import HttpResponseRedirect
 from .decorators import admin_required
 from django.contrib.auth.models import Group
+from django.views.decorators.http import require_POST
+from django.utils import timezone
+from datetime import timedelta
 import os
 import requests
 from django.views.decorators.csrf import csrf_exempt
@@ -268,10 +271,10 @@ def view_contact_page(request):
             recipient_list=['zombiejake2005@gmail.com'],  # To the admin's email
         )
 
-        # Return a success message or render a thank you page
+        
         return render(request, 'contact.html', {
             "message_name": message_name,
-            "message_sent": True,  # Flag to indicate success
+            "message_sent": True,  
         })
 
     else:
@@ -289,7 +292,7 @@ def register(request):
     form = CreateUserForm()
 
     # Handling the registration form
-    if request.method == "POST" and "password1" in request.POST:  # Registration form
+    if request.method == "POST" and "password1" in request.POST:  
         form = CreateUserForm(request.POST)
         if form.is_valid():
             form.save()
@@ -298,12 +301,12 @@ def register(request):
 
     context = {'form': form}
 
-    # Handling the login form
-    if request.method == "POST" and "password" in request.POST:  # Login form
+    
+    if request.method == "POST" and "password" in request.POST:  
         username = request.POST.get('username')
         password = request.POST.get('password')
         email = request.POST.get('email')
-        keep_signed_in = request.POST.get('keep_signed_in')  # Check if 'Keep me signed in' was checked
+        keep_signed_in = request.POST.get('keep_signed_in')  
 
         print(f"Attempting to authenticate with Username: {username} and Password: {password}")
 
@@ -332,7 +335,8 @@ def viewLogout(request):
     return redirect('register')
 
 def viewProducts(request):
-    products = Products.objects.all()
+    
+    products = Products.objects.filter(hidden=False)
     paginator = Paginator(products, 6)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -369,6 +373,8 @@ def add_to_cart(request, product_id):
     cart_item.quantity += int(request.POST["JStoPython"])
     cart_item.save()
     return redirect('view_cart')
+
+
 
 @login_required
 def view_cart(request):
@@ -453,7 +459,7 @@ def view_schedule_page(request, username):
         class_count = 0
         messages.error(request, "This user does not have any classes")
 
-    # Check if the calendar exists for each class
+    
     for class_item in coach_classes:
         if not hasattr(class_item, 'calendar'):
             ClassCalendar.objects.create(class_name=class_item)
@@ -465,6 +471,7 @@ def view_schedule_page(request, username):
 
             if event_form.is_valid():
                 event = event_form.save(commit=False)
+                print("Color from form:", event_form.cleaned_data.get('color'))
                 event.class_item = Classes.objects.get(id=class_id)  # Link event to class
                 event.save()
                 messages.success(request, "Event created successfully!")
@@ -481,7 +488,7 @@ def view_schedule_page(request, username):
             'start': event.start_date.isoformat(),
             'end': event.end_date.isoformat(),
             'description': event.description,
-            'color': '#ff7c00',
+            'color': event.color,
         })
 
     return render(request, 'classes/scheduling.html', {
@@ -510,10 +517,7 @@ def search_coaches(request):
     query = request.GET.get('q', '')
     state_filter = request.GET.get('state')
     school_filter = request.GET.get('school')
-    free_classes = request.GET.get('free_classes') == 'true'
-    paid_classes = request.GET.get('paid_classes') == 'true'
 
-    # Base query
     coaches = Coach.objects.filter(
         Q(user__username__icontains=query) |
         Q(first_name__icontains=query) |
@@ -526,7 +530,6 @@ def search_coaches(request):
     if school_filter:
         coaches = coaches.filter(school=school_filter)
 
-    # Get class filtering context
     approved_class_ids = request.user.classes.values_list('id', flat=True)
     pending_notifications = Notification.objects.filter(
         requester=request.user,
@@ -537,15 +540,7 @@ def search_coaches(request):
 
     for coach in coaches:
         average_rating = coach.get_average_rating()
-
-        # Apply class-level filtering
         coach_classes = Classes.objects.filter(coach=coach)
-
-        if free_classes and not paid_classes:
-            coach_classes = coach_classes.filter(price=0)
-        elif paid_classes and not free_classes:
-            coach_classes = coach_classes.filter(price__gt=0)
-        # if both selected, no need to filter
 
         class_info = []
         for coach_class in coach_classes:
@@ -580,40 +575,248 @@ def search_coaches(request):
     return JsonResponse(results, safe=False)
 
 
+
 from django.core.serializers.json import DjangoJSONEncoder
 import json
 
+
+def get_phase_and_meetings_by_grade_range(grade_range):
+    lesson_plan = {
+        'prek_4th': {
+            'phase_1': {
+                'meeting_1': 'Stick Handling: Basic grip and cradle introduction.',
+                'meeting_2': 'Passing and Catching: Short-distance throwing and basic catching techniques.',
+            },
+            'phase_2': {
+                'meeting_1': 'Ground Balls: Proper stance and basic scooping mechanics.',
+                'meeting_2': 'Game Concepts: Introduction to team collaboration and basic game rules.',
+            },
+        },
+        '5th_7th': {
+            'phase_1': {
+                'meeting_1': 'Position-Specific Skills: Responsibilities and skills for attack, midfield, or defense positions.',
+                'meeting_2': 'Ambidexterity: Practice of basic skills with the non-dominant hand.',
+            },
+            'phase_2': {
+                'meeting_1': 'Game Situations: Intermediate strategies and decision-making.',
+                'meeting_2': 'Athletic Conditioning: Focus on agility, speed, and fitness.',
+            },
+        },
+        '8th_10th': {
+            'phase_1': {
+                'meeting_1': 'Advanced Positional Skills: Mastering advanced techniques and positional responsibilities.',
+                'meeting_2': 'Game IQ Development: Initial strategy analysis and scenario anticipation.',
+            },
+            'phase_2': {
+                'meeting_1': 'Physical Conditioning: Strength, speed, and injury prevention training.',
+                'meeting_2': 'Mental Preparation: Building mental toughness and resilience.',
+            },
+        },
+        '11th_12th_college': {
+            'phase_1': {
+                'meeting_1': 'Position Mastery: Refinement of advanced positional tactics.',
+                'meeting_2': 'Tactical Understanding: Advanced strategies and adaptive gameplay.',
+            },
+            'phase_2': {
+                'meeting_1': 'Leadership & Communication: On-field leadership and decision-making.',
+                'meeting_2': 'Strength & Conditioning: Tailored fitness and nutrition for college-level play.',
+            },
+        },
+    }
+    
+    # Retrieve the phase and meetings for the selected grade range
+    phase_data = lesson_plan.get(grade_range, {})
+    return phase_data
+
+@login_required
 def class_dashboard(request, class_id):
     class_obj = get_object_or_404(Classes, pk=class_id)
 
-    # Check if the user is enrolled in the class
-    if request.user not in class_obj.students.all():
+    # Access Control: Allow if user is a student OR the coach assigned to this class
+    is_student = request.user in class_obj.students.all()
+    is_coach = hasattr(request.user, 'coach') and class_obj.coach and class_obj.coach.user == request.user
+
+    if not (is_student or is_coach):
         return render(request, 'classes/class_dashboard.html', {
             'class_obj': class_obj,
             'error_message': "You are not authorized to access this class."
         })
 
-    # Get all events for this class
+    # Get the grade range and retrieve the corresponding phase and meetings
+      # Modify according to your actual model
+    
+
+    # Collect events and meetings for calendar
     events = class_obj.events.all()
-    event_data = [{
-        'id': event.id,
-        'title': event.title,
-        'start': event.start_date.isoformat(),
-        'end': event.end_date.isoformat(),
-        'description': event.description,
-    } for event in events]
+    meetings = class_obj.meetings.filter(hidden=False)
+
+    event_data = []
+
+    # Adding events
+    for event in events:
+        event_data.append({
+            'id': event.id,
+            'title': event.title,
+            'start': event.start_date.isoformat(),
+            'end': event.end_date.isoformat(),
+            'description': event.description,
+            'color': event.color,
+        })
+
+    # Adding meetings with dynamically calculated end_date
+    for meeting in meetings:
+        end_time = meeting.start_date + timedelta(hours=1)  # Calculate end time by adding 1 hour to start_date
+        event_data.append({
+            'id': f"meeting-{meeting.id}",
+            'title': f"Meeting: {meeting.name}",
+            'start': meeting.start_date.isoformat(),
+            'end': end_time.isoformat(),  # Use dynamically calculated end_time
+            'description': f"{meeting.description} (Player: {meeting.player.first_name})",
+            'color': '#007bff',  # Blue for meetings
+        })
+
+    form = MeetingForm()
 
     return render(request, 'classes/class_dashboard.html', {
         'class_obj': class_obj,
         'events_json': json.dumps(event_data, cls=DjangoJSONEncoder),
+        'form': form,
+        
+    })
+
+@login_required
+def upcoming_events(request, class_id):
+    # Get the class object based on the class_id
+    class_obj = get_object_or_404(Classes, pk=class_id)
+
+    # Get the current time
+    now = timezone.now()
+
+    # Get upcoming events and meetings for the specific class
+    events = class_obj.events.filter(start_date__gte=now).order_by('start_date')
+    meetings = class_obj.meetings.filter(start_date__gte=now, hidden=False).order_by('start_date')
+
+    # Combine both sets of events and meetings
+    upcoming_events = list(events) + list(meetings)
+
+    return render(request, 'classes/upcoming_events.html', {
+        'class_obj': class_obj,
+        'upcoming_events': upcoming_events
+    })
+
+from django.http import JsonResponse
+from .models import Meeting
+
+@require_POST
+def delete_meeting(request):
+    try:
+        data = json.loads(request.body)
+        meeting_id = data.get('meeting_id')
+
+        if not meeting_id:
+            return JsonResponse({'status': 'error', 'message': 'Missing meeting ID'})
+
+        meeting = Meeting.objects.get(id=int(meeting_id))
+        meeting.delete()
+
+        return JsonResponse({'status': 'success', 'meeting_id': meeting_id})
+    
+    except Meeting.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Meeting not found'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
+
+
+@login_required
+def schedule_meeting_from_dashboard(request, class_id):
+    class_obj = get_object_or_404(Classes, id=class_id)
+
+    if request.method == 'POST':
+        form = MeetingForm(request.POST)
+        if form.is_valid():
+            # Save the meeting
+            meeting = form.save(commit=False)
+            meeting.class_item = class_obj
+            meeting.coach = class_obj.coach
+            meeting.player = request.user
+            meeting.price = 45.00  # Set price
+
+            # Use the dynamically set description from the form (hidden input)
+            meeting.description = request.POST['description']
+            meeting.save()
+
+            # Handle products and cart creation
+            product, created = Products.objects.get_or_create(
+                name="Meeting Session",
+                defaults={
+                    'price': 45.00,
+                    'description': 'One-on-one coaching session',
+                    'image': 'default.jpg',
+                    'hidden': True
+                }
+            )
+
+            if not created and not product.hidden:
+                product.hidden = True
+                product.save()
+
+            cart_item, _ = Cart.objects.get_or_create(
+                user=request.user,
+                product=product
+            )
+            cart_item.save()
+
+            return redirect('view_cart')  # Redirect after saving the meeting
+
+    else:
+        form = MeetingForm()
+
+    return render(request, 'classes/class_dashboard.html', {
+        'class_obj': class_obj,
+        'form': form,
+    })
+
+@login_required
+def chat_room(request, class_id):
+    class_obj = get_object_or_404(Classes, id=class_id)
+
+    # Only allow access to students or the coach
+    if request.user not in class_obj.students.all() and request.user != class_obj.coach.user:
+        return HttpResponseForbidden("You're not authorized to view this chat.")
+
+    messages = ChatMessage.objects.filter(class_obj=class_obj).order_by('timestamp')
+
+    # Process each message to check if the attachment is an image
+    for msg in messages:
+        if msg.attachment:
+            # Check if the file is an image based on the extension
+            msg.is_image = msg.attachment.url.lower().endswith(('.jpg', '.jpeg', '.png', '.gif'))
+        else:
+            msg.is_image = False
+
+    if request.method == 'POST':
+        form = ChatMessageForm(request.POST, request.FILES)
+        if form.is_valid():
+            chat_message = form.save(commit=False)
+            chat_message.user = request.user
+            chat_message.class_obj = class_obj
+            chat_message.save()
+            return redirect('chat_room', class_id=class_obj.id)
+    else:
+        form = ChatMessageForm()
+
+    return render(request, 'classes/chat_room.html', {
+        'form': form,
+        'messages': messages,
+        'class_obj': class_obj
     })
 
 def get_class_calendar(request, class_id):
-    # Get the class object based on the class_id
+    
     class_item = get_object_or_404(Classes, id=class_id)
     
-    # Retrieve all events related to this class
-    events = Event.objects.filter(class_item=class_item)  # Assuming your Event model has a relation to Classes
+    
+    events = Event.objects.filter(class_item=class_item)  
     
     event_data = []
     for event in events:
@@ -623,7 +826,7 @@ def get_class_calendar(request, class_id):
             'start': event.start_date.isoformat(),
             'end': event.end_date.isoformat(),
             'description': event.description,
-            'color': '#ff7c00',  # Optional color styling
+            'color': event.color,  
         })
     
     return JsonResponse({'events': event_data})
@@ -652,7 +855,7 @@ def update_event(request, event_id):
 
         if form.is_valid():
             form.save()
-            # Build a redirect URL (assuming you pass username in your schedule page URL)
+           
             username = request.user.username
             redirect_url = reverse('schedule', args=[username])
             return JsonResponse({
@@ -669,7 +872,7 @@ def update_event(request, event_id):
 def viewUserProfile(request, username):
     user = get_object_or_404(User, username=username)
     
-    # Create or get the user's profile
+    
     profile, created = Profile.objects.get_or_create(user=user)
 
     user_role = 'User'
@@ -687,11 +890,11 @@ def viewUserProfile(request, username):
         if user.groups.filter(name='Admin').exists():
             user_role = 'Admin'
 
-    # Handle form submissions
+    
     if request.method == 'POST':
         form_type = request.POST.get('form_type')
 
-        # Process profile image form
+        
         if form_type == 'profile':
             form = ProfileImageForm(request.POST, request.FILES, instance=profile)
             coach_form = CoachProfileForm(instance=coach) if user_role == 'Coach' else None
@@ -700,7 +903,7 @@ def viewUserProfile(request, username):
                 form.save()
                 return redirect('profile', username=username)
 
-        # Process coach info form
+        
         elif form_type == 'coach' and user_role == 'Coach':
             coach_form = CoachProfileForm(request.POST, instance=coach)
             form = ProfileImageForm(instance=profile)
@@ -728,13 +931,13 @@ def request_class_access(request):
         data = json.loads(request.body)
         class_id = data.get('class_id')
         
-        # Get the class and coach
+        
         class_obj = Classes.objects.get(id=class_id)
         coach = class_obj.coach.user
         
-        # Create a notification for the coach
+        
         Notification.objects.create(
-            user=coach,  # The coach receives the notification
+            user=coach,  
             message=f"{request.user.username} has requested access to your class: {class_obj.name}.",
             related_class=class_obj,
             requester=request.user
@@ -759,7 +962,7 @@ def approve_class_access(request, notification_id):
     notification.is_read = True
     notification.save()
 
-    #return JsonResponse({'status': 'success', 'message': 'successfully approved class access.'})
+    
     return redirect('notifications')
 
 @login_required
@@ -770,7 +973,7 @@ def deny_class_access(request, notification_id):
         messages.error(request, 'You are not authorized to deny this request.')
         return redirect('notifications')
 
-    # Mark the notification as read but do not add class to requester
+    
     notification.is_read = True
     notification.save()
 
@@ -790,7 +993,7 @@ def notifications_view(request):
 
 @login_required
 def approved_classes_view(request):
-    approved_classes = request.user.classes.all()  # Assuming ManyToManyField
+    approved_classes = request.user.classes.all()  
     return render(request, 'store/approved_classes.html', {
         'approved_classes': approved_classes
     })

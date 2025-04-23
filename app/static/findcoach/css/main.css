@@ -819,7 +819,7 @@ legend {
   font-family: 'Roboto', sans-serif;
   
   
-  background: url('../../store/images/background.jpg');
+  background: url('../../store/images/coachbanner.jpg');
   background-size: cover;
   background-position: center;
   overflow: hidden;
@@ -832,7 +832,7 @@ legend {
 	left: 0;
 	width: 100%;
 	height: 113.5vh;
-	background-color: rgba(0, 0, 0, 0.5);
+	background-color: rgba(0, 0, 0, 0.3);
   
   
 	z-index: 1; 

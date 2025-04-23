@@ -2,6 +2,15 @@
 {% load static %}
 
   {% block content %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-006S879W2R"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-006S879W2R');
+  </script>
+ 
 
     <div class="banner header-text">
       <div class="owl-banner owl-carousel">
@@ -34,6 +43,8 @@
               <img src="{% static "store/images/westletics.webp" %}" alt="">
             </div>
           </div>
+
+          
         </div>
       </div>
     </div>

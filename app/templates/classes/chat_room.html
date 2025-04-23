@@ -1,0 +1,43 @@
+{% extends 'root.html' %}
+{% load static %}
+{% block content %}
+<div class="chat-container">
+  <h2>Chat Room – {{ class_obj.name }}</h2>
+
+  <div class="chat-box">
+    {% for msg in messages %}
+      <div class="chat-message {% if msg.user == request.user %}my-message{% else %}other-message{% endif %}">
+        <strong>{{ msg.user.username }}</strong> <small>{{ msg.timestamp|date:"M d, H:i" }}</small><br>
+        {% if msg.message %}
+          <p>{{ msg.message }}</p>
+        {% endif %}
+        {% if msg.attachment %}
+          {% if msg.is_image %}
+            <!-- Show image inline -->
+            <div style="margin-top: 10px;">
+              <img src="{{ msg.attachment.url }}" alt="Image" style="max-width: 300px; border-radius: 8px;">
+            </div>
+          {% else %}
+            <!-- Show as downloadable attachment -->
+            <a href="{{ msg.attachment.url }}" target="_blank">📎 Attachment</a>
+          {% endif %}
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Send</button>
+  </form>
+</div>
+
+<style>
+  .chat-container { max-width: 700px; margin: 0 auto; }
+  .chat-box { border: 1px solid #ddd; padding: 10px; height: 400px; overflow-y: scroll; margin-bottom: 15px; }
+  .chat-message { margin-bottom: 15px; }
+  .my-message { text-align: right; background-color: #e6f7ff; padding: 8px; border-radius: 8px; }
+  .other-message { text-align: left; background-color: #f8f8f8; padding: 8px; border-radius: 8px; }
+</style>
+{% endblock %}

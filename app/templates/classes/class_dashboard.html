@@ -18,27 +18,64 @@
             </a>
             <ul class="dropdown-content">
               <li><a href="#">Weekly Schedule</a></li>
-              <li><a href="#">Upcoming Sessions</a></li>
+              <li><a href="{% url 'upcoming_events' class_id=class_obj.id %}">Upcoming Sessions</a></li>
               <li><a href="#">Past Sessions</a></li>
             </ul>
           </li>
-          <li><a href="/chatroom">Chat Room</a></li>
+          <li><a href="{% url 'chat_room' class_obj.id %}">Chat Room</a></li>
           <li><a href="/reminders">Reminders</a></li>
-          <li><a href="/milestones">Milestones</a></li>
         </ul>
       </div>
 
       <div class="main-content">
-        <h1>Dashboard for {{ class_obj.name }}</h1>
+        <h1>{{ class_obj.name }} Class</h1>
         <h3>Coach: {{ class_obj.coach.first_name }} {{ class_obj.coach.last_name }}</h3>
+
+        {% if user.coach %}
+          <div class="alert alert-primary mt-3">
+            You are viewing this dashboard as the coach: <strong>{{ user.coach.first_name }} {{ user.coach.last_name }}</strong>
+          </div>
+        {% endif %}
+
         <hr>
 
+        <!-- Grade Range Dropdown -->
+        <label for="grade_range">Select Grade Range:</label>
+        <select id="grade_range" name="grade_range">
+          <option value="prek_4th">PreK - 4th Grade</option>
+          <option value="5th_7th">5th - 7th Grade</option>
+          <option value="8th_10th">8th - 10th Grade</option>
+          <option value="11th_12th_college">11th - 12th Grade & College Students</option>
+        </select>
+
+        <hr>
+
+        <!-- Display Current Phase -->
+        <h2 id="current_phase">Phase Name</h2>
+
+        <!-- Display Meeting Descriptions -->
+        <p id="meeting_1"><strong>Meeting 1:</strong> No meeting scheduled</p>
+        <p id="meeting_2"><strong>Meeting 2:</strong> No meeting scheduled</p>
+
+        <hr>
         <h4>Class Schedule</h4>
         <div id="student-calendar" style="max-width: 900px; margin: 20px auto;"></div>
+
+        <hr>
+
+        {% if not user.coach %}
+          <!-- Player View: Show Meeting Form -->
+          <h4>Schedule a Paid Meeting</h4>
+          <form method="POST" action="{% url 'schedule_meeting_from_dashboard' class_obj.id %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-success">Pay & Schedule ($45)</button>
+          </form>
+        {% endif %}
       </div>
     </div>
 
-    <!-- Read-only Event Modal -->
+    <!-- Event Modal -->
     <div class="modal fade" id="eventViewModal" tabindex="-1" aria-labelledby="eventViewModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -51,21 +88,49 @@
             <p><strong>Description:</strong> <span id="viewEventDescription"></span></p>
             <p><strong>Start:</strong> <span id="viewEventStart"></span></p>
             <p><strong>End:</strong> <span id="viewEventEnd"></span></p>
+            <input type="hidden" id="currentMeetingId">
+            {% if not user.coach %}
+              <button id="markCompleteBtn" class="btn btn-sm btn-primary mt-2">Mark as Complete</button>
+            {% endif %}
+            <p id="completionMessage" class="text-success mt-2" style="display:none;">Meeting marked as complete!</p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- FullCalendar and Bootstrap JS -->
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
       document.addEventListener('DOMContentLoaded', function () {
-        var calendarEl = document.getElementById('student-calendar');
-        var events = {{ events_json|safe }};
-
-        var calendar = new FullCalendar.Calendar(calendarEl, {
+        const phaseData = {
+          'prek_4th': {
+            phase_name: 'Phase 1: Introduction & Basics',
+            meeting_1: 'Stick Handling: Basic grip and cradle introduction.',
+            meeting_2: 'Passing and Catching: Short-distance throwing and basic catching techniques.'
+          },
+          '5th_7th': {
+            phase_name: 'Phase 1: Skill Reinforcement',
+            meeting_1: 'Position-Specific Skills: Fundamental responsibilities and skills specific to attack, midfield, or defense positions.',
+            meeting_2: 'Ambidexterity: Initial practice of basic skills using a non-dominant hand.'
+          },
+          '8th_10th': {
+            phase_name: 'Phase 1: Advanced Positional Skills',
+            meeting_1: 'Advanced Positional Skills: Mastering advanced techniques and positional responsibilities.',
+            meeting_2: 'Game IQ Development: Initial strategy analysis and scenario anticipation.'
+          },
+          '11th_12th_college': {
+            phase_name: 'Phase 1: Position Mastery',
+            meeting_1: 'Position Mastery: Refinement of advanced positional tactics and elite skill execution.',
+            meeting_2: 'Tactical Understanding: Deepening knowledge of complex strategies and adaptive gameplay.'
+          }
+        };
+    
+        const calendarEl = document.getElementById('student-calendar');
+        const events = {{ events_json|safe }};
+    
+        const calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: 'dayGridMonth',
           height: 'auto',
           headerToolbar: {
@@ -76,23 +141,91 @@
           events: events,
           eventClick: function (info) {
             document.getElementById('viewEventTitle').textContent = info.event.title;
-            document.getElementById('viewEventDescription').textContent = info.event.extendedProps.description;
-
-            const start = new Date(info.event.start).toLocaleString();
-            const end = new Date(info.event.end).toLocaleString();
-
-            document.getElementById('viewEventStart').textContent = start;
-            document.getElementById('viewEventEnd').textContent = end;
-
-            var modal = new bootstrap.Modal(document.getElementById('eventViewModal'));
-            modal.show();
+            document.getElementById('viewEventDescription').textContent = info.event.extendedProps.description || 'Lesson description not found.';
+            document.getElementById('viewEventStart').textContent = new Date(info.event.start).toLocaleString();
+            document.getElementById('viewEventEnd').textContent = new Date(info.event.end).toLocaleString();
+    
+            // Set the meeting ID
+            document.getElementById('currentMeetingId').value = info.event.id;
+    
+            new bootstrap.Modal(document.getElementById('eventViewModal')).show();
           }
         });
-
+    
         calendar.render();
+    
+        // Grade range dropdown
+        document.getElementById('grade_range').addEventListener('change', function (e) {
+          const selected = e.target.value;
+          const data = phaseData[selected];
+          if (data) {
+            document.getElementById('current_phase').textContent = data.phase_name;
+            document.getElementById('meeting_1').innerHTML = `<strong>Meeting 1:</strong> ${data.meeting_1}`;
+            document.getElementById('meeting_2').innerHTML = `<strong>Meeting 2:</strong> ${data.meeting_2}`;
+          } else {
+            document.getElementById('current_phase').textContent = 'Phase Name';
+            document.getElementById('meeting_1').innerHTML = '<strong>Meeting 1:</strong> No meeting scheduled';
+            document.getElementById('meeting_2').innerHTML = '<strong>Meeting 2:</strong> No meeting scheduled';
+          }
+        });
+    
+        document.getElementById('grade_range').dispatchEvent(new Event('change'));
+    
+        // Delete meeting on "Mark Complete"
+        document.addEventListener('click', function (e) {
+          if (e.target && e.target.matches('#markCompleteBtn')) {
+            const fullMeetingId = document.getElementById('currentMeetingId').value;
+            const numericMeetingId = fullMeetingId.replace('meeting-', '');
+    
+            if (!numericMeetingId) {
+              alert('Meeting ID missing!');
+              return;
+            }
+    
+            fetch("{% url 'delete_meeting' %}", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+              },
+              body: JSON.stringify({ meeting_id: numericMeetingId })
+            })
+            .then(response => {
+              if (!response.ok) throw new Error('Network error');
+              return response.json();
+            })
+            .then(data => {
+              if (data.status === 'success') {
+                alert('Meeting deleted successfully!');
+                document.getElementById('completionMessage').style.display = 'block';
+    
+                const event = calendar.getEventById(fullMeetingId);
+                if (event) {
+                  event.remove();
+                }
+              } else {
+                alert('Error: ' + data.message);
+              }
+            })
+            .catch(error => {
+              alert('Request failed: ' + error.message);
+            });
+          }
+        });
       });
     </script>
+    
   {% endif %}
 {% endblock %}
+
+
+
+
+
+
+
+
+
+
 
 

@@ -1,5 +1,18 @@
 {% extends 'root.html' %}
+
 {% block content %}
+<!-- Bootstrap CSS (include in your root.html or here if not already included) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+
+<!-- Optional fix for z-index/opacity issues -->
+<style>
+  .modal-backdrop.show {
+      opacity: 0.5;
+  }
+  .modal {
+      z-index: 1050;
+  }
+</style>
 
 <div class="container mt-4">
 
@@ -48,6 +61,12 @@
 
             {% if notification.related_class and notification.requester %}
               <div class="mt-2">
+                <!-- View Player Info Button -->
+                <a href="#" class="btn btn-sm btn-info" data-toggle="modal" data-target="#playerModal{{ notification.requester.id }}">
+                  View Player Info
+                </a>
+
+                <!-- Approve/Deny Buttons -->
                 <form action="{% url 'approve_class_access' notification.id %}" method="post" class="d-inline">
                   {% csrf_token %}
                   <button type="submit" class="btn btn-sm btn-success">Approve Access</button>
@@ -83,5 +102,40 @@
   </div>
 </div>
 
+<!-- Render all modals at the bottom -->
+{% for notification in unread_notifications %}
+  {% if notification.related_class and notification.requester %}
+    <div class="modal fade" id="playerModal{{ notification.requester.id }}" tabindex="-1" role="dialog" aria-labelledby="playerModalLabel{{ notification.requester.id }}" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="playerModalLabel{{ notification.requester.id }}">Player Profile</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="text-center mb-3">
+              <img src="{% if notification.requester.profile.image %}{{ notification.requester.profile.image.url }}{% else %}/media/profile_pics/default.jpg{% endif %}"
+                   alt="Profile Picture"
+                   class="rounded-circle"
+                   width="120"
+                   height="120">
+            </div>
+            <p><strong>Username:</strong> {{ notification.requester.username }}</p>
+            <p><strong>Email:</strong> {{ notification.requester.email }}</p>
+            <p><strong>Grade Range:</strong> {{ notification.requester.profile.get_grade_range_display }}</p>
+            <p><strong>Bio:</strong><br>{{ notification.requester.profile.bio }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endfor %}
+
+<!-- Bootstrap JS (make sure this is in your base template or include here) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 {% endblock %}
+
 
