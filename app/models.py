@@ -147,9 +147,18 @@ class Review(models.Model):
         # Ensure rating is between 1 and 5
         if self.rating < 1 or self.rating > 5:
             raise ValidationError('Rating must be between 1 and 5.')
+
 class Products(models.Model):
+    CATEGORY_CHOICES = [
+        ('clothing', 'Clothing'),
+        ('equipment', 'Equipment'),
+        ('accessories', 'Accessories'),
+        ('other', 'Other'),
+    ]
+
     image = models.ImageField(upload_to='product_pics')
     name = models.CharField(max_length=255)
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='other')
     price = models.DecimalField(max_digits=10, decimal_places=2)
     hidden = models.BooleanField(default=False)
     description = models.TextField()

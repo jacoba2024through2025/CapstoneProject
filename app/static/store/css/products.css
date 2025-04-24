@@ -191,11 +191,13 @@ footer a:hover {
 
 .quantity_selector {
   display: flex;
-  border: 2px;
   border-radius: 4px;
   overflow: hidden;
+  justify-content: center;
+  width: 40%;
 }
 .quantity_selector button {
+  border-radius: 4px;
   background-color: #3498db;
   color: #fff;
   border: none;
@@ -209,8 +211,22 @@ footer a:hover {
 .quantity_selector button:hover {
   background-color: #2980b9;
 }
+.quantity_selector button:focus {
+  outline: none;
+}
+
+.quantity_container {
+  display: flex;
+  justify-content: center;
+  width: -moz-fit-content;
+  width: fit-content;
+  border: 2px solid #3498db;
+  border-radius: 4px;
+}
 
 .input-box {
+  border: 2px solid #3498db;
+  border-radius: 4px;
   width: 40px;
   text-align: center;
   border: none;

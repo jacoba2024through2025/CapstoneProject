@@ -216,11 +216,13 @@ footer {
 
 .quantity_selector {
   display: flex;
-  border: 2px;
   border-radius: 4px;
   overflow: hidden;
+  justify-content: center;
+  width: 40%;
 
   button {
+    border-radius: 4px;
     background-color: #3498db;
     color: #fff;
     border: none;
@@ -235,9 +237,24 @@ footer {
   button:hover {
     background-color: #2980b9;
   }
+
+  button:focus {
+    outline: none;
+  }
 }
 
+.quantity_container {
+  display: flex;
+  justify-content: center;
+  width: fit-content;
+  border: 2px solid #3498db;
+  border-radius: 4px;
+}
+
+
 .input-box {
+  border: 2px solid #3498db;
+  border-radius: 4px;
   width: 40px;
   text-align: center;
   border: none;

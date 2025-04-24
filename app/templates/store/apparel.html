@@ -53,9 +53,11 @@
 			</ul>
 		</div>
 		<div class="quantity_selector">
-			<button class="minusBtn" id="minus-btn"><i class="material-icons">remove</i></button>
-			<input type="number" class="input-box" id="quantity" value="1" min="1" max="10">
-			<button class="addBtn" id="add-btn"><i class="material-icons">add</i></button>
+			<div class="quantity_container">
+				<button class="minusBtn" id="minus-btn"><i class="material-icons">remove</i></button>
+				<input type="number" class="input-box" id="quantity" value="1" min="1" max="10">
+				<button class="addBtn" id="add-btn"><i class="material-icons">add</i></button>
+			</div>
 		</div>
 		
 		<form action="{% url 'add_to_cart' product.id %}" method="post">
