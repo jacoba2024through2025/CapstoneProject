@@ -4,129 +4,139 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="{% static "store/css/register.css" %}"/>
+    <link rel="stylesheet" href="{% static 'store/css/register.css' %}" />
+    <link rel="stylesheet" href="{% static 'store/css/styles.css' %}" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
     <title>Login/Sign Up</title>
+    <style>
+      /* Add transition for smooth height change */
+      .login-html {
+        transition: min-height 0.3s ease-in-out;
+      }
+    </style>
   </head>
   <body>
-    {% comment %} <h1>Register Page</h1> {% endcomment %}
+    <div class="page-container">
+      <!-- Left Side: Logo & Tagline -->
+      <div class="image-left-container">
+        <img src="{% static 'store/images/Westletics_logo.png' %}" alt="Westletics Logo" class="project-logo-profile" />
+        <h2>Outplay. Outwork. Outlast. Unleash your extraordinary potential</h2>
+        <h6 class="h6-login">Experience the power of Westletics: Unleash your full potential, achieve peak performance, and transform your game!</h6>
+      </div>
 
-    <div class="login-wrap">
-      <div class="login-html">
-        <input
-          id="tab-1"
-          type="radio"
-          name="tab"
-          class="sign-in"
-          checked
-        /><label for="tab-1" class="tab">Sign In</label>
-        <input id="tab-2" type="radio" name="tab" class="sign-up" /><label
-          for="tab-2"
-          class="tab"
-          >Sign Up</label
-        >
-        <div class="login-form">
-          <div class="sign-in-htm">
-            <form method="POST" action="">
-              {% csrf_token %}
-              <div class="group">
-                <label for="user" class="label">Username</label>
+      <!-- Right Side: Login / Register Forms -->
+      <div class="login-wrap">
+        <div class="login-html">
+          <input id="tab-1" type="radio" name="tab" class="sign-in" checked />
+          <label for="tab-1" class="tab">Sign In</label>
+          <input id="tab-2" type="radio" name="tab" class="sign-up" />
+          <label for="tab-2" class="tab">Sign Up</label>
 
-                <input
-                  type="text"
-                  class="input"
-                  name="username"
-                  id="username"
-                  placeholder="Username..."
-                />
-              </div>
-              <div class="group">
-                <label for="pass" class="label">Password</label>
-                <input
-                  type="password"
-                  name="password"
-                  id="password"
-                  placeholder="Password..."
-                  class="input"
-                />
-              </div>
-              <div class="group">
-                <input id="check" type="checkbox" class="check" name="keep_signed_in" checked />
-                <label for="check"
-                  ><span class="icon"></span> Keep me Signed in</label
-                >
-              </div>
-              <div class="group">
-                <input type="submit" class="button" value="Sign In" />
-              </div>
-              <div class="hr"></div>
-                        {% for message in messages %}
-                            <p class="error-msg">{{ message }}</p>
-                        {% endfor %}
-              <div class="foot-lnk">
-                <a href="{% url 'password_reset' %}">Forgot Password?</a>
-              </div>
-            </form>
-          </div>
-          <div class="sign-up-htm">
-            <form method="POST" action="">
-              {% csrf_token %}
-              <div class="group">
-                <label for="user" class="label">Username</label>
+          <div class="login-form">
+            <!-- Sign In Form -->
+            <div class="sign-in-htm">
+              <form method="POST" action="">
+                {% csrf_token %}
+                <div class="group">
+                  <label for="user" class="label">Username</label>
+                  <input type="text" class="input" name="username" id="username" placeholder="Username..." />
+                </div>
+                <div class="group">
+                  <label for="pass" class="label">Password</label>
+                  <input type="password" name="password" id="password" placeholder="Password..." class="input" />
+                </div>
+                <div class="group">
+                  <input id="check" type="checkbox" class="check" name="keep_signed_in" checked />
+                  <label for="check"><span class="icon"></span> Keep me Signed in</label>
+                </div>
+                <div class="group">
+                  <input type="submit" class="button" value="Sign In" />
+                </div>
+                <div class="hr"></div>
+                {% for message in messages %}
+                  <p class="error-msg">{{ message }}</p>
+                {% endfor %}
+                <div class="foot-lnk">
+                  <a href="{% url 'password_reset' %}">Forgot Password?</a>
+                </div>
+              </form>
+            </div>
 
-                <input
-                  type="text"
-                  name="username"
-                  id="{{ form.username.id_for_label }}"
-                  class="input"
-                  value="{{ form.username.value|default:'' }}"
-                />
-              </div>
-              <div class="group">
-                <label for="pass" class="label">Email</label>
-
-                <input
-                  type="email"
-                  name="email"
-                  id="{{ form.email.id_for_label }}"
-                  class="input"
-                />
-              </div>
-              <div class="group">
-                <label for="pass" class="label">Password</label>
-
-                <input
-                  type="password"
-                  name="password1"
-                  id="{{ form.password1.id_for_label }}"
-                  class="input"
-                />
-              </div>
-              <div class="group">
-                <label for="pass" class="label">Repeat Password</label>
-
-                <input
-                  type="password"
-                  name="password2"
-                  id="{{ form.password2.id_for_label }}"
-                  class="input"
-                />
-              </div>
-              <div class="group">
-                <input type="submit" class="button" value="Create Account" />
-              </div>
-              <div class="hr"></div>
-              <div class="foot-lnk">
-                <p>
-                  <a class="link-style" href="{% url 'home' %}"
-                    >Continue as a Guest</a
-                  >
-                </p>
-              </div>
-            </form>
+            <!-- Sign Up Form -->
+            <div class="sign-up-htm">
+              <form method="POST" action="">
+                {% csrf_token %}
+                <div class="group">
+                  <label for="user" class="label">Username</label>
+                  <input type="text" name="username" id="{{ form.username.id_for_label }}" class="input" value="{{ form.username.value|default:'' }}" />
+                </div>
+                <div class="group">
+                  <label for="pass" class="label">Email</label>
+                  <input type="email" name="email" id="{{ form.email.id_for_label }}" class="input" />
+                </div>
+                <div class="group">
+                  <label for="pass" class="label">Password</label>
+                  <input type="password" name="password1" id="{{ form.password1.id_for_label }}" class="input" />
+                </div>
+                <div class="group">
+                  <label for="pass" class="label">Repeat Password</label>
+                  <input type="password" name="password2" id="{{ form.password2.id_for_label }}" class="input" />
+                </div>
+                <div class="group">
+                  <input type="submit" class="button" value="Create Account" />
+                </div>
+                <div class="hr"></div>
+                <div class="foot-lnk">
+                  <p><a class="link-style" href="{% url 'home' %}">Continue as a Guest</a></p>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>
     </div>
+
+    <footer class="footer">
+      <div class="container text-center">
+        <h3>Our Socials</h3>
+        <div class="social-icons">
+          <a href="https://www.tiktok.com/@westletics45" target="_blank" class="social-icon">
+            TikTok
+            <i class="fab fa-tiktok"></i>
+          </a>
+          <a href="https://www.instagram.com/Westletics45/" target="_blank" class="social-icon">
+            Instagram
+            <i class="fab fa-instagram"></i>
+          </a>
+        </div>
+        <p>© 2025, Westletics Powered by Stripe</p>
+      </div>
+    </footer>
+
+    <!-- 📜 Add this script at the bottom -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const loginHtml = document.querySelector('.login-html');
+        const signInTab = document.getElementById('tab-1');
+        const signUpTab = document.getElementById('tab-2');
+
+        function adjustHeight() {
+          if (signUpTab.checked) {
+            loginHtml.style.minHeight = '600px'; // Adjust to fit Sign Up
+          } else {
+            loginHtml.style.minHeight = '450px'; // Adjust to fit Sign In
+          }
+        }
+
+        adjustHeight(); // Initial on load
+        signInTab.addEventListener('change', adjustHeight);
+        signUpTab.addEventListener('change', adjustHeight);
+      });
+    </script>
+  </body>
+</html>
+
+
     
 
 

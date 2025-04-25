@@ -6,6 +6,36 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+
+/*Login form image styling*/
+
+
+	
+	
+	
+
+
+
+.founder {
+	font-weight: 100;
+	
+}
+
+
+/*Login form image styling*/
+
+
+	
+	
+	
+
+
+
+.founder {
+	font-weight: 100;
+	
+}
+
 .project-logo {
   width: 9vw;
   height: 10vh;
@@ -666,9 +696,9 @@ footer {
 }
 
 footer .inner-content {
-  border-top: 3px solid #056ba3;
-  margin-top: 60px;
-  padding: 60px 0px;
+	border-top: 3px solid #056BA3;
+	margin-top: 60px;
+	padding: 30px 0px;
 }
 
 footer .inner-content p {
@@ -1640,6 +1670,129 @@ footer .inner-content p a {
 .footer p {
   color: #fff;
 }
+
+/* Dashboard Styling*/
+
+.coach-profile-image {
+	max-width: 15vw;
+	border-radius: 8px;
+	border: 2px solid #ddd;
+	padding: 4px;
+	background-color: #fff;
+	object-fit: cover;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+.class-info-dashboard-heading {
+	background-color: #fff;
+	padding: 20px;
+	text-align: center;
+	border: 1px solid #e0e0e0;
+	border-top: none;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+.class-info-dashboard-heading h1 {
+	color: #CA152C;
+}
+
+.class-info-dashboard-heading h3 {
+	color: #056BA3;
+}
+
+.class-info-dashboard-body {
+	background-color: #fff;
+	padding: 20px;
+	
+	border: 1px solid #e0e0e0;
+	border-top: none;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	border-bottom: 3px solid #056BA3
+}
+
+.class-info-dashboard-body h2 {
+	color: #CA152C;
+}
+
+.class-info-dashboard-body p {
+	color: #056BA3;
+}
+
+.fc .fc-button {
+    background-color: #CA152C !important;
+    border-color: #182441 !important;
+    color: white !important;
+  }
+
+  .fc .fc-button:hover {
+    background-color: darkred !important;
+    border-color: darkred !important;
+  }
+
+.custom-meeting-form form {
+	max-width: 600px;
+	margin: auto;
+	padding: 1.5rem;
+	border-radius: 8px;
+	background-color: #fff;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+  }
+  
+  .custom-meeting-form h4 {
+	font-size: 1.5rem;
+	font-weight: 600;
+	color: #CA152C;
+	margin-bottom: 1rem;
+	text-align: center;
+  }
+  
+  .custom-meeting-form form p {
+	margin-bottom: 1rem;
+  }
+  
+  .custom-meeting-form form label {
+	display: block;
+	margin-bottom: 0.3rem;
+	font-weight: 500;
+	color: #333;
+  }
+  
+  .custom-meeting-form form input,
+  .custom-meeting-form form textarea,
+  .custom-meeting-form form select {
+	width: 100%;
+	padding: 0.6rem;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	font-size: 1rem;
+	transition: border-color 0.3s;
+  }
+  
+  .custom-meeting-form form input:focus,
+  .custom-meeting-form form textarea:focus,
+  .custom-meeting-form form select:focus {
+	border-color: #007bff;
+	outline: none;
+  }
+  
+  .custom-meeting-form input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+	filter: invert(0.5);
+  }
+  
+  .custom-meeting-form button[type="submit"] {
+	font-weight: 500;
+	letter-spacing: 0.5px;
+	transition: background-color 0.3s ease;
+	margin-top: 1rem;
+	background-color: #CA152C;
+	width: 100%;
+  }
+  
+  .custom-meeting-form button[type="submit"]:hover {
+	background-color: #d02d2d;
+  }
+  
+  
+
 
 /* Mobile friendly*/
 @media (max-width: 768px) {

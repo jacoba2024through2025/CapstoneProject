@@ -71,6 +71,7 @@ urlpatterns = [
     path('meetings/delete/', views.delete_meeting, name='delete_meeting'),
     path('class_chat/<int:class_id>/', views.chat_room, name='chat_room'),
     path('class/<int:class_id>/upcoming-events/', views.upcoming_events, name='upcoming_events'),
+    path('class/<int:class_id>/past_sessions/', views.past_sessions, name='past_sessions'),
     
     # ... other paths
     path('approved-classes/', views.approved_classes_view, name='approved_classes'),

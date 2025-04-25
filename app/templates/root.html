@@ -20,7 +20,7 @@
     <script src="https://js.stripe.com/v3/" defer></script>
 
     {% block head %}{% endblock head %}
-    <title>{% block title %}{% endblock title %}</title>
+    <title>{% block title %}Home{% endblock title %}</title>
 
   </head>
   <body>
@@ -66,6 +66,8 @@
                         <a class="dropdown-item" href="{% url 'schedule' username=request.user.username %}"><i class="icon-spacing fa-solid fa-calendar"></i>My Schedules</a>
                       {% elif user_role == 'User' %}
                         <a class="dropdown-item" href="{% url 'find_coach' %}"><i class="fa-solid fa-comments"></i>Find A Coach</a>
+                        <a class="dropdown-item" href="{% url 'approved_classes' %}"><i class="fas fa-graduation-cap"></i></i>My Classes</a>
+
                       {% endif %}
                      
                       <a class="dropdown-item" href="{% url 'notifications' %}">
@@ -102,7 +104,7 @@
     
     <footer class="footer">
       <div class="container text-center">
-        <h3>Our Socials</h3>
+        
         <div class="social-icons">
           <a href="https://www.tiktok.com/@westletics45" target="_blank" class="social-icon">
             TikTok

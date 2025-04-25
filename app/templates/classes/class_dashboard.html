@@ -1,5 +1,5 @@
 {% extends 'root.html' %}
-
+{% load static %}
 {% block content %}
   {% if error_message %}
     <div class="error-message">
@@ -19,7 +19,7 @@
             <ul class="dropdown-content">
               <li><a href="#">Weekly Schedule</a></li>
               <li><a href="{% url 'upcoming_events' class_id=class_obj.id %}">Upcoming Sessions</a></li>
-              <li><a href="#">Past Sessions</a></li>
+              <li><a href="{% url 'past_sessions' class_id=class_obj.id %}">Past Sessions</a></li>
             </ul>
           </li>
           <li><a href="{% url 'chat_room' class_obj.id %}">Chat Room</a></li>
@@ -28,8 +28,16 @@
       </div>
 
       <div class="main-content">
-        <h1>{{ class_obj.name }} Class</h1>
-        <h3>Coach: {{ class_obj.coach.first_name }} {{ class_obj.coach.last_name }}</h3>
+        <div class="class-info-dashboard-heading">
+          <h1>Class Name: {{ class_obj.name }}</h1>
+          <h3>Coach: {{ class_obj.coach.first_name }} {{ class_obj.coach.last_name }}</h3>
+          {% if class_obj.coach.profile %}
+            <img src="{{ class_obj.coach.profile.image.url }}" alt="Coach Profile Picture" class="coach-profile-image">
+          {% else %}
+            <img src="{% static 'default.jpg' %}" alt="Default Profile Picture" class="coach-profile-image">
+          {% endif %}
+          <p>Email: {{ class_obj.coach.email|default:"N/A" }}</p>
+        </div>
 
         {% if user.coach %}
           <div class="alert alert-primary mt-3">
@@ -37,40 +45,89 @@
           </div>
         {% endif %}
 
+
+        {% if user.coach %}
+          <div class="student-selector mb-3">
+            <form method="get" action="">
+              <label for="student_id"><strong>Select Student:</strong></label>
+                <select name="student_id" id="student_id" onchange="this.form.submit()">
+                  {% for student in students %}
+                    <option value="{{ student.id }}" {% if student == selected_student %}selected{% endif %}>
+                      {{ student.username }}
+                    </option>
+                  {% endfor %}
+                </select>
+            </form>
+          </div>
+        {% endif %}
+
+
+        {% if user.coach and phase_data %}
+          <div class="class-info-dashboard-body">
+            <h2>Student {{ selected_student.username }}'s Current Phase</h2>
+            <p><strong>{{ phase_data.phase_name }}</strong></p>
+            <p><strong>Meeting 1:</strong> {{ phase_data.meeting_1 }}</p>
+            <p><strong>Meeting 2:</strong> {{ phase_data.meeting_2 }}</p>
+          </div>
+        {% else %}
+          <p> No Student Phase Data Available</p>
+        {% endif %}
+
         <hr>
 
         <!-- Grade Range Dropdown -->
-        <label for="grade_range">Select Grade Range:</label>
-        <select id="grade_range" name="grade_range">
-          <option value="prek_4th">PreK - 4th Grade</option>
-          <option value="5th_7th">5th - 7th Grade</option>
-          <option value="8th_10th">8th - 10th Grade</option>
-          <option value="11th_12th_college">11th - 12th Grade & College Students</option>
-        </select>
+        {% if not user.coach%}
+          <div class="class-info-dashboard-body">
+            <label for="grade_range">Select Grade Range:</label>
+            <select id="grade_range" name="grade_range">
+              <option value="prek_4th">PreK - 4th Grade</option>
+              <option value="5th_7th">5th - 7th Grade</option>
+              <option value="8th_10th">8th - 10th Grade</option>
+              <option value="11th_12th_college">11th - 12th Grade & College Students</option>
+            </select>
+          </div>
+        {% endif %}
 
         <hr>
-
-        <!-- Display Current Phase -->
-        <h2 id="current_phase">Phase Name</h2>
-
-        <!-- Display Meeting Descriptions -->
-        <p id="meeting_1"><strong>Meeting 1:</strong> No meeting scheduled</p>
-        <p id="meeting_2"><strong>Meeting 2:</strong> No meeting scheduled</p>
+        
+        {% if not user.coach %}
+          <div class="class-info-dashboard-body">
+            <!-- Display Current Phase -->
+            <h2 id="current_phase">Phase Name</h2>
+            <p id="meeting_1"><strong>Meeting 1:</strong> No meeting scheduled</p>
+            <p id="meeting_2"><strong>Meeting 2:</strong> No meeting scheduled</p>
+          </div>
+        {% endif %}
 
         <hr>
         <h4>Class Schedule</h4>
-        <div id="student-calendar" style="max-width: 900px; margin: 20px auto;"></div>
+        <div class="class-info-dashboard-body">
+          <div id="student-calendar" style="max-width: 900px; margin: 20px auto;"></div>
+        </div>
 
         <hr>
 
         {% if not user.coach %}
-          <!-- Player View: Show Meeting Form -->
-          <h4>Schedule a Paid Meeting</h4>
-          <form method="POST" action="{% url 'schedule_meeting_from_dashboard' class_obj.id %}">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-success">Pay & Schedule ($45)</button>
-          </form>
+          <div class="alert alert-info mt-3">
+            You have completed <strong>{{ completed_meeting_count }}</strong> meeting{{ completed_meeting_count|pluralize }} so far.
+          </div>
+
+          <div class="class-info-dashboard-body">
+            <div class="custom-meeting-form">
+              <h4>Schedule a Paid Meeting</h4>
+              <form method="POST" action="{% url 'schedule_meeting_from_dashboard' class_obj.id %}">
+                {% csrf_token %}
+                {{ form.as_p }}
+
+                <!-- Hidden field for grade range -->
+                <input type="hidden" name="grade_range" id="hidden_grade_range">
+                <!-- Hidden field for exact grade -->
+                <input type="hidden" name="exact_grade" id="hidden_exact_grade">
+
+                <button type="submit" class="btn btn-success">Pay & Schedule ($45)</button>
+              </form>
+            </div>
+          </div>
         {% endif %}
       </div>
     </div>
@@ -104,116 +161,225 @@
 
     <script>
       document.addEventListener('DOMContentLoaded', function () {
-        const phaseData = {
-          'prek_4th': {
-            phase_name: 'Phase 1: Introduction & Basics',
-            meeting_1: 'Stick Handling: Basic grip and cradle introduction.',
-            meeting_2: 'Passing and Catching: Short-distance throwing and basic catching techniques.'
-          },
-          '5th_7th': {
-            phase_name: 'Phase 1: Skill Reinforcement',
-            meeting_1: 'Position-Specific Skills: Fundamental responsibilities and skills specific to attack, midfield, or defense positions.',
-            meeting_2: 'Ambidexterity: Initial practice of basic skills using a non-dominant hand.'
-          },
-          '8th_10th': {
-            phase_name: 'Phase 1: Advanced Positional Skills',
-            meeting_1: 'Advanced Positional Skills: Mastering advanced techniques and positional responsibilities.',
-            meeting_2: 'Game IQ Development: Initial strategy analysis and scenario anticipation.'
-          },
-          '11th_12th_college': {
-            phase_name: 'Phase 1: Position Mastery',
-            meeting_1: 'Position Mastery: Refinement of advanced positional tactics and elite skill execution.',
-            meeting_2: 'Tactical Understanding: Deepening knowledge of complex strategies and adaptive gameplay.'
-          }
-        };
+          const completedMeetingCount = {{ completed_meeting_count }};
+          const gradeRangeElement = document.getElementById('grade_range');
+          const hiddenGradeRangeInput = document.getElementById('hidden_grade_range');
     
-        const calendarEl = document.getElementById('student-calendar');
-        const events = {{ events_json|safe }};
+          const gradeOptions = {
+              'prek_4th': [
+                  { value: 'PreK', label: 'PreK' },
+                  { value: 'K', label: 'Kindergarten' },
+                  { value: '1st', label: '1st Grade' },
+                  { value: '2nd', label: '2nd Grade' },
+                  { value: '3rd', label: '3rd Grade' },
+                  { value: '4th', label: '4th Grade' },
+              ],
+              '5th_7th': [
+                  { value: '5th', label: '5th Grade' },
+                  { value: '6th', label: '6th Grade' },
+                  { value: '7th', label: '7th Grade' },
+              ],
+              '8th_10th': [
+                  { value: '8th', label: '8th Grade' },
+                  { value: '9th', label: '9th Grade' },
+                  { value: '10th', label: '10th Grade' },
+              ],
+              '11th_12th_college': [
+                  { value: '11th', label: '11th Grade' },
+                  { value: '12th', label: '12th Grade' },
+                  { value: 'College', label: 'College' },
+              ]
+          };
     
-        const calendar = new FullCalendar.Calendar(calendarEl, {
-          initialView: 'dayGridMonth',
-          height: 'auto',
-          headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,listMonth'
-          },
-          events: events,
-          eventClick: function (info) {
-            document.getElementById('viewEventTitle').textContent = info.event.title;
-            document.getElementById('viewEventDescription').textContent = info.event.extendedProps.description || 'Lesson description not found.';
-            document.getElementById('viewEventStart').textContent = new Date(info.event.start).toLocaleString();
-            document.getElementById('viewEventEnd').textContent = new Date(info.event.end).toLocaleString();
+          const form = document.querySelector('.custom-meeting-form form');
+          if (form) {
+            const scheduleBtn = form.querySelector('button[type="submit"]');
+            // Proceed with your logic for the form if it exists
+          
+          
     
-            // Set the meeting ID
-            document.getElementById('currentMeetingId').value = info.event.id;
-    
-            new bootstrap.Modal(document.getElementById('eventViewModal')).show();
-          }
-        });
-    
-        calendar.render();
-    
-        // Grade range dropdown
-        document.getElementById('grade_range').addEventListener('change', function (e) {
-          const selected = e.target.value;
-          const data = phaseData[selected];
-          if (data) {
-            document.getElementById('current_phase').textContent = data.phase_name;
-            document.getElementById('meeting_1').innerHTML = `<strong>Meeting 1:</strong> ${data.meeting_1}`;
-            document.getElementById('meeting_2').innerHTML = `<strong>Meeting 2:</strong> ${data.meeting_2}`;
-          } else {
-            document.getElementById('current_phase').textContent = 'Phase Name';
-            document.getElementById('meeting_1').innerHTML = '<strong>Meeting 1:</strong> No meeting scheduled';
-            document.getElementById('meeting_2').innerHTML = '<strong>Meeting 2:</strong> No meeting scheduled';
-          }
-        });
-    
-        document.getElementById('grade_range').dispatchEvent(new Event('change'));
-    
-        // Delete meeting on "Mark Complete"
-        document.addEventListener('click', function (e) {
-          if (e.target && e.target.matches('#markCompleteBtn')) {
-            const fullMeetingId = document.getElementById('currentMeetingId').value;
-            const numericMeetingId = fullMeetingId.replace('meeting-', '');
-    
-            if (!numericMeetingId) {
-              alert('Meeting ID missing!');
-              return;
-            }
-    
-            fetch("{% url 'delete_meeting' %}", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": "{{ csrf_token }}"
-              },
-              body: JSON.stringify({ meeting_id: numericMeetingId })
-            })
-            .then(response => {
-              if (!response.ok) throw new Error('Network error');
-              return response.json();
-            })
-            .then(data => {
-              if (data.status === 'success') {
-                alert('Meeting deleted successfully!');
-                document.getElementById('completionMessage').style.display = 'block';
-    
-                const event = calendar.getEventById(fullMeetingId);
-                if (event) {
-                  event.remove();
-                }
-              } else {
-                alert('Error: ' + data.message);
+          const exactGradeDropdown = document.createElement('select');
+          exactGradeDropdown.id = 'exact_grade';
+          exactGradeDropdown.name = 'exact_grade';
+          form.insertBefore(exactGradeDropdown, scheduleBtn);
+          
+          const hiddenExactGradeInput = document.createElement('input');
+          hiddenExactGradeInput.type = 'hidden';
+          hiddenExactGradeInput.name = 'exact_grade';
+          hiddenExactGradeInput.id = 'hidden_exact_grade';
+          form.appendChild(hiddenExactGradeInput);
+          
+          function updateExactGradeOptions(range) {
+              exactGradeDropdown.innerHTML = '<option value="">Select Exact Grade</option>';
+              if (gradeOptions[range]) {
+                  gradeOptions[range].forEach(opt => {
+                      const option = document.createElement('option');
+                      option.value = opt.value;
+                      option.textContent = opt.label;
+                      exactGradeDropdown.appendChild(option);
+                  });
               }
-            })
-            .catch(error => {
-              alert('Request failed: ' + error.message);
-            });
           }
-        });
+    
+          exactGradeDropdown.addEventListener('change', function () {
+              hiddenExactGradeInput.value = this.value;
+          });
+          
+        
+          const phaseData = {
+              'prek_4th': {
+                  'phase_1': {
+                      phase_name: 'Phase 1: Introduction & Basics',
+                      meeting_1: 'Stick Handling: Basic grip and cradle introduction.',
+                      meeting_2: 'Passing and Catching: Short-distance throwing and basic catching techniques.'
+                  },
+                  'phase_2': {
+                      phase_name: 'Phase 2: Skill Reinforcement',
+                      meeting_1: 'Ground Balls: Proper stance and basic scooping mechanics.',
+                      meeting_2: 'Game Concepts: Introduction to team collaboration and basic game rules in simplified game scenarios.'
+                  }
+              },
+              '5th_7th': {
+                  'phase_1': {
+                      phase_name: 'Phase 1: Skill Reinforcement',
+                      meeting_1: 'Position-Specific Skills: Fundamental responsibilities and skills specific to attack, midfield, or defense positions.',
+                      meeting_2: 'Ambidexterity: Initial practice of basic skills using a non-dominant hand.'
+                  },
+                  'phase_2': {
+                      phase_name: 'Phase 2: Advanced Play',
+                      meeting_1: 'Game Situations: Understanding intermediate strategies and developing decision-making in controlled game scenarios.',
+                      meeting_2: 'Athletic Conditioning: Emphasis on agility, speed, and overall fitness improvement.'
+                  }
+              },
+              '8th_10th': {
+                  'phase_1': {
+                      phase_name: 'Phase 1: Advanced Positional Skills',
+                      meeting_1: 'Advanced Positional Skills: Mastering advanced techniques and positional responsibilities.',
+                      meeting_2: 'Game IQ Development: Initial strategy analysis and scenario anticipation.'
+                  },
+                  'phase_2': {
+                      phase_name: 'Phase 2: Physical & Mental Development',
+                      meeting_1: 'Physical Conditioning: Tailored training for improved strength, speed, and injury prevention.',
+                      meeting_2: 'Mental Preparation: Developing mental toughness, resilience, and strategies for competitive pressure.'
+                  }
+              },
+              '11th_12th_college': {
+                  'phase_1': {
+                      phase_name: 'Phase 1: Elite Tactics & Execution',
+                      meeting_1: 'Position Mastery: Refinement of advanced positional tactics and elite skill execution.',
+                      meeting_2: 'Tactical Understanding: Deepening knowledge of complex strategies and adaptive gameplay.'
+                  },
+                  'phase_2': {
+                      phase_name: 'Phase 2: Leadership & College Prep',
+                      meeting_1: 'Leadership & Communication: Developing effective team leadership, on-field communication, and decision-making.',
+                      meeting_2: 'Strength & Conditioning: Comprehensive and tailored fitness and nutrition plans suitable for college-level play.'
+                  }
+              }
+          };
+    
+          function updatePhaseUI(gradeRange, completedCount) {
+              const phase = completedCount >= 2 ? 'phase_2' : 'phase_1';
+              const data = phaseData[gradeRange] && phaseData[gradeRange][phase];
+    
+              if (data) {
+                  document.getElementById('current_phase').textContent = data.phase_name;
+                  document.getElementById('meeting_1').innerHTML = `<strong>Meeting 1:</strong> ${data.meeting_1}`;
+                  document.getElementById('meeting_2').innerHTML = `<strong>Meeting 2:</strong> ${data.meeting_2}`;
+              } else {
+                  document.getElementById('current_phase').textContent = 'Phase Name';
+                  document.getElementById('meeting_1').innerHTML = '<strong>Meeting 1:</strong> No meeting scheduled';
+                  document.getElementById('meeting_2').innerHTML = '<strong>Meeting 2:</strong> No meeting scheduled';
+              }
+          }
+    
+          // Initial setup
+          const initialGradeRange = gradeRangeElement.value;
+          hiddenGradeRangeInput.value = initialGradeRange;
+          updateExactGradeOptions(initialGradeRange);
+          updatePhaseUI(initialGradeRange, completedMeetingCount);
+    
+          gradeRangeElement.addEventListener('change', function (e) {
+              const selected = e.target.value;
+              hiddenGradeRangeInput.value = selected;
+              updateExactGradeOptions(selected);
+              updatePhaseUI(selected, completedMeetingCount);
+          });
+          }
+          const calendarEl = document.getElementById('student-calendar');
+          const events = {{ events_json|safe }};
+
+          console.log(events);
+    
+          const calendar = new FullCalendar.Calendar(calendarEl, {
+              initialView: 'dayGridMonth',
+              height: 'auto',
+              headerToolbar: {
+                  left: 'prev,next today',
+                  center: 'title',
+                  right: 'dayGridMonth,listMonth'
+              },
+              events: events,
+              eventClick: function (info) {
+                  document.getElementById('viewEventTitle').textContent = info.event.title;
+                  document.getElementById('viewEventDescription').textContent = info.event.extendedProps.description || 'Lesson description not found.';
+                  document.getElementById('viewEventStart').textContent = new Date(info.event.start).toLocaleString();
+                  document.getElementById('viewEventEnd').textContent = new Date(info.event.end).toLocaleString();
+                  document.getElementById('currentMeetingId').value = info.event.id;
+                  new bootstrap.Modal(document.getElementById('eventViewModal')).show();
+              }
+          });
+    
+          calendar.render();
+    
+          document.addEventListener('click', function (e) {
+              if (e.target && e.target.matches('#markCompleteBtn')) {
+                  const fullMeetingId = document.getElementById('currentMeetingId').value;
+                  const numericMeetingId = fullMeetingId.replace('meeting-', '');
+    
+                  if (!numericMeetingId) {
+                      alert('Meeting ID missing!');
+                      return;
+                  }
+    
+                  fetch("{% url 'delete_meeting' %}", {
+                      method: "POST",
+                      headers: {
+                          "Content-Type": "application/json",
+                          "X-CSRFToken": "{{ csrf_token }}"
+                      },
+                      body: JSON.stringify({ meeting_id: numericMeetingId })
+                  })
+                  .then(response => {
+                      if (!response.ok) throw new Error('Network error');
+                      return response.json();
+                  })
+                  .then(data => {
+                      if (data.status === 'success') {
+                          alert('Meeting marked as completed!');
+                          document.getElementById('completionMessage').style.display = 'block';
+    
+                          const event = calendar.getEventById(fullMeetingId);
+                          if (event) {
+                              event.remove();
+                          }
+    
+                          const newCount = data.completed_meeting_count;
+                          const completedMeetingCountElement = document.querySelector('.alert-info');
+                          if (completedMeetingCountElement) {
+                              completedMeetingCountElement.innerHTML = `You have completed <strong>${newCount}</strong> meeting${newCount === 1 ? '' : 's'} so far.`;
+                          }
+    
+                          updatePhaseUI(hiddenGradeRangeInput.value, newCount);
+                      }
+                  })
+                  .catch(error => {
+                      alert('Error marking meeting complete: ' + error);
+                  });
+              }
+          });
       });
     </script>
+    
     
   {% endif %}
 {% endblock %}

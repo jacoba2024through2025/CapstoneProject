@@ -170,6 +170,7 @@ class Meeting(models.Model):
     PHASE_CHOICES = [
         ('phase_1', 'Phase 1: Introduction & Basics'),
         ('phase_2', 'Phase 2: Skill Reinforcement'),
+        
     ]
     
     GRADE_RANGE_CHOICES = [
@@ -190,7 +191,7 @@ class Meeting(models.Model):
     end_date = models.DateTimeField()
     price = models.DecimalField(max_digits=10, decimal_places=2, default=45.00)
     hidden = models.BooleanField(default=False)
-
+    exact_grade = models.CharField(max_length=20, blank=True, null=True)
     phase = models.CharField(max_length=10, choices=PHASE_CHOICES, default='phase_1')
     grade_range = models.CharField(max_length=20, choices=GRADE_RANGE_CHOICES, default='prek_4th')
     
@@ -202,7 +203,16 @@ class Meeting(models.Model):
 
     def mark_as_completed(self):
         self.status = 'completed'
+        self.description = self.auto_generate_description()  # Update description when marking as completed
         self.save()
+    
+    def get_reset_completed_count(self):
+        raw_completed = Meeting.objects.filter(
+            player=self.player,
+            class_item=self.class_item,
+            status='completed'
+        ).count()
+        return raw_completed % 4
 
     def __str__(self):
         return f"{self.name} ({self.start_date} - {self.end_date})"

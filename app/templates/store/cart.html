@@ -1,13 +1,13 @@
-{% extends "root.html" %} {% load static %} 
+{% extends "root.html" %}
+{% load static %}
 
 {% block head %}
 <link rel="stylesheet" href="{% static "store/css/cart.css" %}">
 {% endblock head %}
-{% block title %}Cart{% endblock title %} 
+
+{% block title %}Cart{% endblock title %}
 
 {% block content %}
-
-
 <div class="cart_section">
   <div class="container-fluid">
     <div class="row">
@@ -15,35 +15,30 @@
         <div class="cart_container">
           <div class="cart_title">
             {% if cart_count > 1 %}
-            Shopping Cart<small> ({{cart_count}} items in your cart) </small>
-            {% endif %}
-            {% if cart_count == 1 %}
-            Shopping Cart<small> ({{cart_count}} item in your cart) </small>
-            {% endif %}
-            {% if cart_count == 0 %}
-            <h2>Your cart is empty</h2>
+              Shopping Cart<small> ({{cart_count}} items in your cart) </small>
+            {% elif cart_count == 1 %}
+              Shopping Cart<small> ({{cart_count}} item in your cart) </small>
+            {% else %}
+              <h2>Your cart is empty</h2>
             {% endif %}
           </div>
+
           {% for item in cart_items %}
           <div class="cart_items">
             <ul class="cart_list">
               <li class="cart_item clearfix">
                 <div class="cart_item_image">
-                  <img src="{{item.product.image.url}}" alt="" />
+                  {% if item.product.image %}
+                    <img src="{{ item.product.image.url }}" alt="Product Image" />
+                  {% else %}
+                    <img src="/media/product_pics/default.jpg" alt="Default Image" />
+                  {% endif %}
                 </div>
-                <div
-                  class="cart_item_info d-flex flex-md-row flex-column justify-content-between"
-                >
+                <div class="cart_item_info d-flex flex-md-row flex-column justify-content-between">
                   <div class="cart_item_name cart_info_col">
                     <div class="cart_item_title">Name</div>
                     <div class="cart_item_text">{{ item.product.name }}</div>
                   </div>
-                  {% comment %} <div class="cart_item_color cart_info_col">
-                    <div class="cart_item_title">Color</div>
-                    <div class="cart_item_text">
-                      <span style="background-color: #999999"></span>Silver
-                    </div>
-                  </div> {% endcomment %}
                   <div class="cart_item_quantity cart_info_col">
                     <div class="cart_item_title">Quantity</div>
                     <div class="cart_item_text">{{ item.quantity }}</div>
@@ -70,21 +65,19 @@
             </ul>
           </div>
           {% endfor %}
+
           <div class="order_total">
             <div class="order_total_content text-md-right">
               <div class="order_total_title">Order Total:</div>
               <div class="order_total_amount">${{ total_price }}</div>
             </div>
           </div>
+
           <div class="cart_buttons">
             <button type="button" class="button cart_button_clear">
-                <a href="{% url "products" %}">
-                    Continue Shopping
-                </a>
+              <a href="{% url "products" %}">Continue Shopping</a>
             </button>
-            <button type="button" class="button cart_button_checkout" id="checkout-button">
-              Checkout
-            </button>
+            <button type="button" class="button cart_button_checkout" id="checkout-button">Checkout</button>
           </div>
         </div>
       </div>
@@ -92,28 +85,29 @@
   </div>
 </div>
 
+{# Stripe Checkout JavaScript (Optional) #}
 {% comment %}
 <script>
   const stripe = Stripe("{{ stripe_public_key }}");
 
-  document
-    .getElementById("checkout-button")
-    .addEventListener("click", function (e) {
-      e.preventDefault();
-      fetch("{% url 'create_checkout_session' %}", {
-        method: "POST",
-        headers: {
-          "X-CSRFToken": "{{ csrf_token }}",
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.id) {
-            stripe.redirectToCheckout({ sessionId: data.id });
-          } else {
-            alert("Error: " + data.error);
-          }
-        });
+  document.getElementById("checkout-button").addEventListener("click", function (e) {
+    e.preventDefault();
+    fetch("{% url 'create_checkout_session' %}", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}",
+      },
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.id) {
+        stripe.redirectToCheckout({ sessionId: data.id });
+      } else {
+        alert("Error: " + data.error);
+      }
     });
+  });
 </script>
-{% endcomment %} {% endblock content %}
+{% endcomment %}
+{% endblock content %}
+
