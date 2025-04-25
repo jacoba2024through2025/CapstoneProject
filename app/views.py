@@ -399,7 +399,7 @@ def add_to_cart(request, product_id):
     cart_item, created = Cart.objects.get_or_create(user=request.user, product=product)
     print(cart_item)
     print(created)
-    cart_item.quantity += int(request.POST["JStoPython"])
+    cart_item.quantity += int(request.POST["JStoPython"]) - 1
     cart_item.save()
     return redirect('view_cart')
 

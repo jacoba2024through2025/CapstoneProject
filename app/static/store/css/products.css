@@ -189,28 +189,58 @@ footer a:hover {
   color: #ff3f40;
 }
 
-.quantity_btn {
+.quantity_selector {
   display: flex;
+  border-radius: 4px;
+  overflow: hidden;
   justify-content: center;
-  align-items: center;
-  text-align: center;
-  width: 50%;
+  width: 40%;
 }
-.quantity_btn p {
-  border: 1px solid #a6a6a6;
-  padding: 15px;
-  font-size: 1.2em;
-  font-weight: 700;
+.quantity_selector button {
+  border-radius: 4px;
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  width: 45px;
+  height: auto;
+  text-align: center;
+  transition: background-color 0.2s;
+}
+.quantity_selector button:hover {
+  background-color: #2980b9;
+}
+.quantity_selector button:focus {
+  outline: none;
 }
 
-.number-arrow {
-  padding: 10px;
-  border: 1px solid #a6a6a6;
-  border-radius: 12px;
-  background-color: #fff;
-}
-.number-arrow i {
-  cursor: pointer;
+.quantity_container {
   display: flex;
-  align-items: center;
+  justify-content: center;
+  width: -moz-fit-content;
+  width: fit-content;
+  border: 2px solid #3498db;
+  border-radius: 4px;
+}
+
+.input-box {
+  border: 2px solid #3498db;
+  border-radius: 4px;
+  width: 40px;
+  text-align: center;
+  border: none;
+  padding: 8px 10px;
+  font-size: 16px;
+  outline: none;
+}
+
+.input-box::-webkit-inner-spin-button,
+.input-box::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.input-box[type=number] {
+  -moz-appearance: textfield;
 }/*# sourceMappingURL=products.css.map */

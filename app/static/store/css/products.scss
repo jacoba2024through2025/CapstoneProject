@@ -214,30 +214,62 @@ footer {
   }
 }
 
-.quantity_btn {
+.quantity_selector {
+  display: flex;
+  border-radius: 4px;
+  overflow: hidden;
+  justify-content: center;
+  width: 40%;
+
+  button {
+    border-radius: 4px;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    width: 45px;
+    height: auto;
+    text-align: center;
+    transition: background-color 0.2s;
+  }
+
+  button:hover {
+    background-color: #2980b9;
+  }
+
+  button:focus {
+    outline: none;
+  }
+}
+
+.quantity_container {
   display: flex;
   justify-content: center;
-  align-items: center;
+  width: fit-content;
+  border: 2px solid #3498db;
+  border-radius: 4px;
+}
+
+
+.input-box {
+  border: 2px solid #3498db;
+  border-radius: 4px;
+  width: 40px;
   text-align: center;
-  width: 50%;
-
-  p {
-    border: 1px solid $color-secondary;
-    padding: 15px;
-    font-size: 1.2em;
-    font-weight: 700;
-  }
+  border: none;
+  padding: 8px 10px;
+  font-size: 16px;
+  outline: none;
 }
 
-.number-arrow {
-  padding: 10px;
-  border: 1px solid $color-secondary;
-  border-radius: 12px;
-  background-color: #fff;
-
-  i {
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-  }
+.input-box::-webkit-inner-spin-button,
+.input-box::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
+
+.input-box[type="number"] {
+  -moz-appearance: textfield;
+}
+

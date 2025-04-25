@@ -34,9 +34,9 @@
             <div class="filters">
               <ul>
                   <li class="active" data-filter="*">All Products</li>
-                  <li data-filter=".des">Featured</li>
-                  <li data-filter=".dev">Flash Deals</li>
-                  <li data-filter=".gra">Last Minute</li>
+                  <li data-filter=".des">Clothing</li>
+                  <li data-filter=".dev">Equipment</li>
+                  <li data-filter=".gra">On Sale</li>
               </ul>
             </div>
           </div>
@@ -63,21 +63,20 @@
             </div>
           </div>
           <div class="col-md-12">
-            <div class="pages">
+            <ul class="pages">
               {% if products.has_previous %}
-              <a href="?page=1">first</a>
+              <li><a href="?page=1"><i class="fa fa-angle-double-left"></i></a></li>
+              <li><a href="?page={{products.previous_page_number}}"><i class="fa fa-angle-left"></i></a></li>
               <a href="?page={{products.previous_page_number}}"></a>
               {% endif %}
-              
-              <p>
-                Page {{products.number}} of {{products.paginator.num_pages}}.
-              </p>
+              <li><a href="?page=1">1</a></li>
+              <li><a href="?page=2">2</a></li>
 
               {% if products.has_next %}
-                <a href="?page={{products.next_page_number}}">next</a>
-                <a href="?page={{products.paginator.num_pages}}">last</a>
+              <li><a href="?page={{products.next_page_number}}"><i class="fa fa-angle-right"></i></a></li>
+              <li><a href="?page={{products.paginator.num_pages}}"><i class="fa fa-angle-double-right"></i></a></li>
               {% endif %}
-            </div>
+            </ul>
           </div>
         </div>
       </div>
