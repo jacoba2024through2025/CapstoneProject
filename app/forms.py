@@ -74,7 +74,7 @@ class EventForm(forms.ModelForm):
 class MeetingForm(forms.ModelForm):
     class Meta:
         model = Meeting
-        fields = ['name', 'description', 'start_date', 'price']
+        fields = ['name', 'start_date']
         widgets = {
             'start_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             

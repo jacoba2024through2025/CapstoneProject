@@ -256,6 +256,23 @@ def view_main_page(request):
     
 
 def view_contact_page(request):
+
+    if request.user.is_authenticated:
+        user = request.user
+        user_role = 'User'
+        try:
+            coach = Coach.objects.get(user=user)
+            
+            user_role = 'Coach'
+            
+        except Coach.DoesNotExist:
+            user_role = 'User'
+
+        return render(request, "contact.html", {
+            
+            'user_role': user_role,
+        })
+
     if request.method == "POST":
         message_name = request.POST['message-name']
         message_email = request.POST['message-email']
@@ -335,13 +352,25 @@ def viewLogout(request):
     return redirect('register')
 
 def viewProducts(request):
+
+    if request.user.is_authenticated:
+        user = request.user
+        user_role = 'User'
+        try:
+            coach = Coach.objects.get(user=user)
+            
+            user_role = 'Coach'
+            
+        except Coach.DoesNotExist:
+            user_role = 'User'
     
     products = Products.objects.filter(hidden=False)
     paginator = Paginator(products, 6)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     context = {
-        'products': page_obj
+        'products': page_obj,
+        'user_role': user_role,
     }
     return render(request, 'store/products.html', context)
 
@@ -409,36 +438,43 @@ def stripe_config(request):
 @csrf_exempt
 def create_checkout_session(request):
     if request.method == 'GET':
-        domain_url = 'http://localhost:8000/'
+        domain_url = 'http://localhost:8000/'  
         stripe.api_key = settings.STRIPE_SECRET_KEY
+
         cart_items = Cart.objects.filter(user=request.user)
         line_items = []
+
         for item in cart_items:
-                    line_items.append(
-                        {
-                        'price_data': {
-                            'currency': 'usd',
-                            'product_data': {
-                                'name': item.product.name,
-                                'metadata': {
-                                    'product_id': item.product.id,
-                                },
-                                'description': item.product.description,
-                                'images': [item.product.image],  # Optional: Include product image
-                            },
-                            'unit_amount': int(item.product.price * 100),  # Convert to cents
-                        },
-                        'quantity': item.quantity,
-                    }
-                )
+            product = item.product
+
+            product_data = {
+                'name': product.name,
+                'metadata': {
+                    'product_id': product.id,
+                },
+                'description': product.description,
+            }
+
+            
+            if product.image:
+                product_data['images'] = [request.build_absolute_uri(product.image.url)]
+
+            line_items.append({
+                'price_data': {
+                    'currency': 'usd',
+                    'product_data': product_data,
+                    'unit_amount': int(product.price * 100),  # Stripe expects cents
+                },
+                'quantity': item.quantity,
+            })
+
         try:
             checkout_session = stripe.checkout.Session.create(
                 success_url=domain_url + 'success?session_id={CHECKOUT_SESSION_ID}',
                 cancel_url=domain_url + 'cancelled/',
                 payment_method_types=['card'],
                 mode='payment',
-                
-                line_items=line_items
+                line_items=line_items,
             )
             return JsonResponse({'sessionId': checkout_session['id']})
         except Exception as e:
@@ -624,7 +660,7 @@ def get_phase_and_meetings_by_grade_range(grade_range):
         },
     }
     
-    # Retrieve the phase and meetings for the selected grade range
+    
     phase_data = lesson_plan.get(grade_range, {})
     return phase_data
 
@@ -632,7 +668,6 @@ def get_phase_and_meetings_by_grade_range(grade_range):
 def class_dashboard(request, class_id):
     class_obj = get_object_or_404(Classes, pk=class_id)
 
-    # Access Control: Allow if user is a student OR the coach assigned to this class
     is_student = request.user in class_obj.students.all()
     is_coach = hasattr(request.user, 'coach') and class_obj.coach and class_obj.coach.user == request.user
 
@@ -642,17 +677,34 @@ def class_dashboard(request, class_id):
             'error_message': "You are not authorized to access this class."
         })
 
-    # Get the grade range and retrieve the corresponding phase and meetings
-      # Modify according to your actual model
     
+    selected_student = request.user
+    if is_coach:
+        student_id = request.GET.get('student_id')
+        if student_id:
+            selected_student = get_object_or_404(class_obj.students, id=student_id)
 
-    # Collect events and meetings for calendar
+    
+    meeting = Meeting.objects.filter(class_item=class_obj, player=selected_student).first()
+    if meeting:
+        grade_range = meeting.grade_range  
+    else:
+        
+        grade_range = 'prek_4th'  
+
+    
+    completed_meeting_count = Meeting.objects.filter(
+        class_item=class_obj,
+        player=selected_student,
+        status='completed'
+    ).count()
+
+    
     events = class_obj.events.all()
-    meetings = class_obj.meetings.filter(hidden=False)
+    meetings = class_obj.meetings.filter(hidden=False, player=selected_student)
 
     event_data = []
 
-    # Adding events
     for event in events:
         event_data.append({
             'id': event.id,
@@ -663,40 +715,42 @@ def class_dashboard(request, class_id):
             'color': event.color,
         })
 
-    # Adding meetings with dynamically calculated end_date
     for meeting in meetings:
-        end_time = meeting.start_date + timedelta(hours=1)  # Calculate end time by adding 1 hour to start_date
+        end_time = meeting.start_date + timedelta(hours=1)
         event_data.append({
             'id': f"meeting-{meeting.id}",
             'title': f"Meeting: {meeting.name}",
             'start': meeting.start_date.isoformat(),
-            'end': end_time.isoformat(),  # Use dynamically calculated end_time
+            'end': end_time.isoformat(),
             'description': f"{meeting.description} (Player: {meeting.player.first_name})",
-            'color': '#007bff',  # Blue for meetings
+            'color': '#007bff',
         })
 
     form = MeetingForm()
 
     return render(request, 'classes/class_dashboard.html', {
+        'completed_meeting_count': completed_meeting_count,
         'class_obj': class_obj,
+        'selected_student': selected_student,
+        'students': class_obj.students.all(),  
         'events_json': json.dumps(event_data, cls=DjangoJSONEncoder),
         'form': form,
-        
+        'grade_range': grade_range,  
     })
 
 @login_required
 def upcoming_events(request, class_id):
-    # Get the class object based on the class_id
+    
     class_obj = get_object_or_404(Classes, pk=class_id)
 
-    # Get the current time
+    
     now = timezone.now()
 
-    # Get upcoming events and meetings for the specific class
+    
     events = class_obj.events.filter(start_date__gte=now).order_by('start_date')
     meetings = class_obj.meetings.filter(start_date__gte=now, hidden=False).order_by('start_date')
 
-    # Combine both sets of events and meetings
+    
     upcoming_events = list(events) + list(meetings)
 
     return render(request, 'classes/upcoming_events.html', {
@@ -704,70 +758,132 @@ def upcoming_events(request, class_id):
         'upcoming_events': upcoming_events
     })
 
+@login_required
+def past_sessions(request, class_id):
+    class_obj = get_object_or_404(Classes, pk=class_id)
+
+    # Get the current time
+    now = timezone.now()
+
+    # Get past events and meetings for the specific class (events and meetings that have ended)
+    events = class_obj.events.filter(end_date__lte=now).order_by('-end_date')
+    meetings = class_obj.meetings.filter(start_date__lte=now, hidden=False).order_by('-start_date')
+
+    
+    past_events = list(events) + list(meetings)
+
+    return render(request, 'classes/past_sessions.html', {
+        'class_obj': class_obj,
+        'past_events': past_events
+    })
+
 from django.http import JsonResponse
 from .models import Meeting
 
 @require_POST
 def delete_meeting(request):
-    try:
+    if request.method == 'POST':
+        # Get the meeting ID from the request
         data = json.loads(request.body)
         meeting_id = data.get('meeting_id')
 
-        if not meeting_id:
-            return JsonResponse({'status': 'error', 'message': 'Missing meeting ID'})
+        # Logic to mark the meeting as complete and delete it
+        meeting = Meeting.objects.get(id=meeting_id)
 
-        meeting = Meeting.objects.get(id=int(meeting_id))
-        meeting.delete()
+        # Mark meeting as completed
+        meeting.status = 'completed'  # Use 'status' to mark as completed
+        meeting.save()
 
-        return JsonResponse({'status': 'success', 'meeting_id': meeting_id})
-    
-    except Meeting.DoesNotExist:
-        return JsonResponse({'status': 'error', 'message': 'Meeting not found'})
-    except Exception as e:
-        return JsonResponse({'status': 'error', 'message': str(e)})
+        # Get the count of completed meetings
+        completed_meeting_count = Meeting.objects.filter(status='completed').count()  # Use 'status' here
 
+        # Return updated information in response
+        return JsonResponse({
+            'status': 'success',
+            'completed_meeting_count': completed_meeting_count,
+            'updated_description': meeting.description,  # Return updated description
+        })
+
+
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, render, redirect
+from .models import Classes, Meeting
+from .forms import MeetingForm
+  # import from your store app
+from datetime import timedelta
 
 @login_required
 def schedule_meeting_from_dashboard(request, class_id):
     class_obj = get_object_or_404(Classes, id=class_id)
 
+    
+    existing_pending = Meeting.objects.filter(
+        class_item=class_obj,
+        player=request.user,
+        status='pending'
+    ).exists()
+
+    if existing_pending:
+        return render(request, 'classes/class_dashboard.html', {
+            'class_obj': class_obj,
+            'form': MeetingForm(),
+            'error_message': "You must complete your current meeting before scheduling a new one."
+        })
+
     if request.method == 'POST':
         form = MeetingForm(request.POST)
         if form.is_valid():
-            # Save the meeting
             meeting = form.save(commit=False)
             meeting.class_item = class_obj
             meeting.coach = class_obj.coach
             meeting.player = request.user
-            meeting.price = 45.00  # Set price
 
-            # Use the dynamically set description from the form (hidden input)
-            meeting.description = request.POST['description']
+            # Grade-based price logic
+            exact_grade = request.POST.get('exact_grade', '').strip()
+            grade_prices = {
+                'PreK': 60,
+                'K': 80, '1st': 80, '2nd': 80, '3rd': 80, '4th': 80,
+                '5th': 60, '6th': 80, '7th': 80,
+                '8th': 80, '9th': 100, '10th': 100,
+                '11th': 80, '12th': 100, 'College': 100
+            }
+            meeting.exact_grade = exact_grade
+            meeting.price = grade_prices.get(exact_grade, 45.00)
+
+            
+            grade_range = request.POST.get('grade_range', 'prek_4th')
+            meeting.grade_range = grade_range
+
+            
+            completed_phase1 = Meeting.objects.filter(
+                class_item=class_obj,
+                player=request.user,
+                grade_range=grade_range,
+                phase='phase_1',
+                status='completed'
+            ).count()
+            meeting.phase = 'phase_2' if completed_phase1 >= 2 else 'phase_1'
+            meeting.description = ''
             meeting.save()
 
-            # Handle products and cart creation
-            product, created = Products.objects.get_or_create(
-                name="Meeting Session",
-                defaults={
-                    'price': 45.00,
-                    'description': 'One-on-one coaching session',
-                    'image': 'default.jpg',
-                    'hidden': True
-                }
+           
+            product = Products.objects.create(
+                name=f"{class_obj.name} Session - {meeting.start_date.strftime('%b %d, %Y')}",
+                price=meeting.price,
+                description=f"Session with {meeting.coach.user.username} for {meeting.exact_grade}",
+                hidden=True,
+                image=None  
             )
 
-            if not created and not product.hidden:
-                product.hidden = True
-                product.save()
-
-            cart_item, _ = Cart.objects.get_or_create(
+            
+            Cart.objects.create(
                 user=request.user,
-                product=product
+                product=product,
+                quantity=1
             )
-            cart_item.save()
 
-            return redirect('view_cart')  # Redirect after saving the meeting
-
+            return redirect('view_cart')
     else:
         form = MeetingForm()
 
@@ -775,6 +891,7 @@ def schedule_meeting_from_dashboard(request, class_id):
         'class_obj': class_obj,
         'form': form,
     })
+
 
 @login_required
 def chat_room(request, class_id):
@@ -786,7 +903,7 @@ def chat_room(request, class_id):
 
     messages = ChatMessage.objects.filter(class_obj=class_obj).order_by('timestamp')
 
-    # Process each message to check if the attachment is an image
+    
     for msg in messages:
         if msg.attachment:
             # Check if the file is an image based on the extension
@@ -993,9 +1110,22 @@ def notifications_view(request):
 
 @login_required
 def approved_classes_view(request):
+    if request.user.is_authenticated:
+        user = request.user
+        user_role = 'User'
+        try:
+            coach = Coach.objects.get(user=user)
+            
+            user_role = 'Coach'
+            
+        except Coach.DoesNotExist:
+            user_role = 'User'
+
+
     approved_classes = request.user.classes.all()  
     return render(request, 'store/approved_classes.html', {
-        'approved_classes': approved_classes
+        'approved_classes': approved_classes,
+        "user_role": user_role,
     })
 
 

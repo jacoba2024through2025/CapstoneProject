@@ -1,0 +1,63 @@
+{% extends 'root.html' %}
+{% load static %}
+{% block content %}
+  {% if error_message %}
+    <div class="error-message">
+      <h2>Access Denied</h2>
+      <p>{{ error_message }}</p>
+    </div>
+  {% else %}
+    <div class="dashboard-container">
+      <div class="sidebar">
+        <h2>Dashboard</h2>
+        <ul class="sidebar-menu">
+          <li class="dropdown">
+            <a href="#" class="dropbtn">
+              Class Schedule
+              <span class="arrow">&#9662;</span>
+            </a>
+            <ul class="dropdown-content">
+              <li><a href="#">Weekly Schedule</a></li>
+              <li><a href="{% url 'upcoming_events' class_id=class_obj.id %}">Upcoming Sessions</a></li>
+              <li><a href="{% url 'past_sessions' class_id=class_obj.id %}">Past Sessions</a></li>
+            </ul>
+          </li>
+          <li><a href="{% url 'chat_room' class_obj.id %}">Chat Room</a></li>
+          <li><a href="/reminders">Reminders</a></li>
+        </ul>
+      </div>
+
+      <div class="main-content">
+        <div class="class-info-dashboard-heading">
+          <h1>Class Name: {{ class_obj.name }}</h1>
+          <h3>Coach: {{ class_obj.coach.first_name }} {{ class_obj.coach.last_name }}</h3>
+          {% if class_obj.coach.profile %}
+            <img src="{{ class_obj.coach.profile.image.url }}" alt="Coach Profile Picture" class="coach-profile-image">
+          {% else %}
+            <img src="{% static 'default.jpg' %}" alt="Default Profile Picture" class="coach-profile-image">
+          {% endif %}
+          <p>Email: {{ class_obj.coach.email|default:"N/A" }}</p>
+        </div>
+
+        <h3>Past Sessions</h3>
+        <div class="past-sessions-list">
+          {% for event in past_events %}
+            <div class="session-item">
+              <h4>{{ event.title }}</h4>
+              <p><strong>Description:</strong> {{ event.description }}</p>
+              <p><strong>Start:</strong> {{ event.start_date|date:"F j, Y, g:i a" }}</p>
+              <p><strong>End:</strong> {{ event.end_date|date:"F j, Y, g:i a" }}</p>
+              {% if event.status == "completed" %}
+                <p><span class="text-success">Session Completed</span></p>
+              {% else %}
+                <p><span class="text-warning">Session Pending</span></p>
+              {% endif %}
+            </div>
+          {% empty %}
+            <p>No past sessions available.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}
