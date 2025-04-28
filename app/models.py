@@ -156,7 +156,7 @@ class Products(models.Model):
         ('other', 'Other'),
     ]
 
-    image = models.ImageField(upload_to='product_pics')
+    image = models.ImageField(upload_to='product_pics', blank=True, null=True)
     name = models.CharField(max_length=255)
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='other')
     price = models.DecimalField(max_digits=10, decimal_places=2)

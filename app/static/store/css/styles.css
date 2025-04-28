@@ -1811,6 +1811,118 @@ footer .inner-content p a {
   }
   
   
+  /* Edit class form
+/* General styles for the edit class page */
+/* General styles for the edit class page */
+.edit-class-page {
+  padding: 30px;
+  max-width: 800px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, #d02d2d, #CA152C);  /* Gradient background */
+  border-radius: 12px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);  /* Soft shadow for depth */
+  backdrop-filter: blur(5px);  /* Slight blur effect behind the form */
+  border: 1px solid #ddd;  /* Light border to frame the form */
+  overflow: hidden;
+}
+
+.edit-class-title {
+  font-size: 2.2rem;
+  margin-bottom: 30px;
+  text-align: center;
+  color: #fff;  /* Title text color */
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);  /* Adds a slight shadow to make the title pop */
+}
+
+/* Form field styling */
+.form-fields {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+/* Each individual form field styling */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(255, 255, 255, 0.85);  /* Semi-transparent white background */
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);  /* Small shadow for depth */
+}
+
+/* Styling the labels */
+.form-label {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+/* Styling the form inputs */
+.form-name input,
+.form-description textarea,
+.form-price input,
+.form-class-image input[type="file"] {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #f9f9f9;
+  transition: all 0.3s ease;
+}
+
+.form-name input:focus,
+.form-description textarea:focus,
+.form-price input:focus,
+.form-class-image input[type="file"]:focus {
+  border-color: #007bff;
+  outline: none;
+  background-color: #f1f9ff;
+}
+
+/* Button styling */
+.submit-button {
+  padding: 12px 25px;
+  border-radius: 6px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-top: 30px;
+  transition: all 0.3s ease;
+}
+
+.save-button {
+  background-color: #4CAF50;  /* Green */
+  color: white;
+  border: none;
+}
+
+.save-button:hover {
+  background-color: #45a049;
+  transform: scale(1.05);  /* Slight zoom-in effect */
+}
+
+.delete-button {
+  background-color: #f44336;  /* Red */
+  color: white;
+  border: none;
+  margin-left: 15px;
+}
+
+.delete-button:hover {
+  background-color: #e53935;
+  transform: scale(1.05);  /* Slight zoom-in effect */
+}
+
+/* Adding a subtle hover effect for form fields */
+.form-field:hover {
+  background-color: rgba(255, 255, 255, 0.95);  /* Slightly change the background color on hover */
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);  /* Deepen shadow on hover */
+}
+
+
+
 
 
 /* Mobile friendly*/

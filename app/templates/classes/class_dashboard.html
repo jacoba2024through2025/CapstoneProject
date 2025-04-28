@@ -108,6 +108,11 @@
         <hr>
 
         {% if not user.coach %}
+          {% if error_message %}
+            <div class="alert alert-danger">
+              {{ error_message }}
+            </div>
+          {% endif %}
           <div class="alert alert-info mt-3">
             You have completed <strong>{{ completed_meeting_count }}</strong> meeting{{ completed_meeting_count|pluralize }} so far.
           </div>
@@ -164,7 +169,7 @@
           const completedMeetingCount = {{ completed_meeting_count }};
           const gradeRangeElement = document.getElementById('grade_range');
           const hiddenGradeRangeInput = document.getElementById('hidden_grade_range');
-    
+  
           const gradeOptions = {
               'prek_4th': [
                   { value: 'PreK', label: 'PreK' },
@@ -190,126 +195,138 @@
                   { value: 'College', label: 'College' },
               ]
           };
-    
+  
           const form = document.querySelector('.custom-meeting-form form');
           if (form) {
-            const scheduleBtn = form.querySelector('button[type="submit"]');
-            // Proceed with your logic for the form if it exists
-          
-          
-    
-          const exactGradeDropdown = document.createElement('select');
-          exactGradeDropdown.id = 'exact_grade';
-          exactGradeDropdown.name = 'exact_grade';
-          form.insertBefore(exactGradeDropdown, scheduleBtn);
-          
-          const hiddenExactGradeInput = document.createElement('input');
-          hiddenExactGradeInput.type = 'hidden';
-          hiddenExactGradeInput.name = 'exact_grade';
-          hiddenExactGradeInput.id = 'hidden_exact_grade';
-          form.appendChild(hiddenExactGradeInput);
-          
-          function updateExactGradeOptions(range) {
-              exactGradeDropdown.innerHTML = '<option value="">Select Exact Grade</option>';
-              if (gradeOptions[range]) {
-                  gradeOptions[range].forEach(opt => {
-                      const option = document.createElement('option');
-                      option.value = opt.value;
-                      option.textContent = opt.label;
-                      exactGradeDropdown.appendChild(option);
-                  });
-              }
-          }
-    
-          exactGradeDropdown.addEventListener('change', function () {
-              hiddenExactGradeInput.value = this.value;
-          });
-          
-        
-          const phaseData = {
-              'prek_4th': {
-                  'phase_1': {
-                      phase_name: 'Phase 1: Introduction & Basics',
-                      meeting_1: 'Stick Handling: Basic grip and cradle introduction.',
-                      meeting_2: 'Passing and Catching: Short-distance throwing and basic catching techniques.'
-                  },
-                  'phase_2': {
-                      phase_name: 'Phase 2: Skill Reinforcement',
-                      meeting_1: 'Ground Balls: Proper stance and basic scooping mechanics.',
-                      meeting_2: 'Game Concepts: Introduction to team collaboration and basic game rules in simplified game scenarios.'
-                  }
-              },
-              '5th_7th': {
-                  'phase_1': {
-                      phase_name: 'Phase 1: Skill Reinforcement',
-                      meeting_1: 'Position-Specific Skills: Fundamental responsibilities and skills specific to attack, midfield, or defense positions.',
-                      meeting_2: 'Ambidexterity: Initial practice of basic skills using a non-dominant hand.'
-                  },
-                  'phase_2': {
-                      phase_name: 'Phase 2: Advanced Play',
-                      meeting_1: 'Game Situations: Understanding intermediate strategies and developing decision-making in controlled game scenarios.',
-                      meeting_2: 'Athletic Conditioning: Emphasis on agility, speed, and overall fitness improvement.'
-                  }
-              },
-              '8th_10th': {
-                  'phase_1': {
-                      phase_name: 'Phase 1: Advanced Positional Skills',
-                      meeting_1: 'Advanced Positional Skills: Mastering advanced techniques and positional responsibilities.',
-                      meeting_2: 'Game IQ Development: Initial strategy analysis and scenario anticipation.'
-                  },
-                  'phase_2': {
-                      phase_name: 'Phase 2: Physical & Mental Development',
-                      meeting_1: 'Physical Conditioning: Tailored training for improved strength, speed, and injury prevention.',
-                      meeting_2: 'Mental Preparation: Developing mental toughness, resilience, and strategies for competitive pressure.'
-                  }
-              },
-              '11th_12th_college': {
-                  'phase_1': {
-                      phase_name: 'Phase 1: Elite Tactics & Execution',
-                      meeting_1: 'Position Mastery: Refinement of advanced positional tactics and elite skill execution.',
-                      meeting_2: 'Tactical Understanding: Deepening knowledge of complex strategies and adaptive gameplay.'
-                  },
-                  'phase_2': {
-                      phase_name: 'Phase 2: Leadership & College Prep',
-                      meeting_1: 'Leadership & Communication: Developing effective team leadership, on-field communication, and decision-making.',
-                      meeting_2: 'Strength & Conditioning: Comprehensive and tailored fitness and nutrition plans suitable for college-level play.'
+              const scheduleBtn = form.querySelector('button[type="submit"]');
+              
+              const exactGradeDropdown = document.createElement('select');
+              exactGradeDropdown.id = 'exact_grade';
+              exactGradeDropdown.name = 'exact_grade';
+              form.insertBefore(exactGradeDropdown, scheduleBtn);
+              
+              const hiddenExactGradeInput = document.createElement('input');
+              hiddenExactGradeInput.type = 'hidden';
+              hiddenExactGradeInput.name = 'exact_grade';
+              hiddenExactGradeInput.id = 'hidden_exact_grade';
+              form.appendChild(hiddenExactGradeInput);
+              
+              function updateExactGradeOptions(range) {
+                  exactGradeDropdown.innerHTML = '<option value="">Select Exact Grade</option>';
+                  if (gradeOptions[range]) {
+                      gradeOptions[range].forEach(opt => {
+                          const option = document.createElement('option');
+                          option.value = opt.value;
+                          option.textContent = opt.label;
+                          exactGradeDropdown.appendChild(option);
+                      });
                   }
               }
-          };
-    
-          function updatePhaseUI(gradeRange, completedCount) {
-              const phase = completedCount >= 2 ? 'phase_2' : 'phase_1';
-              const data = phaseData[gradeRange] && phaseData[gradeRange][phase];
-    
-              if (data) {
-                  document.getElementById('current_phase').textContent = data.phase_name;
-                  document.getElementById('meeting_1').innerHTML = `<strong>Meeting 1:</strong> ${data.meeting_1}`;
-                  document.getElementById('meeting_2').innerHTML = `<strong>Meeting 2:</strong> ${data.meeting_2}`;
-              } else {
-                  document.getElementById('current_phase').textContent = 'Phase Name';
-                  document.getElementById('meeting_1').innerHTML = '<strong>Meeting 1:</strong> No meeting scheduled';
-                  document.getElementById('meeting_2').innerHTML = '<strong>Meeting 2:</strong> No meeting scheduled';
+  
+              exactGradeDropdown.addEventListener('change', function () {
+                  hiddenExactGradeInput.value = this.value;
+                  updatePrice(this.value); // Update the price when grade is selected
+              });
+  
+              // Price update function based on selected grade
+              function updatePrice(exactGrade) {
+                  const gradePrices = {
+                      'PreK': 60,
+                      'K': 80, '1st': 80, '2nd': 80, '3rd': 80, '4th': 80,
+                      '5th': 60, '6th': 80, '7th': 80,
+                      '8th': 80, '9th': 100, '10th': 100,
+                      '11th': 80, '12th': 100, 'College': 100
+                  };
+  
+                  const price = gradePrices[exactGrade] || 45.00; // Default price if no grade is selected
+  
+                  // Update the button text with the selected price
+                  scheduleBtn.textContent = `Pay and Schedule - $${price.toFixed(2)}`;
               }
+          
+              const phaseData = {
+                  'prek_4th': {
+                      'phase_1': {
+                          phase_name: 'Phase 1: Introduction & Basics',
+                          meeting_1: 'Stick Handling: Basic grip and cradle introduction.',
+                          meeting_2: 'Passing and Catching: Short-distance throwing and basic catching techniques.'
+                      },
+                      'phase_2': {
+                          phase_name: 'Phase 2: Skill Reinforcement',
+                          meeting_1: 'Ground Balls: Proper stance and basic scooping mechanics.',
+                          meeting_2: 'Game Concepts: Introduction to team collaboration and basic game rules in simplified game scenarios.'
+                      }
+                  },
+                  '5th_7th': {
+                      'phase_1': {
+                          phase_name: 'Phase 1: Skill Reinforcement',
+                          meeting_1: 'Position-Specific Skills: Fundamental responsibilities and skills specific to attack, midfield, or defense positions.',
+                          meeting_2: 'Ambidexterity: Initial practice of basic skills using a non-dominant hand.'
+                      },
+                      'phase_2': {
+                          phase_name: 'Phase 2: Advanced Play',
+                          meeting_1: 'Game Situations: Understanding intermediate strategies and developing decision-making in controlled game scenarios.',
+                          meeting_2: 'Athletic Conditioning: Emphasis on agility, speed, and overall fitness improvement.'
+                      }
+                  },
+                  '8th_10th': {
+                      'phase_1': {
+                          phase_name: 'Phase 1: Advanced Positional Skills',
+                          meeting_1: 'Advanced Positional Skills: Mastering advanced techniques and positional responsibilities.',
+                          meeting_2: 'Game IQ Development: Initial strategy analysis and scenario anticipation.'
+                      },
+                      'phase_2': {
+                          phase_name: 'Phase 2: Physical & Mental Development',
+                          meeting_1: 'Physical Conditioning: Tailored training for improved strength, speed, and injury prevention.',
+                          meeting_2: 'Mental Preparation: Developing mental toughness, resilience, and strategies for competitive pressure.'
+                      }
+                  },
+                  '11th_12th_college': {
+                      'phase_1': {
+                          phase_name: 'Phase 1: Elite Tactics & Execution',
+                          meeting_1: 'Position Mastery: Refinement of advanced positional tactics and elite skill execution.',
+                          meeting_2: 'Tactical Understanding: Deepening knowledge of complex strategies and adaptive gameplay.'
+                      },
+                      'phase_2': {
+                          phase_name: 'Phase 2: Leadership & College Prep',
+                          meeting_1: 'Leadership & Communication: Developing effective team leadership, on-field communication, and decision-making.',
+                          meeting_2: 'Strength & Conditioning: Comprehensive and tailored fitness and nutrition plans suitable for college-level play.'
+                      }
+                  }
+              };
+  
+              function updatePhaseUI(gradeRange, completedCount) {
+                  const phase = completedCount >= 2 ? 'phase_2' : 'phase_1';
+                  const data = phaseData[gradeRange] && phaseData[gradeRange][phase];
+          
+                  if (data) {
+                      document.getElementById('current_phase').textContent = data.phase_name;
+                      document.getElementById('meeting_1').innerHTML = `<strong>Meeting 1:</strong> ${data.meeting_1}`;
+                      document.getElementById('meeting_2').innerHTML = `<strong>Meeting 2:</strong> ${data.meeting_2}`;
+                  } else {
+                      document.getElementById('current_phase').textContent = 'Phase Name';
+                      document.getElementById('meeting_1').innerHTML = '<strong>Meeting 1:</strong> No meeting scheduled';
+                      document.getElementById('meeting_2').innerHTML = '<strong>Meeting 2:</strong> No meeting scheduled';
+                  }
+              }
+  
+              // Initial setup
+              const initialGradeRange = gradeRangeElement.value;
+              hiddenGradeRangeInput.value = initialGradeRange;
+              updateExactGradeOptions(initialGradeRange);
+              updatePhaseUI(initialGradeRange, completedMeetingCount);
+  
+              gradeRangeElement.addEventListener('change', function (e) {
+                  const selected = e.target.value;
+                  hiddenGradeRangeInput.value = selected;
+                  updateExactGradeOptions(selected);
+                  updatePhaseUI(selected, completedMeetingCount);
+              });
           }
-    
-          // Initial setup
-          const initialGradeRange = gradeRangeElement.value;
-          hiddenGradeRangeInput.value = initialGradeRange;
-          updateExactGradeOptions(initialGradeRange);
-          updatePhaseUI(initialGradeRange, completedMeetingCount);
-    
-          gradeRangeElement.addEventListener('change', function (e) {
-              const selected = e.target.value;
-              hiddenGradeRangeInput.value = selected;
-              updateExactGradeOptions(selected);
-              updatePhaseUI(selected, completedMeetingCount);
-          });
-          }
+  
           const calendarEl = document.getElementById('student-calendar');
           const events = {{ events_json|safe }};
-
-          console.log(events);
-    
+          
           const calendar = new FullCalendar.Calendar(calendarEl, {
               initialView: 'dayGridMonth',
               height: 'auto',
@@ -328,19 +345,19 @@
                   new bootstrap.Modal(document.getElementById('eventViewModal')).show();
               }
           });
-    
+  
           calendar.render();
-    
+  
           document.addEventListener('click', function (e) {
               if (e.target && e.target.matches('#markCompleteBtn')) {
                   const fullMeetingId = document.getElementById('currentMeetingId').value;
                   const numericMeetingId = fullMeetingId.replace('meeting-', '');
-    
+  
                   if (!numericMeetingId) {
                       alert('Meeting ID missing!');
                       return;
                   }
-    
+  
                   fetch("{% url 'delete_meeting' %}", {
                       method: "POST",
                       headers: {
@@ -357,18 +374,18 @@
                       if (data.status === 'success') {
                           alert('Meeting marked as completed!');
                           document.getElementById('completionMessage').style.display = 'block';
-    
+  
                           const event = calendar.getEventById(fullMeetingId);
                           if (event) {
                               event.remove();
                           }
-    
+  
                           const newCount = data.completed_meeting_count;
                           const completedMeetingCountElement = document.querySelector('.alert-info');
                           if (completedMeetingCountElement) {
                               completedMeetingCountElement.innerHTML = `You have completed <strong>${newCount}</strong> meeting${newCount === 1 ? '' : 's'} so far.`;
                           }
-    
+  
                           updatePhaseUI(hiddenGradeRangeInput.value, newCount);
                       }
                   })
@@ -378,7 +395,10 @@
               }
           });
       });
-    </script>
+  </script>
+  
+  
+  
     
     
   {% endif %}

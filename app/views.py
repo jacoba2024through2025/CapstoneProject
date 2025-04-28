@@ -37,76 +37,93 @@ def view_admin_page(request):
 def view_admin_chart(request):
     return render(request, 'bs-binary-admin/chart.html')
 
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from .forms import CreateProductForm
+from .models import Products
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from .models import Products
+from .forms import CreateProductForm
+from .decorators import admin_required  # Assuming you have this
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from .forms import CreateProductForm
+from .models import Products
+
 @admin_required
 def view_admin_forms(request):
-    
     products = Products.objects.all()
-
     selected_product = None
     selected_product_id = request.POST.get('product_id') or request.GET.get('product_id')
 
-    
+    # Handle the selected product for editing
     if selected_product_id:
         selected_product = get_object_or_404(Products, id=selected_product_id)
 
-    
     form = None
 
     if request.method == 'POST':
-        if 'edit_product' in request.POST:
+        if 'create_product' in request.POST:
+            # Create a new product from form data
+            form = CreateProductForm(request.POST, request.FILES)
+
+            if form.is_valid():
+                product = form.save()
+                messages.success(request, f"Product '{product.name}' created successfully!")
+                return redirect('forms')  # Redirect to the form page to avoid resubmission
+            else:
+                messages.error(request, "There was an error creating the product. Please check the form.")
+
+        elif 'edit_product' in request.POST:
+            # Handle product update
             product_id = request.POST.get('product_id')
-            
+
             if not product_id:
                 messages.error(request, "Please select a product to edit.")
                 return redirect('forms')
 
-            
             product = get_object_or_404(Products, id=product_id)
             form = CreateProductForm(request.POST, request.FILES, instance=product)
 
             if form.is_valid():
-                print("Form is valid, saving product.")
                 form.save()
-                messages.success(request, "Product updated successfully!")
-                
-                return redirect('forms')  
+                messages.success(request, f"Product '{product.name}' updated successfully!")
+                return redirect('forms')
             else:
-                print("Form errors:", form.errors)
-                print(form.errors)
-                messages.error(request, "There was an error updating the product. Please check the form.")
-        
-        
+                messages.error(request, f"There was an error updating '{product.name}'. Please check the form.")
+
         elif 'delete_product' in request.POST:
+            # Handle product deletion
             product_id = request.POST.get('product_id')
+
             if not product_id:
                 messages.error(request, "Please select a product to delete.")
-                return redirect('forms') 
+                return redirect('forms')
 
-            
             product = get_object_or_404(Products, id=product_id)
+            product_name = product.name
             product.delete()
-            messages.success(request, "Product deleted successfully!")
+            messages.success(request, f"Product '{product_name}' deleted successfully!")
             return redirect('forms')
-        elif 'create_product' in request.POST:
-            form = CreateProductForm(request.POST, request.FILES)
-            if form.is_valid():
-                form.save()
-                messages.success(request, "Product created successfully!")
-                return redirect('forms')  
-            else:
-                messages.error(request, "There was an error creating the product. Please check the form.") 
 
     else:
-        
-        form = CreateProductForm()
+        if selected_product:
+            form = CreateProductForm(instance=selected_product)
+        else:
+            form = CreateProductForm()
 
-    
     return render(request, 'bs-binary-admin/form.html', {
         'form': form,
         'products': products,
-        'selected_product_id': selected_product_id,  
-        'selected_product': selected_product, 
+        'selected_product_id': selected_product_id,
+        'selected_product': selected_product,
     })
+
+
+
 
 @admin_required
 def view_admin_tabs(request):

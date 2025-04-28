@@ -102,12 +102,15 @@ class ChatMessageForm(forms.ModelForm):
 class CreateProductForm(forms.ModelForm):
     class Meta:
         model = Products
-        fields = ['name', 'category','description', 'price', 'image']
+        fields = ['name', 'category', 'description', 'price', 'image']
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Product Name'}),
             'description': forms.Textarea(attrs={'placeholder': 'Product Description'}),
             'price': forms.NumberInput(attrs={'placeholder': 'Price'}),
+            'category': forms.Select(attrs={'class': 'form-control'})  # Using Select widget for category
         }
+
+        image = forms.ImageField(required=False)
 
 class CoachProfileForm(forms.ModelForm):
     class Meta:

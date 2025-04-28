@@ -2,31 +2,32 @@
 
 {% block content %}
     <div class="edit-class-page">
-        <h1>Edit Class: {{ class_instance.name }}</h1>
+        <h1 class="edit-class-title">Edit Class: {{ class_instance.name }}</h1>
 
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="form-fields">
-                <div class="form-field">
-                    {{ form.name.label }}
+                <div class="form-field form-name">
+                    <label for="{{ form.name.id_for_label }}" class="form-label">{{ form.name.label }}</label>
                     {{ form.name }}
                 </div>
-                <div class="form-field">
-                    {{ form.description.label }}
+                <div class="form-field form-description">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">{{ form.description.label }}</label>
                     {{ form.description }}
                 </div>
-                <div class="form-field">
-                    {{ form.price.label }}
+                <div class="form-field form-price">
+                    <label for="{{ form.price.id_for_label }}" class="form-label">{{ form.price.label }}</label>
                     {{ form.price }}
                 </div>
-                <div class="form-field">
-                    {{ form.class_image.label }}
+                <div class="form-field form-class-image">
+                    <label for="{{ form.class_image.id_for_label }}" class="form-label">{{ form.class_image.label }}</label>
                     {{ form.class_image }}
                 </div>
             </div>
 
-            <button type="submit" class="save-button">Save Changes</button>
-            <button type="submit" name="delete_class" class="save-button">Delete Class</button>
+            <button type="submit" class="submit-button save-button">Save Changes</button>
+            <button type="submit" name="delete_class" class="submit-button delete-button">Delete Class</button>
         </form>
     </div>
 {% endblock %}
+
