@@ -7,25 +7,13 @@
       <p>{{ error_message }}</p>
     </div>
   {% else %}
+    <div class="dashboard-nav-buttons d-flex flex-wrap justify-content-center gap-2 mb-3">
+      <a href="{% url 'upcoming_events' class_id=class_obj.id %}" class="btn custom-btn-red"><i class="fa-solid fa-clock icon-spacing"></i>Upcoming Sessions</a>
+      <a href="{% url 'past_sessions' class_id=class_obj.id %}" class="btn custom-btn-red"><i class="fa-solid fa-clock-rotate-left icon-spacing"></i>Past Sessions</a>
+      <a href="{% url 'chat_room' class_obj.id %}" class="btn custom-btn-red"><i class="fa-solid fa-comments icon-spacing"></i>Chat Room</a>
+    </div>
     <div class="dashboard-container">
-      <div class="sidebar">
-        <h2>Dashboard</h2>
-        <ul class="sidebar-menu">
-          <li class="dropdown">
-            <a href="#" class="dropbtn">
-              Class Schedule
-              <span class="arrow">&#9662;</span>
-            </a>
-            <ul class="dropdown-content">
-              <li><a href="#">Weekly Schedule</a></li>
-              <li><a href="{% url 'upcoming_events' class_id=class_obj.id %}">Upcoming Sessions</a></li>
-              <li><a href="{% url 'past_sessions' class_id=class_obj.id %}">Past Sessions</a></li>
-            </ul>
-          </li>
-          <li><a href="{% url 'chat_room' class_obj.id %}">Chat Room</a></li>
-          <li><a href="/reminders">Reminders</a></li>
-        </ul>
-      </div>
+      
 
       <div class="main-content">
         <div class="class-info-dashboard-heading">
@@ -330,6 +318,7 @@
           const calendar = new FullCalendar.Calendar(calendarEl, {
               initialView: 'dayGridMonth',
               height: 'auto',
+              aspectRatio: 1.35,
               headerToolbar: {
                   left: 'prev,next today',
                   center: 'title',

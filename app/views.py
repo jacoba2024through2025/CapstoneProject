@@ -192,6 +192,8 @@ class SuccessView(TemplateView):
     template_name = "store/success.html"
 
 def empty_cart(request):
+    print("Emptying cart:", request.user)
+    current_user = request.user
     cart_items = Cart.objects.filter(user=request.user)
     for item in cart_items:
         item.delete()
@@ -345,7 +347,8 @@ def register(request):
         print(f"Attempting to authenticate with Username: {username} and Password: {password}")
 
         user = authenticate(request, username=username, password=password, email=email)
-
+        stored_user = user  # Store the authenticated user in a global variable
+        print(stored_user)
         if user is not None:
             login(request, user)
 
@@ -380,6 +383,8 @@ def viewProducts(request):
             
         except Coach.DoesNotExist:
             user_role = 'User'
+    else:
+        user_role = 'Guest'
     
     products = Products.objects.filter(hidden=False)
     paginator = Paginator(products, 6)
@@ -409,8 +414,13 @@ def create_product(request):
         form = CreateProductForm()
     return render(request, 'store/create_product.html', {'form': form})
 
-@login_required
+
 def add_to_cart(request, product_id):
+    if not request.user.is_authenticated:
+        return redirect('register')
+
+
+
     print(request.POST["JStoPython"])
     product = get_object_or_404(Products, id=product_id)
     cart_item, created = Cart.objects.get_or_create(user=request.user, product=product)

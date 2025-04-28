@@ -1584,80 +1584,31 @@ footer .inner-content p a {
 }
 
 /* Sidebar content */
+.btn {
+  position: relative;
+  display: inline-block;
+  padding: 10px 20px;
+  font-weight: 600;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+  margin: 10px;
+}
+
+/* Custom Button Colors */
+.custom-btn-red {
+  background-color: #CA152C;
+}
 .dashboard-container {
-	display: flex;
+	
 	min-height: 100vh;
 	background-color: #f4f6f9;
 	font-family: poppins, sans-serif;
   }
   
-  .sidebar {
-	width: 250px;
-	background-color: #182441;
-	color: #fff;
-	padding: 20px;
-	box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-  }
   
-  .sidebar h2 {
-	margin-bottom: 20px;
-	font-size: 22px;
-	color: #056BA3;
-	border-bottom: 3px solid #056BA3;
-  }
-  
-  .sidebar-menu {
-	list-style-type: none;
-	padding: 0;
-  }
-  
-  .sidebar-menu li {
-	margin-bottom: 15px;
-  }
-  
-  .sidebar-menu a {
-	color: #CA152C;
-	text-decoration: none;
-	font-size: 16px;
-	display: block;
-	transition: color 0.3s ease;
-  }
-  
-  .sidebar-menu a:hover {
-	color: #d02d2d;
-  }
-  
-  .dropdown-content {
-	display: none;
-	list-style-type: none;
-	padding-left: 15px;
-  }
-  
-  .dropdown:hover .dropdown-content {
-	display: block;
-  }
-  
-  .dropbtn {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	cursor: pointer;
-  }
-  
-  .arrow {
-	margin-left: 8px;
-	transition: transform 0.3s ease;
-	display: inline-block;
-  }
-  
-  .dropdown:hover .arrow {
-	transform: rotate(180deg);
-  }
-  
-  .main-content {
-	flex-grow: 1;
-	padding: 30px;
-  }
   
   /* Footer */
   .footer {
@@ -1691,6 +1642,16 @@ footer .inner-content p a {
 }
 
 /* Dashboard Styling*/
+.dashboard-nav-buttons {
+  display: flex;
+  
+  align-items: stretch;
+  gap: 2vw;
+  margin: 5px auto;
+  width: 100%;
+  
+  padding: 0 15px;
+}
 
 .coach-profile-image {
 	max-width: 15vw;
@@ -1809,6 +1770,42 @@ footer .inner-content p a {
   .custom-meeting-form button[type="submit"]:hover {
 	background-color: #d02d2d;
   }
+
+
+
+/* Reusable button hover underline animation */
+.dashboard-nav-buttons a {
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+  overflow: hidden;
+  transition: color 0.3s ease;
+}
+
+.dashboard-nav-buttons a::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: currentColor; /* Matches the text color */
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease;
+}
+
+.dashboard-nav-buttons a:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* Optional: Add touch-safe behavior for mobile (no hover flicker) */
+@media (hover: none) {
+  .dashboard-nav-buttons a::after {
+    display: none;
+  }
+}
   
   
   /* Edit class form
@@ -1923,6 +1920,22 @@ footer .inner-content p a {
 
 
 
+@media (min-width: 375px) and (max-width: 768px) {
+  .container {
+    width: 1%;
+  }
+
+  .project-logo {
+    width: 15vw;
+    height: 8vh;
+  }
+
+  .container-new {
+    width: 75% !important;
+  }
+}
+
+
 
 
 /* Mobile friendly*/
@@ -1956,3 +1969,117 @@ footer .inner-content p a {
 }
 
 
+/*Class Dashboard mobile friendly*/
+/* Responsive adjustments for tablet and below */
+@media (max-width: 768px) {
+  .dashboard-container {
+    flex-direction: column;
+    padding: 0 15px;
+  }
+
+  .dashboard-nav-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .dashboard-nav-buttons a {
+    width: 100%;
+    text-align: center;
+  }
+
+  .coach-profile-image {
+    max-width: 60vw;
+    margin: 10px auto;
+    display: block;
+  }
+
+  .class-info-dashboard-heading,
+  .class-info-dashboard-body,
+  .custom-meeting-form form {
+    padding: 15px;
+    margin-bottom: 20px;
+    width: 100%;
+  }
+
+  .custom-meeting-form {
+    width: 100%;
+  }
+
+  .custom-meeting-form form {
+    padding: 1rem;
+  }
+
+  .custom-meeting-form button[type="submit"] {
+    width: 100%;
+    font-size: 1rem;
+  }
+
+  .custom-meeting-form select,
+  .custom-meeting-form input,
+  .custom-meeting-form textarea {
+    font-size: 1rem;
+  }
+
+  .calendar-wrapper {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  #student-calendar {
+    width: 100% !important;
+    overflow-x: auto;
+  }
+
+  .fc .fc-toolbar-title {
+    font-size: 1.1rem !important;
+  }
+
+  .fc .fc-button {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  .modal-content {
+    padding: 10px;
+  }
+}
+
+/* Smaller phones and extra small devices */
+@media (max-width: 480px) {
+  .class-info-dashboard-heading h1 {
+    font-size: 1.25rem;
+  }
+
+  .class-info-dashboard-heading h3 {
+    font-size: 1rem;
+  }
+
+  .class-info-dashboard-body h2 {
+    font-size: 1.1rem;
+  }
+
+  .custom-meeting-form h4 {
+    font-size: 1.2rem;
+  }
+
+  .fc .fc-toolbar-title {
+    font-size: 1rem !important;
+  }
+
+  .modal-content p,
+  .modal-content span,
+  .modal-title {
+    font-size: 0.9rem;
+  }
+
+  .custom-meeting-form button[type="submit"] {
+    font-size: 0.95rem;
+  }
+
+  .form-label {
+    font-size: 0.95rem;
+  }
+}
