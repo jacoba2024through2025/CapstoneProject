@@ -1,6 +1,7 @@
 {% extends 'mainpage.html' %} {% load static %}
 
 {% block head %}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="{% static "store/css/test.css" %}">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 {% endblock head %}
@@ -20,7 +21,7 @@
       <div class="card__body">
         <div class="half">
           <div class="featured_text">
-            <h1>Nurton</h1>
+            <h1>MERCH</h1>
             <p class="sub">{{product.name}}</p>
             <p class="price">${{product.price}}</p>
           </div>

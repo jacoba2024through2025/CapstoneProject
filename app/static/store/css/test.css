@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css?family=Fjalla+One|Montserrat:300,400,700,800|Open+Sans:300");
 body {
-  background-image: linear-gradient(to right bottom, #CA152C, #BC344C, #CF4F66, #810E1D, #EB475D);
+  background-image: linear-gradient(to right bottom, #CA152C, #BC344C, #9c0f29, #810E1D, #9e2838);
   height: 100%;
   margin: 0;
   background-repeat: no-repeat;
@@ -139,8 +139,8 @@ section {
   left: 40px;
   width: calc(100% - 40px);
   height: 3px;
-  background: #115dd8;
-  background: linear-gradient(to right, #CA152C 0%, #115dd8 20%, #ddd 20%, #ddd 100%);
+  background: #8d2420;
+  background: linear-gradient(to right, #CA152C 0%, #c0442e 20%, #ddd 20%, #ddd 100%);
 }
 .card .card__footer .recommend {
   flex: 1 0 10px;
@@ -159,22 +159,22 @@ section {
   font-family: "Montserrat", sans-serif;
   font-weight: 600;
   text-transform: uppercase;
-  color: #115dd8;
+  color: #f30909;
 }
 .card .card__footer .action button {
   cursor: pointer;
-  border: 1px solid #115dd8;
+  border: 1px solid #c40c0c;
   padding: 14px 30px;
   border-radius: 200px;
   color: #fff;
-  background: #115dd8;
+  background: #c40c0c;
   font-family: "Open Sans", sans-serif;
   font-size: 16px;
   transition: 200ms;
 }
 .card .card__footer .action button:hover {
   background: #fff;
-  color: #115dd8;
+  color: #c40c0c;
 }
 
 .quantity_selector {
@@ -186,7 +186,7 @@ section {
 }
 .quantity_selector button {
   border-radius: 4px;
-  background-color: #3498db;
+  background-color: #ec2121;
   color: #fff;
   border: none;
   cursor: pointer;
@@ -197,7 +197,7 @@ section {
   transition: background-color 0.2s;
 }
 .quantity_selector button:hover {
-  background-color: #2980b9;
+  background-color: #7a0800;
 }
 .quantity_selector button:focus {
   outline: none;
@@ -208,12 +208,12 @@ section {
   justify-content: center;
   width: -moz-fit-content;
   width: fit-content;
-  border: 2px solid #3498db;
+  border: 2px solid #db3450;
   border-radius: 4px;
 }
 
 .input-box {
-  border: 2px solid #3498db;
+  border: 2px solid #db3450;
   border-radius: 4px;
   width: 40px;
   text-align: center;
@@ -231,4 +231,94 @@ section {
 
 .input-box[type=number] {
   -moz-appearance: textfield;
+}
+
+@media (max-width: 768px) {
+  body {
+    background-image: none;
+    background-color: #CA152C;
+  }
+  section {
+    margin: 10% auto;
+    padding: 0 10px;
+  }
+  .card {
+    box-shadow: none;
+    padding: 10px;
+  }
+  .card .card__title {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .card .card__title h3 {
+    text-align: left;
+    font-size: 16px;
+  }
+  .card .card__title .icon {
+    margin-bottom: 10px;
+  }
+  .card .card__body {
+    flex-direction: column;
+  }
+  .card .card__body > .half {
+    flex: 1 0 100%;
+    padding: 0;
+  }
+  .card .card__body .featured_text h1 {
+    font-size: 32px;
+    line-height: 40px;
+  }
+  .card .card__body .featured_text p.sub {
+    font-size: 18px;
+  }
+  .card .card__body .featured_text p.price {
+    font-size: 20px;
+  }
+  .card .card__body .image {
+    padding-top: 10px;
+  }
+  .card .card__body .image img {
+    max-width: 100%;
+  }
+  .card .card__body .description {
+    margin-bottom: 15px;
+  }
+  .card .card__body .description p {
+    font-size: 14px;
+    line-height: 22px;
+  }
+  .card .card__body .reviews .stars {
+    font-size: 12px;
+  }
+  .card .card__body .reviews > span {
+    font-size: 12px;
+  }
+  .card .card__footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .card .card__footer .recommend {
+    margin-bottom: 15px;
+  }
+  .card .card__footer .recommend p {
+    font-size: 12px;
+  }
+  .card .card__footer .recommend h3 {
+    font-size: 16px;
+  }
+  .card .card__footer .action button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+  .quantity_selector {
+    width: 100%;
+  }
+  .quantity_selector button {
+    font-size: 16px;
+    width: 35px;
+  }
+  .quantity_selector .input-box {
+    font-size: 14px;
+    width: 30px;
+  }
 }/*# sourceMappingURL=test.css.map */

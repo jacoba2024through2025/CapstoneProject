@@ -5,9 +5,9 @@ body {
     to right bottom,
     #CA152C,
     #BC344C,
-    #CF4F66,
+    #9c0f29,
     #810E1D,
-    #EB475D
+    #9e2838
   );
   height: 100%;
   margin: 0;
@@ -171,8 +171,8 @@ section{
       left: 40px;
       width: calc(100% - 40px);
       height: 3px;
-      background: #115dd8;
-      background: linear-gradient(to right, #CA152C 0%,#115dd8 20%,#ddd 20%,#ddd 100%);
+      background: #8d2420;
+      background: linear-gradient(to right, #CA152C 0%,#c0442e 20%,#ddd 20%,#ddd 100%);
     }
     
     .recommend{
@@ -193,25 +193,25 @@ section{
         font-family: "Montserrat", sans-serif;
         font-weight: 600;
         text-transform: uppercase;
-        color: #115dd8;
+        color: #f30909;
       }
     }
     
     .action{
       button{
         cursor: pointer;
-        border: 1px solid #115dd8;
+        border: 1px solid #c40c0c;
         padding: 14px 30px;
         border-radius: 200px;
         color: #fff;
-        background: #115dd8;
+        background: #c40c0c;
         font-family: "Open Sans", sans-serif;
         font-size: 16px;
         transition: 200ms;
         
         &:hover{
           background: #fff;
-          color: #115dd8;
+          color: #c40c0c;
         }
       }
     }
@@ -227,7 +227,7 @@ section{
 
   button {
     border-radius: 4px;
-    background-color: #3498db;
+    background-color: #ec2121;
     color: #fff;
     border: none;
     cursor: pointer;
@@ -239,7 +239,7 @@ section{
   }
 
   button:hover {
-    background-color: #2980b9;
+    background-color: #7a0800;
   }
 
   button:focus {
@@ -251,12 +251,12 @@ section{
   display: flex;
   justify-content: center;
   width: fit-content;
-  border: 2px solid #3498db;
+  border: 2px solid #db3450;
   border-radius: 4px;
 }
 
 .input-box {
-  border: 2px solid #3498db;
+  border: 2px solid #db3450;
   border-radius: 4px;
   width: 40px;
   text-align: center;
@@ -274,4 +274,124 @@ section{
 
 .input-box[type="number"] {
   -moz-appearance: textfield;
+}
+
+@media (max-width: 768px) {
+  body {
+    background-image: none;
+    background-color: #CA152C;
+  }
+
+  section {
+    margin: 10% auto;
+    padding: 0 10px;
+  }
+
+  .card {
+    box-shadow: none;
+    padding: 10px;
+
+    .card__title {
+      flex-direction: column;
+      align-items: flex-start;
+
+      h3 {
+        text-align: left;
+        font-size: 16px;
+      }
+
+      .icon {
+        margin-bottom: 10px;
+      }
+    }
+
+    .card__body {
+      flex-direction: column;
+
+      > .half {
+        flex: 1 0 100%;
+        padding: 0;
+      }
+
+      .featured_text {
+        h1 {
+          font-size: 32px;
+          line-height: 40px;
+        }
+
+        p.sub {
+          font-size: 18px;
+        }
+
+        p.price {
+          font-size: 20px;
+        }
+      }
+
+      .image {
+        padding-top: 10px;
+
+        img {
+          max-width: 100%;
+        }
+      }
+
+      .description {
+        margin-bottom: 15px;
+
+        p {
+          font-size: 14px;
+          line-height: 22px;
+        }
+      }
+
+      .reviews {
+        .stars {
+          font-size: 12px;
+        }
+
+        > span {
+          font-size: 12px;
+        }
+      }
+    }
+
+    .card__footer {
+      flex-direction: column;
+      align-items: flex-start;
+
+      .recommend {
+        margin-bottom: 15px;
+
+        p {
+          font-size: 12px;
+        }
+
+        h3 {
+          font-size: 16px;
+        }
+      }
+
+      .action {
+        button {
+          padding: 10px 20px;
+          font-size: 14px;
+        }
+      }
+    }
+  }
+
+  .quantity_selector {
+    width: 100%;
+
+    button {
+      font-size: 16px;
+      width: 35px;
+    }
+
+    .input-box {
+      font-size: 14px;
+      width: 30px;
+    }
+  }
 }
