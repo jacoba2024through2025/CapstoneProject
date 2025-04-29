@@ -473,11 +473,13 @@ header .navbar {
   transform: translateY(-50%);
   text-align: center;
   width: 100%;
+  
+ 
 }
 
 .banner .text-content h4 {
-  color: #ca152c;
-  font-size: 22px;
+  color: white;
+  font-size: 30px;
   text-transform: uppercase;
   font-weight: 700;
   margin-bottom: 15px;
@@ -490,12 +492,24 @@ header .navbar {
   letter-spacing: 5px;
 }
 
+.col-md-12 .text-content {
+  background: #212529;
+  margin-right: 20vw;
+  margin-left: 20vw;
+  border-radius: 3%;
+}
+
 .banner .text-content h4,
 .banner .text-content h6 {
+  
   background: #212529;
   display: inline-block;
   padding: 0.5rem 1rem;
   border-radius: 3%;
+}
+
+.banner .text-content h6 {
+  font-size: 15px;
 }
 
 .owl-banner .owl-dots .owl-dot {
@@ -1493,6 +1507,93 @@ footer .inner-content p a {
   margin-right: 15px;
 }
 
+.approved-class-button {
+  background-color: #ca152c;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.approved-class-button:hover {
+  background-color: #a81024;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.approved-classes-container {
+  padding-bottom: 40px;
+}
+
+.approved-classes-header {
+  background-color: #CA152C;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.approved-classes-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.approved-class-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.approved-class-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.approved-class-img {
+  height: 200px;
+  object-fit: cover;
+  width: 100%;
+}
+
+.approved-class-body {
+  flex-grow: 1;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.approved-class-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.approved-class-description {
+  font-size: 0.95rem;
+  margin-top: 10px;
+}
+
+.approved-class-coach {
+  font-style: italic;
+  margin-top: 10px;
+}
+
+.no-approved-classes-text {
+  margin-top: 20px;
+  font-style: italic;
+}
+
 /* Create schedule page*/
 
 /* Styling for the form container */
@@ -1679,6 +1780,18 @@ footer .inner-content p a {
 	color: #056BA3;
 }
 
+
+.class-schedule-header {
+  background-color: #CA152C;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  margin-right: 35vw;
+  margin-left: 35vw;
+}
+
 .class-info-dashboard-body {
 	background-color: #fff;
 	padding: 20px;
@@ -1799,6 +1912,71 @@ footer .inner-content p a {
   transform: scaleX(1);
   transform-origin: left;
 }
+
+
+/*Upcoming Events Page*/
+.events-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.events-title {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.events-list {
+  list-style: none;
+  padding: 0;
+}
+
+.events-item {
+  background: #f9f9f9;
+  padding: 20px;
+  margin-bottom: 15px;
+  border-left: 5px solid #ca152c;
+  border-radius: 5px;
+  transition: background-color 0.2s ease;
+}
+
+.events-item:hover {
+  background-color: #f1f7ff;
+}
+
+.events-item-title {
+  font-size: 1.2em;
+  color: #2c3e50;
+}
+
+.events-item-date {
+  color: #666;
+  display: block;
+  margin: 5px 0 10px;
+}
+
+.events-item-description,
+.events-item-class {
+  margin: 5px 0;
+  color: #444;
+}
+
+.events-item-class strong {
+  color: #000;
+}
+
+.events-no-events {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  margin-top: 20px;
+}
+
 
 /* Optional: Add touch-safe behavior for mobile (no hover flicker) */
 @media (hover: none) {

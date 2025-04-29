@@ -65,17 +65,18 @@
                       {% if user_role == 'Coach' %}
                         <a class="dropdown-item" href="{% url 'schedule' username=request.user.username %}"><i class="icon-spacing fa-solid fa-calendar"></i>My Schedules</a>
                       {% elif user_role == 'User' %}
-                        <a class="dropdown-item" href="{% url 'find_coach' %}"><i class="fa-solid fa-comments"></i>Find A Coach</a>
-                        <a class="dropdown-item" href="{% url 'approved_classes' %}"><i class="fas fa-graduation-cap"></i></i>My Classes</a>
+                        <a class="dropdown-item" href="{% url 'find_coach' %}"><i class="fa-solid fa-comments icon-spacing"></i>Find A Coach</a>
+                        <a class="dropdown-item" href="{% url 'approved_classes' %}"><i class="fas fa-graduation-cap icon-spacing"></i></i>My Classes</a>
 
                       {% endif %}
-                     
-                      <a class="dropdown-item" href="{% url 'notifications' %}">
-                        <i class="icon-spacing fa-solid fa-bell"></i> Notifications
-                        {% if unread_count > 0 %}
-                          <span class="badge badge-pill badge-danger">{{ unread_count }}</span>
-                        {% endif %}
-                      </a>
+                      {% if user_role == 'Coach' %}
+                        <a class="dropdown-item" href="{% url 'notifications' %}">
+                          <i class="icon-spacing fa-solid fa-bell"></i> Notifications
+                          {% if unread_count > 0 %}
+                            <span class="badge badge-pill badge-danger">{{ unread_count }}</span>
+                          {% endif %}
+                        </a>
+                      {% endif %}
                       <a class="dropdown-item" href="{% url 'view_cart' %}"><i class="icon-spacing fa-solid fa-cart-shopping"></i>My Cart</a>
                     </div>
                   </li>

@@ -1,0 +1,97 @@
+/* Container centers content vertically and horizontally */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-image: url('../images/products.jpg'); /* adjust path if needed */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+  }
+
+.fp-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f4f6f8;
+    padding: 20px;
+  }
+  
+  /* Card container */
+  .fp-card {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 450px;
+    width: 100%;
+  }
+  
+  /* Title */
+  .fp-title {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 1.5rem;
+  }
+  
+  /* Description */
+  .fp-description {
+    text-align: center;
+    color: #777;
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+  }
+  
+  /* Form styles */
+  .fp-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Adjust spacing for form inputs rendered with {{ form.as_p }} */
+  .fp-form p {
+    margin-bottom: 15px;
+  }
+  
+  .fp-form label {
+    display: block;
+    margin-bottom: 6px;
+    color: #444;
+    font-weight: 500;
+  }
+  
+  .fp-form input[type="email"],
+  .fp-form input[type="text"],
+  .fp-form input[type="password"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+  }
+  
+  .fp-form input:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+  }
+  
+  /* Submit button */
+  .fp-button {
+    background-color: #4a90e2;
+    color: #fff;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    margin-top: 10px;
+  }
+  
+  .fp-button:hover {
+    background-color: #357abd;
+  }

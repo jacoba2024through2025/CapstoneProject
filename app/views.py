@@ -275,22 +275,17 @@ def view_main_page(request):
     
 
 def view_contact_page(request):
-
+    # Determine the user role
     if request.user.is_authenticated:
         user = request.user
         user_role = 'User'
         try:
             coach = Coach.objects.get(user=user)
-            
             user_role = 'Coach'
-            
         except Coach.DoesNotExist:
             user_role = 'User'
-
-        return render(request, "contact.html", {
-            
-            'user_role': user_role,
-        })
+    else:
+        user_role = 'Guest'
 
     if request.method == "POST":
         message_name = request.POST['message-name']
@@ -300,21 +295,22 @@ def view_contact_page(request):
         
         # Send the email
         send_mail(
-            
-            subject=message_subject,  # Subject of the email
-            message=message,          # Body of the email
-            from_email=message_email, # From the email entered in the form
-            recipient_list=['zombiejake2005@gmail.com'],  # To the admin's email
+            subject=message_subject,
+            message=message,
+            from_email=message_email,
+            recipient_list=['zombiejake2005@gmail.com'],
         )
 
-        
         return render(request, 'contact.html', {
             "message_name": message_name,
-            "message_sent": True,  
+            "message_sent": True,
+            "user_role": user_role,  # Include user role in context
         })
 
     else:
-        return render(request, "contact.html", {})
+        return render(request, "contact.html", {
+            "user_role": user_role,  # Include user role in context
+        })
     
 
 
@@ -434,6 +430,19 @@ def add_to_cart(request, product_id):
 
 @login_required
 def view_cart(request):
+    if request.user.is_authenticated:
+        user = request.user
+        user_role = 'User'
+        try:
+            coach = Coach.objects.get(user=user)
+            
+            user_role = 'Coach'
+            
+        except Coach.DoesNotExist:
+            user_role = 'User'
+    else:
+        user_role = 'Guest'
+
     cart_items = Cart.objects.filter(user=request.user)
     total_price = sum(item.get_total_price() for item in cart_items)
     cart_count = 0
@@ -443,6 +452,7 @@ def view_cart(request):
         'cart_items': cart_items,
         'total_price': total_price,
         "cart_count": cart_count,
+        'user_role': user_role,
     }
     return render(request, 'store/cart.html', context)
 
@@ -511,6 +521,19 @@ def create_checkout_session(request):
 
 
 def view_schedule_page(request, username):
+    if request.user.is_authenticated:
+        user = request.user
+        user_role = 'User'
+        try:
+            coach = Coach.objects.get(user=user)
+            
+            user_role = 'Coach'
+            
+        except Coach.DoesNotExist:
+            user_role = 'User'
+    else:
+        user_role = 'Guest'
+
     user = get_object_or_404(User, username=username)
 
     try:
@@ -560,10 +583,22 @@ def view_schedule_page(request, username):
         'class_count': class_count,
         'event_form': event_form,
         'events': event_data,
+        'user_role': user_role,
     })
 
 @login_required
 def find_coach(request):
+    if request.user.is_authenticated:
+        user = request.user
+        user_role = 'User'
+        try:
+            coach = Coach.objects.get(user=user)
+            user_role = 'Coach'
+        except Coach.DoesNotExist:
+            user_role = 'User'
+    else:
+        user_role = 'Guest'
+
     approved_classes = request.user.classes.all()
     coach_states = Coach.objects.exclude(state__isnull=True).exclude(state='').values_list('state', flat=True).distinct()
     coach_schools = Coach.objects.exclude(school__isnull=True).exclude(school='').values_list('school', flat=True).distinct()
@@ -571,6 +606,7 @@ def find_coach(request):
         'approved_classes': approved_classes,
         'coach_states': coach_states,
         'coach_schools': coach_schools,
+        'user_role': user_role,  # Include user role in context
     })
 
 from django.db.models import Q
@@ -693,6 +729,16 @@ def get_phase_and_meetings_by_grade_range(grade_range):
 
 @login_required
 def class_dashboard(request, class_id):
+    if request.user.is_authenticated:
+        user = request.user
+        user_role = 'User'
+        try:
+            coach = Coach.objects.get(user=user)
+            user_role = 'Coach'
+        except Coach.DoesNotExist:
+            user_role = 'User'
+    else:
+        user_role = 'Guest'
     class_obj = get_object_or_404(Classes, pk=class_id)
 
     is_student = request.user in class_obj.students.all()
@@ -753,7 +799,32 @@ def class_dashboard(request, class_id):
             'color': '#007bff',
         })
 
-    form = MeetingForm()
+    # Determine current phase for selected_student
+    completed_phase1 = Meeting.objects.filter(
+        class_item=class_obj,
+        player=selected_student,
+        grade_range=grade_range,
+        phase='phase_1',
+        status='completed'
+    ).count()
+
+    completed_phase2 = Meeting.objects.filter(
+        class_item=class_obj,
+        player=selected_student,
+        grade_range=grade_range,
+        phase='phase_2',
+        status='completed'
+    ).count()
+
+    if completed_phase1 < 2:
+        current_phase = 'phase_1'
+    elif completed_phase2 < 2:
+        current_phase = 'phase_2'
+    else:
+        current_phase = 'phase_3'
+
+    form = MeetingForm(phase=current_phase)
+
 
     return render(request, 'classes/class_dashboard.html', {
         'completed_meeting_count': completed_meeting_count,
@@ -762,7 +833,9 @@ def class_dashboard(request, class_id):
         'students': class_obj.students.all(),  
         'events_json': json.dumps(event_data, cls=DjangoJSONEncoder),
         'form': form,
-        'grade_range': grade_range,  
+        'grade_range': grade_range,
+        'user_role': user_role,
+        'current_phase': current_phase, 
     })
 
 @login_required
@@ -840,11 +913,9 @@ from .forms import MeetingForm
   # import from your store app
 from datetime import timedelta
 
-@login_required
 def schedule_meeting_from_dashboard(request, class_id):
     class_obj = get_object_or_404(Classes, id=class_id)
 
-    
     existing_pending = Meeting.objects.filter(
         class_item=class_obj,
         player=request.user,
@@ -859,15 +930,43 @@ def schedule_meeting_from_dashboard(request, class_id):
         })
 
     if request.method == 'POST':
-        form = MeetingForm(request.POST)
+        grade_range = request.POST.get('grade_range', 'prek_4th')
+
+        # Determine phase
+        completed_phase1 = Meeting.objects.filter(
+            class_item=class_obj,
+            player=request.user,
+            grade_range=grade_range,
+            phase='phase_1',
+            status='completed'
+        ).count()
+
+        completed_phase2 = Meeting.objects.filter(
+            class_item=class_obj,
+            player=request.user,
+            grade_range=grade_range,
+            phase='phase_2',
+            status='completed'
+        ).count()
+
+        if completed_phase1 < 2:
+            current_phase = 'phase_1'
+        elif completed_phase2 < 2:
+            current_phase = 'phase_2'
+        else:
+            current_phase = 'phase_3'
+
+        form = MeetingForm(request.POST, phase=current_phase)
         if form.is_valid():
             meeting = form.save(commit=False)
             meeting.class_item = class_obj
             meeting.coach = class_obj.coach
             meeting.player = request.user
+            meeting.phase = current_phase
 
-            # Grade-based price logic
             exact_grade = request.POST.get('exact_grade', '').strip()
+            meeting.exact_grade = exact_grade
+
             grade_prices = {
                 'PreK': 60,
                 'K': 80, '1st': 80, '2nd': 80, '3rd': 80, '4th': 80,
@@ -875,35 +974,23 @@ def schedule_meeting_from_dashboard(request, class_id):
                 '8th': 80, '9th': 100, '10th': 100,
                 '11th': 80, '12th': 100, 'College': 100
             }
-            meeting.exact_grade = exact_grade
             meeting.price = grade_prices.get(exact_grade, 45.00)
 
-            
-            grade_range = request.POST.get('grade_range', 'prek_4th')
             meeting.grade_range = grade_range
 
-            
-            completed_phase1 = Meeting.objects.filter(
-                class_item=class_obj,
-                player=request.user,
-                grade_range=grade_range,
-                phase='phase_1',
-                status='completed'
-            ).count()
-            meeting.phase = 'phase_2' if completed_phase1 >= 2 else 'phase_1'
-            meeting.description = ''
+            # Only allow custom descriptions in phase 3
+            if current_phase != 'phase_3':
+                meeting.description = ''  # Auto-generated in save()
+
             meeting.save()
 
-           
             product = Products.objects.create(
                 name=f"{class_obj.name} Session - {meeting.start_date.strftime('%b %d, %Y')}",
                 price=meeting.price,
                 description=f"Session with {meeting.coach.user.username} for {meeting.exact_grade}",
-                hidden=True,
-                image=None  
+                hidden=True
             )
 
-            
             Cart.objects.create(
                 user=request.user,
                 product=product,
@@ -918,6 +1005,7 @@ def schedule_meeting_from_dashboard(request, class_id):
         'class_obj': class_obj,
         'form': form,
     })
+
 
 
 @login_required

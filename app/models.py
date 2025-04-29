@@ -170,6 +170,7 @@ class Meeting(models.Model):
     PHASE_CHOICES = [
         ('phase_1', 'Phase 1: Introduction & Basics'),
         ('phase_2', 'Phase 2: Skill Reinforcement'),
+        ('phase_3', 'Phase 3: Custom Session'),
         
     ]
     
@@ -217,7 +218,10 @@ class Meeting(models.Model):
     def __str__(self):
         return f"{self.name} ({self.start_date} - {self.end_date})"
 
-    def auto_generate_description(self):
+    def auto_generate_description(self, phase=None):
+        if (phase or self.phase) == 'phase_3':  
+            return ''
+        
         lesson_plan = {
             'prek_4th': {
                 'phase_1': {
@@ -261,12 +265,14 @@ class Meeting(models.Model):
             },
         }
 
+        effective_phase = phase or self.phase
+
         # Fetch all completed meetings for this player in the same class, grade range, and phase
         completed_meetings = Meeting.objects.filter(
             class_item=self.class_item,
             player=self.player,
             grade_range=self.grade_range,
-            phase=self.phase,
+            phase=effective_phase,
             status='completed'
         ).count()
 
