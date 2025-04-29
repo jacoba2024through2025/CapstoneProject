@@ -102,7 +102,7 @@ class ChatMessageForm(forms.ModelForm):
 class CreateProductForm(forms.ModelForm):
     class Meta:
         model = Products
-        fields = ['name', 'category','description', 'price', 'image']
+        fields = ['name', 'category', 'short_description','long_description', 'price', 'image']
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Product Name'}),
             'description': forms.Textarea(attrs={'placeholder': 'Product Description'}),

@@ -1,7 +1,7 @@
 {% extends 'mainpage.html' %} {% load static %}
 
 {% block head %}
-<link rel="stylesheet" href="{% static "store/css/products.css" %}">
+<link rel="stylesheet" href="{% static "store/css/test.css" %}">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 {% endblock head %}
 
@@ -9,64 +9,56 @@
 
 {% block content %}
 
-<section class="product">
-	<div class="product__photo">
-		<div class="photo-container">
-			<div class="photo-main">
-				<div class="controls">
-					<i class="material-icons">share</i>
-					<i class="material-icons">favorite_border</i>
-				</div>
-				<img src="{{product.image.url}}" alt="green apple slice">
-			</div>
-			{% comment %} <div class="photo-album">
-				<ul>
-					<li><img src="https://res.cloudinary.com/john-mantas/image/upload/v1537302064/codepen/delicious-apples/green-apple2.png" alt="green apple"></li>
-					<li><img src="https://res.cloudinary.com/john-mantas/image/upload/v1537303532/codepen/delicious-apples/half-apple.png" alt="half apple"></li>
-					<li><img src="https://res.cloudinary.com/john-mantas/image/upload/v1537303160/codepen/delicious-apples/green-apple-flipped.png" alt="green apple"></li>
-					<li><img src="https://res.cloudinary.com/john-mantas/image/upload/v1537303708/codepen/delicious-apples/apple-top.png" alt="apple top"></li>
-				</ul>
-			</div> {% endcomment %}
-		</div>
-	</div>
-	<div class="product__info">
-		<div class="title">
-			<h1>{{product.name}}</h1>
-			<span>Category: 45999</span>
-		</div>
-		<div class="price">
-			R$ <span>{{product.price}}</span>
-		</div>
-		<div class="variant">
-			{% comment %} <h3>SELECT A SIZE</h3> {% endcomment %}
-			{% comment %} <ul>
-				<li><img src="https://res.cloudinary.com/john-mantas/image/upload/v1537302064/codepen/delicious-apples/green-apple2.png" alt="green apple"></li>
-				<li><img src="https://res.cloudinary.com/john-mantas/image/upload/v1537302752/codepen/delicious-apples/yellow-apple.png" alt="yellow apple"></li>
-				<li><img src="https://res.cloudinary.com/john-mantas/image/upload/v1537302427/codepen/delicious-apples/orange-apple.png" alt="orange apple"></li>
-				<li><img src="https://res.cloudinary.com/john-mantas/image/upload/v1537302285/codepen/delicious-apples/red-apple.png" alt="red apple"></li>
-			</ul> {% endcomment %}
-		</div>
-		<div class="description">
-			<h3>Description</h3>
-			<ul>
-				<li>{{product.description}}</li>
-			</ul>
-		</div>
-		<div class="quantity_selector">
-			<div class="quantity_container">
-				<button class="minusBtn" id="minus-btn"><i class="material-icons">remove</i></button>
-				<input type="number" class="input-box" id="quantity" value="1" min="1" max="10">
-				<button class="addBtn" id="add-btn"><i class="material-icons">add</i></button>
-			</div>
-		</div>
-		
-		<form action="{% url 'add_to_cart' product.id %}" method="post">
-        	{% csrf_token %}
-			<input type="hidden" name="JStoPython" value="1" id="form-quantity">
-        	<button type="submit" class="buy--btn">ADD TO CART</button>
-      	</form>
-	</div>
-</section>
+ <section>
+    <div class="card">
+      <div class="card__title">
+        <div class="icon">
+          <a href="{% url "products" %}"><i class="fa fa-arrow-left"></i></a>
+        </div>
+        <h3>{{product.category}}</h3>
+      </div>
+      <div class="card__body">
+        <div class="half">
+          <div class="featured_text">
+            <h1>Nurton</h1>
+            <p class="sub">{{product.name}}</p>
+            <p class="price">${{product.price}}</p>
+          </div>
+          <div class="image">
+            <img src="{{product.image.url}}" alt="">
+          </div>
+        </div>
+        <div class="half">
+          <div class="description">
+            <p>{{product.long_description}}</p>
+          </div>
+          <span class="stock"><i class="fa fa-pen"></i> In stock</span>
+          <div class="reviews">
+            <div class="quantity_selector">
+              <div class="quantity_container">
+                <button class="minusBtn" id="minus-btn"><i class="material-icons">remove</i></button>
+                <input type="number" class="input-box" id="quantity" value="1" min="1" max="10">
+                <button class="addBtn" id="add-btn"><i class="material-icons">add</i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card__footer">
+        <div class="recommend">
+          <p>Produced by</p>
+          <h3>Matt Westlake</h3>
+        </div>
+        <div class="action">
+          <form action="{% url 'add_to_cart' product.id %}" method="post">
+        	  {% csrf_token %}
+			      <input type="hidden" name="JStoPython" value="1" id="form-quantity">
+        	  <button type="submit" class="buy--btn">ADD TO CART</button>
+      	  </form>
+        </div>
+      </div>
+    </div>
+  </section>
 
 
 {% endblock %}

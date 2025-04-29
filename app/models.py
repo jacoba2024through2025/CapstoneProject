@@ -161,7 +161,8 @@ class Products(models.Model):
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='other')
     price = models.DecimalField(max_digits=10, decimal_places=2)
     hidden = models.BooleanField(default=False)
-    description = models.TextField()
+    short_description = models.TextField(blank=True, null=True)
+    long_description = models.TextField()
     
     def __str__(self):
         return f"{self.name} - {self.price}"

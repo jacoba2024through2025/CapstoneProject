@@ -352,7 +352,7 @@ def viewLogout(request):
     return redirect('register')
 
 def viewProducts(request):
-
+    user_role = ''
     if request.user.is_authenticated:
         user = request.user
         user_role = 'User'
