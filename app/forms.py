@@ -100,6 +100,8 @@ class ChatMessageForm(forms.ModelForm):
         }
 
 class CreateProductForm(forms.ModelForm):
+    
+
     class Meta:
         model = Products
         fields = ['name', 'category', 'short_description','long_description', 'price', 'image']

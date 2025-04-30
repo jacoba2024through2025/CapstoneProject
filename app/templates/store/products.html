@@ -5,12 +5,29 @@
 
 {% block content %}
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-006S879W2R"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
     <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
 
     gtag('config', 'G-006S879W2R');
+
+    $(document).ready(function() {
+        var $grid = $('.products-grid').isotope({
+          itemSelector: '.product-item',
+          layoutMode: 'fitRows'
+        });
+
+        $('.filters ul li').click(function() {
+          $('.filters ul li').removeClass('active');
+          $(this).addClass('active');
+
+          var filterValue = $(this).attr('data-filter');
+          $grid.isotope({ filter: filterValue });
+        });
+      });
     </script>
 
     <div class="page-heading products-heading header-text">
@@ -45,7 +62,9 @@
                 <div class="row grid">
                     {% for product in products %}
                     <div class="col-lg-4 col-md-4 all dev">
-                      <div class="product-item">
+                      <div class="product-item 
+                      {% if product.category == 'clothing' %}des{% endif %}
+                      {% if product.category == 'equipment' %}dev{% endif %}">
                         {% if product.image %}
                           <img src="{{ product.image.url }}" alt="">
                         {% else %}
@@ -81,6 +100,9 @@
         </div>
       </div>
     </div>
+
+    
+    
 
 {% endblock%}
 

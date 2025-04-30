@@ -43,7 +43,7 @@ section{
     
     .icon{
       flex: 1 0 10px;
-      background: #CF4F66;
+      background: #8a0b0b;
       color: #fff;
       padding: 10px 10px;
       transition: 200ms;
@@ -110,6 +110,7 @@ section{
         display: block;
         max-width: 100%;
         height: auto;
+        border: 1px solid #300d0d;
       }
     }
     

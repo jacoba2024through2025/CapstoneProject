@@ -1,3 +1,4 @@
+from PIL import Image
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -167,13 +168,41 @@ class Products(models.Model):
     def __str__(self):
         return f"{self.name} - {self.price}"
     
+    def save(self, *args, **kwargs):
+        super().save()
+        img = Image.open(self.image.path)
+        width, height = img.size
+
+        if width > 800 or height > 800:
+            img.thumbnail((width, height))
+
+        if height < width:
+            # make square by cutting off equal amounts left and right
+            left = (width - height) / 2
+            right = (width + height) / 2
+            top = 0
+            bottom = height
+            img = img.crop((left, top, right, bottom))
+
+        elif width < height:
+            # make square by cutting off bottom
+            left = (width - height) / 2
+            right = width
+            top = 0
+            bottom = width
+            img = img.crop((left, top, right, bottom))
+
+        if width > 800 and height > 800:
+            img.thumbnail((width, height))
+
+        img.save(self.image.path)
+    
 class Meeting(models.Model):
     PHASE_CHOICES = [
         ('phase_1', 'Phase 1: Introduction & Basics'),
         ('phase_2', 'Phase 2: Skill Reinforcement'),
         
     ]
-    
     GRADE_RANGE_CHOICES = [
         ('prek_4th', 'PreK - 4th Grade'),
         ('5th_7th', '5th - 7th Grade'),

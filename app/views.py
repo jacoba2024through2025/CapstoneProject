@@ -452,7 +452,7 @@ def create_checkout_session(request):
                 'metadata': {
                     'product_id': product.id,
                 },
-                'description': product.description,
+                'description': product.long_description,
             }
 
             
