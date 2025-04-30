@@ -389,7 +389,7 @@ def viewLogout(request):
     return redirect('register')
 
 def viewProducts(request):
-
+    user_role = ''
     if request.user.is_authenticated:
         user = request.user
         user_role = 'User'
@@ -510,7 +510,7 @@ def create_checkout_session(request):
                 'metadata': {
                     'product_id': product.id,
                 },
-                'description': product.description,
+                'description': product.long_description,
             }
 
             
