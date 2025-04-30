@@ -24,7 +24,7 @@
           {% else %}
             <img src="{% static 'default.jpg' %}" alt="Default Profile Picture" class="coach-profile-image">
           {% endif %}
-          <p>Email: {{ class_obj.coach.email|default:"N/A" }}</p>
+          <p>Email: {{ class_obj.coach.user.email|default:"N/A" }}</p>
         </div>
 
         {% if user.coach %}
@@ -37,7 +37,7 @@
         {% if user.coach %}
           <div class="student-selector mb-3">
             <form method="get" action="">
-              <label for="student_id"><strong>Select Student:</strong></label>
+              <label for="student_id"><strong>Select Player:</strong></label>
                 <select name="student_id" id="student_id" onchange="this.form.submit()">
                   {% for student in students %}
                     <option value="{{ student.id }}" {% if student == selected_student %}selected{% endif %}>
@@ -50,17 +50,26 @@
         {% endif %}
 
 
-        {% if user.coach and phase_data %}
-          <div class="class-info-dashboard-body">
-            <h2>Student {{ selected_student.username }}'s Current Phase</h2>
-            <p><strong>{{ phase_data.phase_name }}</strong></p>
-            <p><strong>Meeting 1:</strong> {{ phase_data.meeting_1 }}</p>
-            <p><strong>Meeting 2:</strong> {{ phase_data.meeting_2 }}</p>
-          </div>
-        
+        {% if user.coach %}
+          {% if selected_student %}
+            <!-- Show current phase information for the selected student -->
+            <div class="class-info-dashboard-body">
+              <h2>Player {{ selected_student.username }}'s Current Phase</h2>
+              <p><strong>{{ phase_data.phase_name }}</strong></p>
+              <p><strong>Meeting 1:</strong> {{ phase_data.meeting_1 }}</p>
+              <p><strong>Meeting 2:</strong> {{ phase_data.meeting_2 }}</p>
+            </div>
+          {% else %}
+            <!-- If no student is selected, show the message -->
+            <div class="alert alert-info">
+              Please select a student from the dropdown above to view their current phase.
+            </div>
+          {% endif %}
         {% endif %}
 
-        <hr>
+        
+
+        
 
         <!-- Grade Range Dropdown -->
         {% if not user.coach%}
@@ -75,7 +84,7 @@
           </div>
         {% endif %}
 
-        <hr>
+        
         
         {% if not user.coach %}
           <div class="class-info-dashboard-body">
@@ -86,7 +95,7 @@
           </div>
         {% endif %}
 
-        <hr>
+        
         <div class="class-schedule-header">
           <h4>Class Schedule</h4>
         </div>
@@ -95,7 +104,7 @@
           <div id="student-calendar" style="max-width: 900px; margin: 20px auto;"></div>
         </div>
 
-        <hr>
+        
 
         {% if not user.coach %}
           {% if error_message %}
@@ -240,24 +249,79 @@
     
           const phaseData = {
             'prek_4th': {
-              'phase_1': {
+              phase_1: {
                 phase_name: 'Phase 1: Introduction & Basics',
                 meeting_1: 'Stick Handling: Basic grip and cradle introduction.',
                 meeting_2: 'Passing and Catching: Short-distance throwing and basic catching techniques.'
               },
-              'phase_2': {
+              phase_2: {
                 phase_name: 'Phase 2: Skill Reinforcement',
                 meeting_1: 'Ground Balls: Proper stance and basic scooping mechanics.',
                 meeting_2: 'Game Concepts: Introduction to team collaboration and basic game rules in simplified game scenarios.'
               },
-              'phase_3': {
+              phase_3: {
                 phase_name: 'Phase 3: Custom Session',
                 meeting_1: 'Custom session designed based on player needs.',
                 meeting_2: 'Custom session designed based on player needs.'
               }
             },
-            // Other grade bands can be added if needed
+            '5th_7th': {
+              phase_1: {
+                phase_name: 'Phase 1: Foundation & Skill Expansion',
+                meeting_1: 'Position-Specific Skills: Responsibilities and skills for attack, midfield, or defense positions.',
+                meeting_2: 'Ambidexterity: Practice of basic skills with the non-dominant hand.'
+              },
+              phase_2: {
+                phase_name: 'Phase 2: Strategy & Conditioning',
+                meeting_1: 'Game Situations: Intermediate strategies and decision-making.',
+                meeting_2: 'Athletic Conditioning: Focus on agility, speed, and fitness.'
+              },
+              phase_3: {
+                phase_name: 'Phase 3: Custom Session',
+                meeting_1: 'Custom session designed based on player needs.',
+                meeting_2: 'Custom session designed based on player needs.'
+              }
+            },
+            '8th_10th': {
+              phase_1: {
+                phase_name: 'Phase 1: Advanced Skills & Game IQ',
+                meeting_1: 'Advanced Positional Skills: Mastering advanced techniques and positional responsibilities.',
+                meeting_2: 'Game IQ Development: Initial strategy analysis and scenario anticipation.'
+              },
+              phase_2: {
+                phase_name: 'Phase 2: Physical & Mental Training',
+                meeting_1: 'Physical Conditioning: Strength, speed, and injury prevention training.',
+                meeting_2: 'Mental Preparation: Building mental toughness and resilience.'
+              },
+              phase_3: {
+                phase_name: 'Phase 3: Custom Session',
+                meeting_1: 'Custom session designed based on player needs.',
+                meeting_2: 'Custom session designed based on player needs.'
+              }
+            },
+            '11th_12th_college': {
+              phase_1: {
+                phase_name: 'Phase 1: Positional Mastery & Tactics',
+                meeting_1: 'Position Mastery: Refinement of advanced positional tactics.',
+                meeting_2: 'Tactical Understanding: Advanced strategies and adaptive gameplay.'
+              },
+              phase_2: {
+                phase_name: 'Phase 2: Leadership & Conditioning',
+                meeting_1: 'Leadership & Communication: On-field leadership and decision-making.',
+                meeting_2: 'Strength & Conditioning: Tailored fitness and nutrition for college-level play.'
+              },
+              phase_3: {
+                phase_name: 'Phase 3: Custom Session',
+                meeting_1: 'Custom session designed based on player needs.',
+                meeting_2: 'Custom session designed based on player needs.'
+              }
+            }
           };
+            
+
+
+            // Other grade bands can be added if needed
+          
     
           function updatePhaseUI(gradeRange, completedCount) {
             let phase = 'phase_1';

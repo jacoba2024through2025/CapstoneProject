@@ -14,7 +14,7 @@
   }
 </style>
 
-<div class="container mt-4">
+<div class="container mt-4 height-control">
 
   <!-- Message Alerts -->
   {% if messages %}
@@ -62,19 +62,19 @@
             {% if notification.related_class and notification.requester %}
               <div class="mt-2">
                 <!-- View Player Info Button -->
-                <a href="#" class="btn btn-sm btn-info" data-toggle="modal" data-target="#playerModal{{ notification.requester.id }}">
+                <a href="#" class="btn btn-sm custom-btn" data-toggle="modal" data-target="#playerModal{{ notification.requester.id }}">
                   View Player Info
                 </a>
 
                 <!-- Approve/Deny Buttons -->
                 <form action="{% url 'approve_class_access' notification.id %}" method="post" class="d-inline">
                   {% csrf_token %}
-                  <button type="submit" class="btn btn-sm btn-success">Approve Access</button>
+                  <button type="submit" class="btn btn-sm custom-btn">Approve Access</button>
                 </form>
 
                 <form action="{% url 'deny_class_access' notification.id %}" method="post" class="d-inline ml-2">
                   {% csrf_token %}
-                  <button type="submit" class="btn btn-sm btn-danger">Deny Access</button>
+                  <button type="submit" class="btn btn-sm custom-btn">Deny Access</button>
                 </form>
               </div>
             {% endif %}
@@ -124,7 +124,7 @@
             </div>
             <p><strong>Username:</strong> {{ notification.requester.username }}</p>
             <p><strong>Email:</strong> {{ notification.requester.email }}</p>
-            <p><strong>Grade Range:</strong> {{ notification.requester.profile.get_grade_range_display }}</p>
+            
             <p><strong>Bio:</strong><br>{{ notification.requester.profile.bio }}</p>
           </div>
         </div>

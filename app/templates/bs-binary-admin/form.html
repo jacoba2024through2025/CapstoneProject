@@ -29,6 +29,45 @@
         </div>
     </nav>
 
+</nav>   
+<!-- /. NAV TOP  -->
+     <nav class="navbar-default navbar-side" role="navigation">
+ <div class="sidebar-collapse">
+     <ul class="nav" id="main-menu">
+     <li class="text-center">
+         <div>
+             <a href='home'><img src="{% static 'store/images/Westletics_logo.png' %}" alt="Westletics Logo" class="admin-project-logo" /></a>
+         </div>
+         </li>
+     
+         
+         <li>
+             <a class="active-menu"  href="{% url 'adminpanel'%}"><i class="fa fa-dashboard fa-3x"></i> Dashboard</a>
+         </li>
+          {% comment %}<li>
+             <a  href="{% url 'ui' %}"><i class="fa fa-desktop fa-3x"></i> UI Elements</a>
+         </li>
+         <li>
+             <a  href="{% url 'tabs' %}"><i class="fa fa-qrcode fa-3x"></i> Tabs & Panels</a>
+         </li>
+                <li>
+             <a   href="{% url 'chart' %}"><i class="fa fa-bar-chart-o fa-3x"></i> Morris Charts</a>
+         </li> {%endcomment%}	
+           <li  >
+             <a  href="{% url 'tables' %}"><i class="fa fa-table fa-3x"></i> Manage Users/Coaches </a>
+         </li>
+         <li  >
+             <a  href="{% url 'forms' %}"><i class="fa fa-edit fa-3x"></i> Manage Products </a>
+         </li>				
+         
+                            
+             
+     </ul>
+    
+ </div>
+ 
+</nav>
+
     <div id="page-wrapper">
         <div id="page-inner">
             <div class="row">

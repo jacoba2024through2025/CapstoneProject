@@ -1713,14 +1713,18 @@ footer .inner-content p a {
   
   /* Footer */
   .footer {
-	background-color: #212529; /* black footer */
-	color: #fff;
-	padding: 20px 0;
+    background-color: #212529; /* black footer */
+    color: #fff;
+    padding: 10px 0;
 
-	position: sticky;
+    position: sticky;
     bottom: 0;
-	z-index: 1;
+    z-index: 3;
 	
+  }
+
+  .height-control {
+    min-height: 65dvh;
   }
   
   .footer .social-icons {
@@ -2097,6 +2101,21 @@ footer .inner-content p a {
 }
 
 
+.view-info-btn {
+  background-color: green; /* Custom gray */
+  color: white;
+}
+
+.custom-btn {
+  background-color: #CA152C !important; /* Example: Indigo */
+  color: white !important;
+  border: none;
+}
+
+.custom-btn:hover {
+  opacity: 0.9 !important;
+  color: white !important;
+}
 
 @media (min-width: 375px) and (max-width: 768px) {
   .container {

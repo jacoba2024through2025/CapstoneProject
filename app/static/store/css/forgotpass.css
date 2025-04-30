@@ -81,7 +81,7 @@ body {
   
   /* Submit button */
   .fp-button {
-    background-color: #4a90e2;
+    background-color: #CA152C;
     color: #fff;
     padding: 12px;
     border: none;
@@ -93,5 +93,37 @@ body {
   }
   
   .fp-button:hover {
-    background-color: #357abd;
+    background-color: #BC344C;
   }
+
+  .forgotpass-wrapper {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #CA152C, #BC344C);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .password-done-box {
+    background-color: white;
+    padding: 30px 40px;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+  }
+  
+  .password-done-image {
+    max-width: 150px;
+    margin-bottom: 20px;
+  }
+  
+  .password-done-text {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 15px;
+    line-height: 1.5;
+  }
+  

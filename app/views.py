@@ -194,9 +194,10 @@ class SuccessView(TemplateView):
 def empty_cart(request):
     print("Emptying cart:", request.user)
     current_user = request.user
-    cart_items = Cart.objects.filter(user=request.user)
-    for item in cart_items:
-        item.delete()
+    if not current_user.is_anonymous:
+        cart_items = Cart.objects.filter(user=current_user)
+        for item in cart_items:
+            item.delete()
     return redirect('view_cart')
 
 def cancel_payment(request):
@@ -217,6 +218,24 @@ class ContactView(FormView):
 
     def get_success_url(self):
         return reverse("contact")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            print("me smart.. me user..")
+            user = self.request.user
+            user_role = 'User'
+            try:
+                coach = Coach.objects.get(user=user)
+                user_role = 'Coach'
+            except Coach.DoesNotExist:
+                user_role = 'User'
+        else:
+            print("me guest.. me smart..")
+            user_role = 'Guest'
+        context['user_role'] =  user_role
+        # Add any other data your template might need
+        return context
 
     def form_valid(self, form):
         email = form.cleaned_data.get("email")
@@ -277,6 +296,7 @@ def view_main_page(request):
 def view_contact_page(request):
     # Determine the user role
     if request.user.is_authenticated:
+        print("me smart.. me user..")
         user = request.user
         user_role = 'User'
         try:
@@ -285,6 +305,7 @@ def view_contact_page(request):
         except Coach.DoesNotExist:
             user_role = 'User'
     else:
+        print("me guest.. me smart..")
         user_role = 'Guest'
 
     if request.method == "POST":
@@ -743,7 +764,7 @@ def class_dashboard(request, class_id):
 
     is_student = request.user in class_obj.students.all()
     is_coach = hasattr(request.user, 'coach') and class_obj.coach and class_obj.coach.user == request.user
-
+    class_coach_email = class_obj.coach.user.email if class_obj.coach else None
     if not (is_student or is_coach):
         return render(request, 'classes/class_dashboard.html', {
             'class_obj': class_obj,
@@ -751,11 +772,17 @@ def class_dashboard(request, class_id):
         })
 
     
-    selected_student = request.user
+    # Assuming you have a class_obj and a coach logged in
+    selected_student = None  # Default to None
+
     if is_coach:
         student_id = request.GET.get('student_id')
         if student_id:
             selected_student = get_object_or_404(class_obj.students, id=student_id)
+
+    elif is_student:
+        # If user is a student, show their own details
+        selected_student = request.user
 
     
     meeting = Meeting.objects.filter(class_item=class_obj, player=selected_student).first()
@@ -826,6 +853,66 @@ def class_dashboard(request, class_id):
     form = MeetingForm(phase=current_phase)
 
 
+    phase_details = {
+        'phase_1': {
+            'prek_4th': {
+                'phase_name': 'Phase 1: Introduction & Basics',
+                'meeting_1': 'Stick Handling: Basic grip and cradle introduction.',
+                'meeting_2': 'Passing and Catching: Short-distance throwing and basic catching techniques.'
+            },
+            '5th_7th': {
+                'phase_name': 'Phase 1: Foundation & Skill Expansion',
+                'meeting_1': 'Position-Specific Skills: Responsibilities and skills for attack, midfield, or defense positions.',
+                'meeting_2': 'Ambidexterity: Practice of basic skills with the non-dominant hand.'
+            },
+            '8th_10th': {
+                'phase_name': 'Phase 1: Advanced Skills & Game IQ',
+                'meeting_1': 'Advanced Positional Skills: Mastering advanced techniques and positional responsibilities.',
+                'meeting_2': 'Game IQ Development: Initial strategy analysis and scenario anticipation.'
+            },
+            '11th_12th_college': {
+                'phase_name': 'Phase 1: Positional Mastery & Tactics',
+                'meeting_1': 'Position Mastery: Refinement of advanced positional tactics.',
+                'meeting_2': 'Tactical Understanding: Advanced strategies and adaptive gameplay.'
+            },
+        },
+        'phase_2': {
+            'prek_4th': {
+                'phase_name': 'Phase 2: Skill Reinforcement',
+                'meeting_1': 'Ground Balls: Proper stance and basic scooping mechanics.',
+                'meeting_2': 'Game Concepts: Introduction to team collaboration and basic game rules in simplified game scenarios.'
+            },
+            '5th_7th': {
+                'phase_name': 'Phase 2: Strategy & Conditioning',
+                'meeting_1': 'Game Situations: Intermediate strategies and decision-making.',
+                'meeting_2': 'Athletic Conditioning: Focus on agility, speed, and fitness.'
+            },
+            '8th_10th': {
+                'phase_name': 'Phase 2: Physical & Mental Training',
+                'meeting_1': 'Physical Conditioning: Strength, speed, and injury prevention training.',
+                'meeting_2': 'Mental Preparation: Building mental toughness and resilience.'
+            },
+            '11th_12th_college': {
+                'phase_name': 'Phase 2: Leadership & Conditioning',
+                'meeting_1': 'Leadership & Communication: On-field leadership and decision-making.',
+                'meeting_2': 'Strength & Conditioning: Tailored fitness and nutrition for college-level play.'
+            },
+        },
+        'phase_3': {
+            'default': {
+                'phase_name': 'Phase 3: Custom Session',
+                'meeting_1': 'Custom session designed based on player needs.',
+                'meeting_2': 'Custom session designed based on player needs.'
+            }
+        }
+    }   
+
+    if current_phase == 'phase_3':
+        phase_data = phase_details['phase_3']['default']
+    else:
+        phase_data = phase_details.get(current_phase, {}).get(grade_range, None)
+
+
     return render(request, 'classes/class_dashboard.html', {
         'completed_meeting_count': completed_meeting_count,
         'class_obj': class_obj,
@@ -835,7 +922,9 @@ def class_dashboard(request, class_id):
         'form': form,
         'grade_range': grade_range,
         'user_role': user_role,
-        'current_phase': current_phase, 
+        'current_phase': current_phase,
+        'class_coach_email': class_coach_email,
+        'phase_data': phase_data,
     })
 
 @login_required
