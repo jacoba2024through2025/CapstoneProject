@@ -1,27 +1,33 @@
 {% extends 'root.html' %}
 
 {% block content %}
-  <div class="container">
-    <h1>Upcoming Events</h1>
+  <div class="dashboard-nav-buttons d-flex flex-wrap justify-content-center gap-2 mb-3">
+    
+    <a href="{% url 'past_sessions' class_id=class_obj.id %}" class="btn custom-btn-red"><i class="fa-solid fa-clock-rotate-left icon-spacing"></i>Past Sessions</a>
+    <a href="{% url 'class_dashboard' class_id=class_obj.id %}" class="btn custom-btn-red"><i class="fa-solid fa-arrow-left icon-spacing"></i></i>Go Back to Dashboard</a>
+    <a href="{% url 'chat_room' class_obj.id %}" class="btn custom-btn-red"><i class="fa-solid fa-comments icon-spacing"></i>Chat Room</a>
+  </div>
+  <div class="events-container">
+    <h1 class="events-title">Upcoming Events</h1>
 
     {% if upcoming_events %}
-      <ul>
+      <ul class="events-list">
         {% for event in upcoming_events %}
-          <li>
-            <strong>{{ event.title }}</strong><br>
-            <em>{{ event.start_date|date:"F j, Y, g:i a" }} - {{ event.end_date|date:"F j, Y, g:i a" }}</em><br>
-            <p>{{ event.description }}</p>
+          <li class="events-item">
+            <strong class="events-item-title">{{ event.title }}</strong>
+            <em class="events-item-date">
+              {{ event.start_date|date:"F j, Y, g:i a" }} - {{ event.end_date|date:"F j, Y, g:i a" }}
+            </em>
+            <p class="events-item-description">{{ event.description }}</p>
             {% if event.class_item %}
-              <p><strong>Class:</strong> {{ event.class_item.name }}</p>
-            {% endif %}
-            {% if event.coach %}
-              <p><strong>Coach:</strong> {{ event.coach.user.first_name }} {{ event.coach.user.last_name }}</p>
+              <p class="events-item-class"><strong>Class:</strong> {{ event.class_item.name }}</p>
             {% endif %}
           </li>
         {% endfor %}
       </ul>
     {% else %}
-      <p>No upcoming events found.</p>
+      <p class="events-no-events">No upcoming events found.</p>
     {% endif %}
   </div>
 {% endblock %}
+

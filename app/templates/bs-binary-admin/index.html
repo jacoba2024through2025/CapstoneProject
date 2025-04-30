@@ -14,6 +14,7 @@
     
     <link rel="stylesheet" href="{% static "binary-admin/assets/css/font-awesome.css" %}"/>
      <!-- MORRIS CHART STYLES-->
+     
     
     <link rel="stylesheet" href="{% static "binary-admin/assets/js/morris/morris-0.4.3.min.css" %}"/>
     
@@ -34,12 +35,12 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href='home'>Admin Panel</a> 
+                <a class="navbar-brand" href="{% url 'home' %}">Admin Panel</a> 
             </div>
   <div style="color: white;
 padding: 15px 50px 5px 50px;
 float: right;
-font-size: 16px;"> Last access : 30 May 2014 &nbsp; <a href="#" class="btn btn-danger square-btn-adjust">Logout</a> </div>
+font-size: 16px;">&nbsp; <span><a href="{% url 'logout' %}">Logout</a></span> </div>
         </nav>   
            <!-- /. NAV TOP  -->
                 <nav class="navbar-default navbar-side" role="navigation">
@@ -72,36 +73,7 @@ font-size: 16px;"> Last access : 30 May 2014 &nbsp; <a href="#" class="btn btn-d
                     </li>				
 					
 					                   
-                    <li>
-                        <a href="#"><i class="fa fa-sitemap fa-3x"></i> Multi-Level Dropdown<span class="fa arrow"></span></a>
-                        <ul class="nav nav-second-level">
-                            <li>
-                                <a href="#">Second Level Link</a>
-                            </li>
-                            <li>
-                                <a href="#">Second Level Link</a>
-                            </li>
-                            <li>
-                                <a href="#">Second Level Link<span class="fa arrow"></span></a>
-                                <ul class="nav nav-third-level">
-                                    <li>
-                                        <a href="#">Third Level Link</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">Third Level Link</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">Third Level Link</a>
-                                    </li>
-
-                                </ul>
-                               
-                            </li>
-                        </ul>
-                      </li>  
-                  <li  >
-                        <a  href="blank.html"><i class="fa fa-square-o fa-3x"></i> Blank Page</a>
-                    </li>	
+                    	
                 </ul>
                
             </div>

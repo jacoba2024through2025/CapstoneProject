@@ -36,6 +36,21 @@ body {
 	
 }
 
+
+/*Login form image styling*/
+
+
+	
+	
+	
+
+
+
+.founder {
+	font-weight: 100;
+	
+}
+
 .project-logo {
   width: 9vw;
   height: 10vh;
@@ -458,11 +473,13 @@ header .navbar {
   transform: translateY(-50%);
   text-align: center;
   width: 100%;
+  
+ 
 }
 
 .banner .text-content h4 {
-  color: #ca152c;
-  font-size: 22px;
+  color: white;
+  font-size: 30px;
   text-transform: uppercase;
   font-weight: 700;
   margin-bottom: 15px;
@@ -475,12 +492,24 @@ header .navbar {
   letter-spacing: 5px;
 }
 
+.col-md-12 .text-content {
+  background: #212529;
+  margin-right: 20vw;
+  margin-left: 20vw;
+  border-radius: 3%;
+}
+
 .banner .text-content h4,
 .banner .text-content h6 {
+  
   background: #212529;
   display: inline-block;
   padding: 0.5rem 1rem;
   border-radius: 3%;
+}
+
+.banner .text-content h6 {
+  font-size: 15px;
 }
 
 .owl-banner .owl-dots .owl-dot {
@@ -1478,6 +1507,93 @@ footer .inner-content p a {
   margin-right: 15px;
 }
 
+.approved-class-button {
+  background-color: #ca152c;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.approved-class-button:hover {
+  background-color: #a81024;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.approved-classes-container {
+  padding-bottom: 40px;
+}
+
+.approved-classes-header {
+  background-color: #CA152C;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.approved-classes-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.approved-class-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.approved-class-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.approved-class-img {
+  height: 200px;
+  object-fit: cover;
+  width: 100%;
+}
+
+.approved-class-body {
+  flex-grow: 1;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.approved-class-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.approved-class-description {
+  font-size: 0.95rem;
+  margin-top: 10px;
+}
+
+.approved-class-coach {
+  font-style: italic;
+  margin-top: 10px;
+}
+
+.no-approved-classes-text {
+  margin-top: 20px;
+  font-style: italic;
+}
+
 /* Create schedule page*/
 
 /* Styling for the form container */
@@ -1569,109 +1685,78 @@ footer .inner-content p a {
 }
 
 /* Sidebar content */
-.dashboard-container {
-  display: flex;
-  min-height: 100vh;
-  background-color: #f4f6f9;
-  font-family: poppins, sans-serif;
-}
-
-.sidebar {
-  width: 250px;
-  background-color: #182441;
-  color: #fff;
-  padding: 20px;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.sidebar h2 {
-  margin-bottom: 20px;
-  font-size: 22px;
-  color: #056ba3;
-  border-bottom: 3px solid #056ba3;
-}
-
-.sidebar-menu {
-  list-style-type: none;
-  padding: 0;
-}
-
-.sidebar-menu li {
-  margin-bottom: 15px;
-}
-
-.sidebar-menu a {
-  color: #ca152c;
-  text-decoration: none;
-  font-size: 16px;
-  display: block;
-  transition: color 0.3s ease;
-}
-
-.sidebar-menu a:hover {
-  color: #d02d2d;
-}
-
-.dropdown-content {
-  display: none;
-  list-style-type: none;
-  padding-left: 15px;
-}
-
-.dropdown:hover .dropdown-content {
-  display: block;
-}
-
-.dropbtn {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-}
-
-.arrow {
-  margin-left: 8px;
-  transition: transform 0.3s ease;
+.btn {
+  position: relative;
   display: inline-block;
-}
-
-.dropdown:hover .arrow {
-  transform: rotate(180deg);
-}
-
-.main-content {
-  flex-grow: 1;
-  padding: 30px;
-}
-
-/* Footer */
-.footer {
-  background-color: #000; /* black footer */
+  padding: 10px 20px;
+  font-weight: 600;
   color: #fff;
-  padding: 20px 0;
-  margin-top: 50px;
+  border: none;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+  margin: 10px;
 }
 
-.footer .social-icons {
-  margin-bottom: 10px;
+/* Custom Button Colors */
+.custom-btn-red {
+  background-color: #CA152C;
 }
+.dashboard-container {
+	
+	min-height: 100vh;
+	background-color: #f4f6f9;
+	font-family: poppins, sans-serif;
+  }
+  
+  
+  
+  /* Footer */
+  .footer {
+    background-color: #212529; /* black footer */
+    color: #fff;
+    padding: 10px 0;
 
-.footer .social-icon {
-  color: #fff;
-  font-size: 24px;
-  margin: 0 10px;
-  transition: color 0.3s ease;
-}
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+	
+  }
 
-.footer .social-icon:hover {
-  color: #ca152c; /* nice pink for hover effect */
-}
+  .height-control {
+    min-height: 65dvh;
+  }
+  
+  .footer .social-icons {
+	margin-bottom: 10px;
+  }
+  
+  .footer .social-icon {
+	color: #fff;
+	font-size: 24px;
+	margin: 0 10px;
+	transition: color 0.3s ease;
+  }
+  
+  .footer .social-icon:hover {
+	color: #CA152C; /* nice pink for hover effect */
+  }
 
 .footer p {
   color: #fff;
 }
 
 /* Dashboard Styling*/
+.dashboard-nav-buttons {
+  display: flex;
+  
+  align-items: stretch;
+  gap: 2vw;
+  margin: 5px auto;
+  width: 100%;
+  
+  padding: 0 15px;
+}
 
 .coach-profile-image {
 	max-width: 15vw;
@@ -1697,6 +1782,18 @@ footer .inner-content p a {
 
 .class-info-dashboard-heading h3 {
 	color: #056BA3;
+}
+
+
+.class-schedule-header {
+  background-color: #CA152C;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  margin-right: 35vw;
+  margin-left: 35vw;
 }
 
 .class-info-dashboard-body {
@@ -1790,8 +1887,252 @@ footer .inner-content p a {
   .custom-meeting-form button[type="submit"]:hover {
 	background-color: #d02d2d;
   }
+
+
+
+/* Reusable button hover underline animation */
+.dashboard-nav-buttons a {
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+  overflow: hidden;
+  transition: color 0.3s ease;
+}
+
+.dashboard-nav-buttons a::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: currentColor; /* Matches the text color */
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease;
+}
+
+.dashboard-nav-buttons a:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+
+/*Upcoming Events Page*/
+.events-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.events-title {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.events-list {
+  list-style: none;
+  padding: 0;
+}
+
+.events-item {
+  background: #f9f9f9;
+  padding: 20px;
+  margin-bottom: 15px;
+  border-left: 5px solid #ca152c;
+  border-radius: 5px;
+  transition: background-color 0.2s ease;
+}
+
+.events-item:hover {
+  background-color: #f1f7ff;
+}
+
+.events-item-title {
+  font-size: 1.2em;
+  color: #2c3e50;
+}
+
+.events-item-date {
+  color: #666;
+  display: block;
+  margin: 5px 0 10px;
+}
+
+.events-item-description,
+.events-item-class {
+  margin: 5px 0;
+  color: #444;
+}
+
+.events-item-class strong {
+  color: #000;
+}
+
+.events-no-events {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  margin-top: 20px;
+}
+
+
+/* Optional: Add touch-safe behavior for mobile (no hover flicker) */
+@media (hover: none) {
+  .dashboard-nav-buttons a::after {
+    display: none;
+  }
+}
   
   
+  /* Edit class form
+/* General styles for the edit class page */
+/* General styles for the edit class page */
+.edit-class-page {
+  padding: 30px;
+  max-width: 800px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, #d02d2d, #CA152C);  /* Gradient background */
+  border-radius: 12px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);  /* Soft shadow for depth */
+  backdrop-filter: blur(5px);  /* Slight blur effect behind the form */
+  border: 1px solid #ddd;  /* Light border to frame the form */
+  overflow: hidden;
+}
+
+.edit-class-title {
+  font-size: 2.2rem;
+  margin-bottom: 30px;
+  text-align: center;
+  color: #fff;  /* Title text color */
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);  /* Adds a slight shadow to make the title pop */
+}
+
+/* Form field styling */
+.form-fields {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+/* Each individual form field styling */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(255, 255, 255, 0.85);  /* Semi-transparent white background */
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);  /* Small shadow for depth */
+}
+
+/* Styling the labels */
+.form-label {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+/* Styling the form inputs */
+.form-name input,
+.form-description textarea,
+.form-price input,
+.form-class-image input[type="file"] {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #f9f9f9;
+  transition: all 0.3s ease;
+}
+
+.form-name input:focus,
+.form-description textarea:focus,
+.form-price input:focus,
+.form-class-image input[type="file"]:focus {
+  border-color: #007bff;
+  outline: none;
+  background-color: #f1f9ff;
+}
+
+/* Button styling */
+.submit-button {
+  padding: 12px 25px;
+  border-radius: 6px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-top: 30px;
+  transition: all 0.3s ease;
+}
+
+.save-button {
+  background-color: #4CAF50;  /* Green */
+  color: white;
+  border: none;
+}
+
+.save-button:hover {
+  background-color: #45a049;
+  transform: scale(1.05);  /* Slight zoom-in effect */
+}
+
+.delete-button {
+  background-color: #f44336;  /* Red */
+  color: white;
+  border: none;
+  margin-left: 15px;
+}
+
+.delete-button:hover {
+  background-color: #e53935;
+  transform: scale(1.05);  /* Slight zoom-in effect */
+}
+
+/* Adding a subtle hover effect for form fields */
+.form-field:hover {
+  background-color: rgba(255, 255, 255, 0.95);  /* Slightly change the background color on hover */
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);  /* Deepen shadow on hover */
+}
+
+
+.view-info-btn {
+  background-color: green; /* Custom gray */
+  color: white;
+}
+
+.custom-btn {
+  background-color: #CA152C !important; /* Example: Indigo */
+  color: white !important;
+  border: none;
+}
+
+.custom-btn:hover {
+  opacity: 0.9 !important;
+  color: white !important;
+}
+
+@media (min-width: 375px) and (max-width: 768px) {
+  .container {
+    width: 1%;
+  }
+
+  .project-logo {
+    width: 15vw;
+    height: 8vh;
+  }
+
+  .container-new {
+    width: 75% !important;
+  }
+}
+
+
 
 
 /* Mobile friendly*/
@@ -1821,5 +2162,121 @@ footer .inner-content p a {
   .project-logo {
     width: 10vw;
     height: 8vh;
+  }
+}
+
+
+/*Class Dashboard mobile friendly*/
+/* Responsive adjustments for tablet and below */
+@media (max-width: 768px) {
+  .dashboard-container {
+    flex-direction: column;
+    padding: 0 15px;
+  }
+
+  .dashboard-nav-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .dashboard-nav-buttons a {
+    width: 100%;
+    text-align: center;
+  }
+
+  .coach-profile-image {
+    max-width: 60vw;
+    margin: 10px auto;
+    display: block;
+  }
+
+  .class-info-dashboard-heading,
+  .class-info-dashboard-body,
+  .custom-meeting-form form {
+    padding: 15px;
+    margin-bottom: 20px;
+    width: 100%;
+  }
+
+  .custom-meeting-form {
+    width: 100%;
+  }
+
+  .custom-meeting-form form {
+    padding: 1rem;
+  }
+
+  .custom-meeting-form button[type="submit"] {
+    width: 100%;
+    font-size: 1rem;
+  }
+
+  .custom-meeting-form select,
+  .custom-meeting-form input,
+  .custom-meeting-form textarea {
+    font-size: 1rem;
+  }
+
+  .calendar-wrapper {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  #student-calendar {
+    width: 100% !important;
+    overflow-x: auto;
+  }
+
+  .fc .fc-toolbar-title {
+    font-size: 1.1rem !important;
+  }
+
+  .fc .fc-button {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  .modal-content {
+    padding: 10px;
+  }
+}
+
+/* Smaller phones and extra small devices */
+@media (max-width: 480px) {
+  .class-info-dashboard-heading h1 {
+    font-size: 1.25rem;
+  }
+
+  .class-info-dashboard-heading h3 {
+    font-size: 1rem;
+  }
+
+  .class-info-dashboard-body h2 {
+    font-size: 1.1rem;
+  }
+
+  .custom-meeting-form h4 {
+    font-size: 1.2rem;
+  }
+
+  .fc .fc-toolbar-title {
+    font-size: 1rem !important;
+  }
+
+  .modal-content p,
+  .modal-content span,
+  .modal-title {
+    font-size: 0.9rem;
+  }
+
+  .custom-meeting-form button[type="submit"] {
+    font-size: 0.95rem;
+  }
+
+  .form-label {
+    font-size: 0.95rem;
   }
 }

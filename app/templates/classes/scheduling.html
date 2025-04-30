@@ -11,8 +11,7 @@
       <div class="col-lg-12 col-12 text-center mb-5">
         <h2 data-aos="fade-up">Welcome to the Scheduling Page</h2>
         <h6 data-aos="fade-up" data-aos-delay="200">
-          You can create a schedule for your class by using the Create Event form.
-          Select any event to update/delete it.
+          You can access the class dashboard for each class you coach here. You can interact with your players, see scheduled meetings with players, and more.
         </h6>
       </div>
 
@@ -28,15 +27,11 @@
             </div>
             <div class="class-info">
               <h3 class="mb-1">{{ class.name }}</h3>
-              {% if class.price > 0 %}
-                <span class="class-price">Price: ${{ class.price }}</span>
-              {% else %}
-                <span class="class-price">Price: Free</span>
-              {% endif %}
+              
               <p class="mt-3">{{ class.description }}</p>
-              <button class="btn-form view-calendar" data-class-id="{{ class.id }}" data-class-name="{{ class.name }}">
+              {% comment %}<button class="btn-form view-calendar" data-class-id="{{ class.id }}" data-class-name="{{ class.name }}">
                 View Calendar
-              </button>
+              </button> {% endcomment %}
               <a href="{% url 'class_dashboard' class.id %}" class="btn-form">
                 Go To Class Dashboard
               </a>
@@ -55,7 +50,7 @@
   </div>
 </section>
 
-<div class="calendar-form" style="display: none;">
+{% comment %}<div class="calendar-form" style="display: none;">
   <h3 id="calendar-header">Create an Event for </h3>
   <form method="POST" class="event-form">
     {% csrf_token %}
@@ -237,7 +232,7 @@
       }
     });
   });
-</script>
+</script>{% endcomment %}
 
 {% endblock content %}
 

@@ -262,10 +262,14 @@ a {
 	color: white;
 }
 
+
+
+
 /* Responsive */
 @media (max-width: 768px) {
 	.page-container {
 		flex-direction: column;
+		height: auto;
 	}
 
 	.image-left-container,

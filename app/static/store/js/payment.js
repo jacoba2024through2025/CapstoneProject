@@ -1,6 +1,7 @@
 // import Stripe from "https://js.stripe.com/v3/";
 
 let ripe = null;
+var sessionId = null;
 
 fetch("/config/")
   .then((result) => {
@@ -12,20 +13,22 @@ fetch("/config/")
     console.log("successfully got", data);
     ripe = Stripe(data.publicKey);
   });
-console.log("ripe", ripe);
-document.querySelector("#checkout-button").addEventListener("click", () => {
-  // Get Checkout Session ID
-  console.log("clicked");
-  fetch("/checkout/")
+fetch("/checkout/")
     .then((result) => {
       return result.json();
     })
     .then((data) => {
       console.log("here", data);
       // Redirect to Stripe Checkout
-      return ripe.redirectToCheckout({ sessionId: data.sessionId });
+      sessionId = data.sessionId;
+      console.log("sessionId", sessionId);
     })
     .then((res) => {
       console.log(res);
     });
+console.log("ripe", ripe);
+document.querySelector("#checkout-button").addEventListener("click", () => {
+  // Get Checkout Session ID
+  console.log("clicked");
+  return ripe.redirectToCheckout({ sessionId: sessionId });
 });

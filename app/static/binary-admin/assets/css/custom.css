@@ -207,7 +207,7 @@ max-width:170px;
 
 .navbar-cls-top .navbar-brand {
 	color: #fff;
-background: #C90000;
+background: #CA152C;
 width: 260px;
 text-align: center;
 height: 60px;
@@ -215,7 +215,7 @@ font-size: 30px;
 font-weight: 700;
 }
 .active-menu {
-    background-color:#C90000!important;
+    background-color: #CA152C!important;
 }
 
 .arrow {

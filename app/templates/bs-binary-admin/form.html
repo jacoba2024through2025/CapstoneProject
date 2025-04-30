@@ -2,279 +2,218 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-      <meta charset="utf-8" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Free Bootstrap Admin Template : Binary Admin</title>
-    <link rel="stylesheet" href="{% static "store/css/styles.css" %}"/>
-	<!-- BOOTSTRAP STYLES-->
-    <link rel="stylesheet" href="{% static "binary-admin/assets/css/bootstrap.css" %}"/>
-     <!-- FONTAWESOME STYLES-->
-     <link rel="stylesheet" href="{% static "binary-admin/assets/css/font-awesome.css" %}"/>
-        <!-- CUSTOM STYLES-->
-        <link rel="stylesheet" href="{% static "binary-admin/assets/css/custom.css" %}"/>
-     <!-- GOOGLE FONTS-->
-   <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+    <link rel="stylesheet" href="{% static 'store/css/styles.css' %}"/>
+    <link rel="stylesheet" href="{% static 'binary-admin/assets/css/bootstrap.css' %}"/>
+    <link rel="stylesheet" href="{% static 'binary-admin/assets/css/font-awesome.css' %}"/>
+    <link rel="stylesheet" href="{% static 'binary-admin/assets/css/custom.css' %}"/>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
 </head>
 <body>
-    <div id="wrapper">
-        <nav class="navbar navbar-default navbar-cls-top " role="navigation" style="margin-bottom: 0">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href='home'>Admin Panel</a>
-            </div>
-  <div style="color: white;
-padding: 15px 50px 5px 50px;
-float: right;
-font-size: 16px;"> Last access : 30 May 2014 &nbsp; <a href="#" class="btn btn-danger square-btn-adjust">Logout</a> </div>
-        </nav>   
-           <!-- /. NAV TOP  -->
-                <nav class="navbar-default navbar-side" role="navigation">
-            <div class="sidebar-collapse">
-                <ul class="nav" id="main-menu">
-				<li class="text-center">
-                    <div>
-                        <a href='home'><img src="{% static 'store/images/Westletics_logo.png' %}" alt="Westletics Logo" class="admin-project-logo" /></a>
-                    </div>
-					</li>
-				
-					
-                    <li>
-                        <a class="active-menu"  href="{% url 'adminpanel'%}"><i class="fa fa-dashboard fa-3x"></i> Dashboard</a>
-                    </li>
-                      {% comment %}<li>
-                        <a  href="{% url 'ui' %}"><i class="fa fa-desktop fa-3x"></i> UI Elements</a>
-                    </li>
-                    <li>
-                        <a  href="{% url 'tabs' %}"><i class="fa fa-qrcode fa-3x"></i> Tabs & Panels</a>
-                    </li>
-						   <li  >
-                            <a   href="{% url 'chart' %}"><i class="fa fa-bar-chart-o fa-3x"></i> Morris Charts</a>
-                    </li>{% endcomment %}	
-                    <li  >
-                        <a  href="{% url 'tables' %}"><i class="fa fa-table fa-3x"></i> Manage Users/Coaches </a>
-                    </li>
-                    <li  >
-                        <a  href="{% url 'forms' %}"><i class="fa fa-edit fa-3x"></i> Manage Products </a>
-                    </li>				
-					
-					                   
-                    <li>
-                        <a href="#"><i class="fa fa-sitemap fa-3x"></i> Multi-Level Dropdown<span class="fa arrow"></span></a>
-                        <ul class="nav nav-second-level">
-                            <li>
-                                <a href="#">Second Level Link</a>
-                            </li>
-                            <li>
-                                <a href="#">Second Level Link</a>
-                            </li>
-                            <li>
-                                <a href="#">Second Level Link<span class="fa arrow"></span></a>
-                                <ul class="nav nav-third-level">
-                                    <li>
-                                        <a href="#">Third Level Link</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">Third Level Link</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">Third Level Link</a>
-                                    </li>
+<div id="wrapper">
+    <nav class="navbar navbar-default navbar-cls-top" role="navigation" style="margin-bottom: 0">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{% url 'home' %}">Admin Panel</a>
+        </div>
+        <div style="color: white; padding: 15px 50px 5px 50px; float: right; font-size: 16px;">
+            Last access : 30 May 2014 &nbsp;
+            <a href="#" class="btn btn-danger square-btn-adjust">Logout</a>
+        </div>
+    </nav>
 
-                                </ul>
-                               
-                            </li>
-                        </ul>
-                      </li>  
-                  <li  >
-                        <a   href="blank.html"><i class="fa fa-square-o fa-3x"></i> Blank Page</a>
-                    </li>	
-                </ul>
-               
-            </div>
-            
-        </nav>  
-        <!-- /. NAV SIDE  -->
-        <div id="page-wrapper" >
-            <div id="page-inner">
-                <div class="row">
-                    <div class="col-md-12">
-                     <h2>Forms Page</h2>   
-                        
-                       
-                    </div>
-                </div>
+</nav>   
+<!-- /. NAV TOP  -->
+     <nav class="navbar-default navbar-side" role="navigation">
+ <div class="sidebar-collapse">
+     <ul class="nav" id="main-menu">
+     <li class="text-center">
+         <div>
+             <a href='home'><img src="{% static 'store/images/Westletics_logo.png' %}" alt="Westletics Logo" class="admin-project-logo" /></a>
+         </div>
+         </li>
+     
+         
+         <li>
+             <a class="active-menu"  href="{% url 'adminpanel'%}"><i class="fa fa-dashboard fa-3x"></i> Dashboard</a>
+         </li>
+          {% comment %}<li>
+             <a  href="{% url 'ui' %}"><i class="fa fa-desktop fa-3x"></i> UI Elements</a>
+         </li>
+         <li>
+             <a  href="{% url 'tabs' %}"><i class="fa fa-qrcode fa-3x"></i> Tabs & Panels</a>
+         </li>
+                <li>
+             <a   href="{% url 'chart' %}"><i class="fa fa-bar-chart-o fa-3x"></i> Morris Charts</a>
+         </li> {%endcomment%}	
+           <li  >
+             <a  href="{% url 'tables' %}"><i class="fa fa-table fa-3x"></i> Manage Users/Coaches </a>
+         </li>
+         <li  >
+             <a  href="{% url 'forms' %}"><i class="fa fa-edit fa-3x"></i> Manage Products </a>
+         </li>				
+         
+                            
+             
+     </ul>
+    
+ </div>
+ 
+</nav>
 
+    <div id="page-wrapper">
+        <div id="page-inner">
+            <div class="row">
                 <div class="col-md-12">
-                    {% if messages %}
-                        <div class="alert alert-dismissible fade show {% if messages.0.level == 1 %}alert-success{% else %}alert-danger{% endif %}" role="alert">
-                            <ul>
-                                {% for message in messages %}
-                                    <li>{{ message }}</li>
-                                {% endfor %}
-                            </ul>
+                    <h2>Forms Page</h2>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            <strong>{{ message }}</strong>
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                    {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Create A Product</div>
+                        <div class="panel-body">
+                            <form method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="id_name">Product Name</label>
+                                    {{ form.name }}
+                                </div>
+                                <div class="form-group">
+                                    <label for="id_description">Product Description</label>
+                                    {{ form.description }}
+                                </div>
+                                <div class="form-group">
+                                    <label for="id_price">Price</label>
+                                    {{ form.price }}
+                                </div>
+                                <div class="form-group">
+                                    <label for="id_image">Image (Optional)</label>
+                                    {{ form.image }}
+                                </div>
+                                <div class="form-group">
+                                    <label for="id_category">Category</label>
+                                    {{ form.category }}
+                                </div>
+                                <button type="submit" name="create_product" class="btn btn-primary">Create Product</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
+            </div>
 
+            <!-- Edit Product Form -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Edit Product</div>
+                        <div class="panel-body">
+                            <form method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="id_product">Select Product to Edit</label>
+                                    <select name="product_id" class="form-control" onchange="this.form.submit()">
+                                        <option value="">-- Select a Product --</option>
+                                        {% for product in products %}
+                                            <option value="{{ product.id }}" {% if product.id == selected_product_id %}selected{% endif %}>{{ product.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
 
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">Create A Product</div>
-                            <div class="panel-body">
-                                <form method="POST" enctype="multipart/form-data">
-                                    {% csrf_token %}
-                                    
+                                {% if selected_product %}
                                     <div class="form-group">
                                         <label for="id_name">Product Name</label>
-                                        <input type="text" name="name" id="id_name" class="form-control" placeholder="Product Name" value="{{ form.name.value }}">
+                                        <input type="text" name="name" class="form-control" value="{{ selected_product.name }}">
                                     </div>
-                                
+
                                     <div class="form-group">
                                         <label for="id_description">Product Description</label>
-                                        <textarea name="description" id="id_description" class="form-control" placeholder="Product Description">{{ form.description.value }}</textarea>
+                                        <textarea name="description" class="form-control">{{ selected_product.description }}</textarea>
                                     </div>
-                                
+
                                     <div class="form-group">
                                         <label for="id_price">Price</label>
-                                        <div class="input-group">
-                                            <span class="input-group-addon">$</span>
-                                            <input type="text" class="form-control" name="price" id="id_price" value="{{ form.price.value|default_if_none:'' }}">
-                                            <span class="input-group-addon">.00</span>
-                                        </div>
+                                        <input type="text" name="price" class="form-control" value="{{ selected_product.price }}">
                                     </div>
-                                
+
                                     <div class="form-group">
-                                        <label for="id_image">Image</label>
-                                        <input type="file" name="image" id="id_image" class="form-control">
+                                        <label for="id_image">Image (Optional)</label>
+                                        <input type="file" name="image" class="form-control">
+                                        {% if selected_product.image %}
+                                            <img src="{{ selected_product.image.url }}" alt="Product Image" style="max-width: 100px; margin-top: 10px;">
+                                        {% endif %}
                                     </div>
-                                
-                                    <button type="submit" name="create_product" class="btn btn-primary">Create Product</button>
-                                </form>
-                                
-                            </div>
+
+                                    <div class="form-group">
+                                        <label for="id_category">Category</label>
+                                        {{ form.category }}
+                                    </div>
+
+                                    <button type="submit" name="edit_product" class="btn btn-primary">Save Changes</button>
+                                {% else %}
+                                    <p>Select a product to edit above.</p>
+                                {% endif %}
+                            </form>
                         </div>
                     </div>
                 </div>
-
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">Edit Existing Products</div>
-                            <div class="panel-body">
-                                <form method="POST" enctype="multipart/form-data">
-                                    {% csrf_token %}
-                                    
-                                    {% if form.errors %}
-                                        <div class="alert alert-danger">
-                                            <ul>
-                                                {% for field in form %}
-                                                    {% for error in field.errors %}
-                                                        <li>{{ error }}</li>
-                                                    {% endfor %}
-                                                {% endfor %}
-                                            </ul>
-                                        </div>
-                                    {% endif %}
-                                
-                                    
-                                    <div class="form-group">
-                                        <label for="id_product">Select Product to Edit</label>
-                                        <select name="product_id" id="id_product" class="form-control" onchange="this.form.submit()">
-                                            <option value="">-- Select a Product --</option>
-                                            {% for product in products %}
-                                                <option value="{{ product.id }}" {% if product.id == selected_product_id %}selected{% endif %}>{{ product.name }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                
-                                    {% if selected_product %}
-                                        <input type="text" name="product_id" id="id_id" class="form-control" placeholder="Product ID" value="{{ selected_product.id }}" readonly>
-                                        <div class="form-group">
-                                            <label for="id_name">Product Name</label>
-                                            <input type="text" name="name" id="id_name" class="form-control" placeholder="Product Name" value="{{ selected_product.name }}">
-                                        </div>
-                                
-                                        <div class="form-group">
-                                            <label for="id_description">Product Description</label>
-                                            <textarea name="description" id="id_description" class="form-control" placeholder="Product Description">{{ selected_product.description }}</textarea>
-                                        </div>
-                                
-                                        <div class="form-group">
-                                            <label for="id_price">Price</label>
-                                            <div class="input-group">
-                                                <span class="input-group-addon">$</span>
-                                                <input type="text" class="form-control" name="price" id="id_price" value="{{ selected_product.price }}">
-                                                <span class="input-group-addon">.00</span>
-                                            </div>
-                                        </div>
-                                
-                                        <div class="form-group">
-                                            <label for="id_image">Image</label>
-                                            <input type="file" name="image" id="id_image" class="form-control">
-                                            {% if selected_product.image %}
-                                                <img src="{{ selected_product.image.url }}" alt="Product Image" style="max-width: 100px; margin-top: 10px;">
-                                            {% endif %}
-                                        </div>
-                                
-                                        <button type="submit" name="edit_product" class="btn btn-primary">Save Changes</button>
-                                    {% else %}
-                                        <p>Please select a product to edit from the dropdown above.</p>
-                                    {% endif %}
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">Delete Existing Products</div>
-                            <div class="panel-body">
-                                <form method="POST">
-                                    {% csrf_token %}
-                                    <div class="form-group">
-                                        <label for="product_id">Select Product to Delete</label>
-                                        <select name="product_id" class="form-control">
-                                            {% for product in products %}
-                                                <option value="{{ product.id }}">{{ product.name }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                    <button type="submit" name="delete_product" class="btn btn-danger">Delete Product</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                 
-                <!-- /. ROW  -->
-    </div>
-             <!-- /. PAGE INNER  -->
             </div>
-         <!-- /. PAGE WRAPPER  -->
+
+            <!-- Delete Product Form -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Delete Product</div>
+                        <div class="panel-body">
+                            <form method="POST">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="product_id">Select Product to Delete</label>
+                                    <select name="product_id" class="form-control">
+                                        {% for product in products %}
+                                            <option value="{{ product.id }}">{{ product.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <button type="submit" name="delete_product" class="btn btn-danger">Delete Product</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
-     <!-- /. WRAPPER  -->
-    <!-- SCRIPTS -AT THE BOTOM TO REDUCE THE LOAD TIME-->
-    <!-- JQUERY SCRIPTS -->
-    <script src="assets/js/jquery-1.10.2.js"></script>
-      <!-- BOOTSTRAP SCRIPTS -->
-    <script src="assets/js/bootstrap.min.js"></script>
-    <!-- METISMENU SCRIPTS -->
-    <script src="assets/js/jquery.metisMenu.js"></script>
-      <!-- CUSTOM SCRIPTS -->
-    <script src="assets/js/custom.js"></script>
-    
-   
+    </div>
+</div>
+
+<script src="{% static 'binary-admin/assets/js/jquery-1.10.2.js' %}"></script>
+<script src="{% static 'binary-admin/assets/js/bootstrap.js' %}"></script>
+<script src="{% static 'binary-admin/assets/js/custom.js' %}"></script>
 </body>
 </html>
+
+
+
+
+
