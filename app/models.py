@@ -169,33 +169,35 @@ class Products(models.Model):
         return f"{self.name} - {self.price}"
     
     def save(self, *args, **kwargs):
-        super().save()
-        img = Image.open(self.image.path)
-        width, height = img.size
+        super().save(*args, **kwargs)
 
-        if width > 800 or height > 800:
-            img.thumbnail((width, height))
+        if self.image and hasattr(self.image, 'path'):
+            try:
+                img = Image.open(self.image.path)
+                width, height = img.size
 
-        if height < width:
-            # make square by cutting off equal amounts left and right
-            left = (width - height) / 2
-            right = (width + height) / 2
-            top = 0
-            bottom = height
-            img = img.crop((left, top, right, bottom))
+                if width > 800 or height > 800:
+                    img.thumbnail((width, height))
 
-        elif width < height:
-            # make square by cutting off bottom
-            left = (width - height) / 2
-            right = width
-            top = 0
-            bottom = width
-            img = img.crop((left, top, right, bottom))
+                if height < width:
+                    left = (width - height) / 2
+                    right = (width + height) / 2
+                    top = 0
+                    bottom = height
+                    img = img.crop((left, top, right, bottom))
 
-        if width > 800 and height > 800:
-            img.thumbnail((width, height))
+                elif width < height:
+                    left = 0
+                    right = width
+                    top = (height - width) / 2
+                    bottom = (height + width) / 2
+                    img = img.crop((left, top, right, bottom))
 
-        img.save(self.image.path)
+                img.save(self.image.path)
+            except Exception as e:
+                # Optional: log or print error during image processing
+                print(f"Image processing failed: {e}")
+
     
 class Meeting(models.Model):
     PHASE_CHOICES = [

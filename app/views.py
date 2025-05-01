@@ -55,7 +55,7 @@ from .models import Products
 
 @admin_required
 def view_admin_forms(request):
-    products = Products.objects.all()
+    products = Products.objects.filter(hidden=False)
     selected_product = None
     selected_product_id = request.POST.get('product_id') or request.GET.get('product_id')
 
@@ -1076,7 +1076,9 @@ def schedule_meeting_from_dashboard(request, class_id):
             product = Products.objects.create(
                 name=f"{class_obj.name} Session - {meeting.start_date.strftime('%b %d, %Y')}",
                 price=meeting.price,
-                description=f"Session with {meeting.coach.user.username} for {meeting.exact_grade}",
+                
+                short_description="Session with Coach",
+                long_description=f"Session with {meeting.coach.user.username} for {meeting.exact_grade}",
                 hidden=True
             )
 
