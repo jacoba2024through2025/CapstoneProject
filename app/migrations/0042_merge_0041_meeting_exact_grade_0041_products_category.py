@@ -6,17 +6,8 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-<<<<<<< HEAD
-        ('app', '0041_meeting_exact_grade'),
-        ('app', '0041_products_category'),
-    ]
-
-    operations = [
-    ]
-=======
         ("app", "0041_meeting_exact_grade"),
         ("app", "0041_products_category"),
     ]
 
     operations = []
->>>>>>> 36927af1739d8bbd41a7812baa98ba0abd956900
