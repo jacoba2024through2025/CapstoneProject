@@ -1,0 +1,72 @@
+{% extends 'mainpage.html' %} {% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static "store/css/products.css" %}">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+{% endblock head %}
+
+{% block title %}{{product.name}}{% endblock title %}
+
+{% block content %}
+
+<section class="product">
+	<div class="product__photo">
+		<div class="photo-container">
+			<div class="photo-main">
+				<div class="controls">
+					<i class="material-icons">share</i>
+					<i class="material-icons">favorite_border</i>
+				</div>
+				<img src="{{product.image.url}}" alt="green apple slice">
+			</div>
+			{% comment %} <div class="photo-album">
+				<ul>
+					<li><img src="https://res.cloudinary.com/john-mantas/image/upload/v1537302064/codepen/delicious-apples/green-apple2.png" alt="green apple"></li>
+					<li><img src="https://res.cloudinary.com/john-mantas/image/upload/v1537303532/codepen/delicious-apples/half-apple.png" alt="half apple"></li>
+					<li><img src="https://res.cloudinary.com/john-mantas/image/upload/v1537303160/codepen/delicious-apples/green-apple-flipped.png" alt="green apple"></li>
+					<li><img src="https://res.cloudinary.com/john-mantas/image/upload/v1537303708/codepen/delicious-apples/apple-top.png" alt="apple top"></li>
+				</ul>
+			</div> {% endcomment %}
+		</div>
+	</div>
+	<div class="product__info">
+		<div class="title">
+			<h1>{{product.name}}</h1>
+			<span>Category: 45999</span>
+		</div>
+		<div class="price">
+			R$ <span>{{product.price}}</span>
+		</div>
+		<div class="variant">
+			{% comment %} <h3>SELECT A SIZE</h3> {% endcomment %}
+			{% comment %} <ul>
+				<li><img src="https://res.cloudinary.com/john-mantas/image/upload/v1537302064/codepen/delicious-apples/green-apple2.png" alt="green apple"></li>
+				<li><img src="https://res.cloudinary.com/john-mantas/image/upload/v1537302752/codepen/delicious-apples/yellow-apple.png" alt="yellow apple"></li>
+				<li><img src="https://res.cloudinary.com/john-mantas/image/upload/v1537302427/codepen/delicious-apples/orange-apple.png" alt="orange apple"></li>
+				<li><img src="https://res.cloudinary.com/john-mantas/image/upload/v1537302285/codepen/delicious-apples/red-apple.png" alt="red apple"></li>
+			</ul> {% endcomment %}
+		</div>
+		<div class="description">
+			<h3>Description</h3>
+			<ul>
+				<li>{{product.description}}</li>
+			</ul>
+		</div>
+		<div class="quantity_selector">
+			<div class="quantity_container">
+				<button class="minusBtn" id="minus-btn"><i class="material-icons">remove</i></button>
+				<input type="number" class="input-box" id="quantity" value="1" min="1" max="10">
+				<button class="addBtn" id="add-btn"><i class="material-icons">add</i></button>
+			</div>
+		</div>
+		
+		<form action="{% url 'add_to_cart' product.id %}" method="post">
+        	{% csrf_token %}
+			<input type="hidden" name="JStoPython" value="1" id="form-quantity">
+        	<button type="submit" class="buy--btn">ADD TO CART</button>
+      	</form>
+	</div>
+</section>
+
+
+{% endblock %}

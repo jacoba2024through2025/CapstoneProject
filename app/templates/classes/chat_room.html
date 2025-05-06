@@ -1,7 +1,14 @@
 {% extends 'root.html' %}
 {% load static %}
 {% block content %}
+<div class="dashboard-nav-buttons d-flex flex-wrap justify-content-center gap-2 mb-3">
+    
+  <a href="{% url 'past_sessions' class_id=class_obj.id %}" class="btn custom-btn-red"><i class="fa-solid fa-clock-rotate-left icon-spacing"></i>Past Sessions</a>
+  <a href="{% url 'class_dashboard' class_id=class_obj.id %}" class="btn custom-btn-red"><i class="fa-solid fa-arrow-left icon-spacing"></i>Go Back to Dashboard</a>
+  <a href="{% url 'upcoming_events' class_id=class_obj.id %}" class="btn custom-btn-red"><i class="fa-solid fa-clock icon-spacing"></i>Upcoming Sessions</a>
+</div>
 <div class="chat-container">
+  
   <h2>Chat Room – {{ class_obj.name }}</h2>
 
   <div class="chat-box">

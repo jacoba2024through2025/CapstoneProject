@@ -71,20 +71,60 @@ class EventForm(forms.ModelForm):
             'color': forms.TextInput(attrs={'type': 'color'}),  # color input
         }
 
+from django import forms
+from .models import Meeting
+
 class MeetingForm(forms.ModelForm):
+    custom_description = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={
+            'rows': 4,
+            'placeholder': 'This is the one'
+        }),
+        label='Custom Description'
+    )
+
     class Meta:
         model = Meeting
         fields = ['name', 'start_date']
         widgets = {
             'start_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
-            
         }
 
     def __init__(self, *args, **kwargs):
+        self.phase = kwargs.pop('phase', None)  # Extract phase from kwargs
         super().__init__(*args, **kwargs)
-        # Optionally set a default description based on phase if not pre-populated
-        if not self.instance.description:
-            self.instance.description = self.instance.auto_generate_description()
+
+        # Only show custom_description field if phase is phase_3
+        if self.phase != 'phase_3':
+            if 'custom_description' in self.fields:
+                del self.fields['custom_description']
+        else:
+            # Set initial custom description if instance has one
+            if self.instance and self.instance.description:
+                self.fields['custom_description'].initial = self.instance.description
+            elif not self.instance.description:
+                self.instance.description = self.instance.auto_generate_description(phase=self.phase)
+
+    def save(self, commit=True):
+        meeting = super().save(commit=False)
+
+        # If the custom_description field is present and filled, use it
+        if 'custom_description' in self.cleaned_data:
+            custom_desc = self.cleaned_data.get('custom_description')
+            if custom_desc:
+                meeting.description = custom_desc
+            elif not meeting.description:
+                meeting.description = meeting.auto_generate_description(phase=self.phase)
+        else:
+            # Always fall back to auto-generate if field isn't used
+            if not meeting.description:
+                meeting.description = meeting.auto_generate_description(phase=self.phase)
+
+        if commit:
+            meeting.save()
+        return meeting
+
 
 
 class ChatMessageForm(forms.ModelForm):
@@ -102,15 +142,15 @@ class ChatMessageForm(forms.ModelForm):
 class CreateProductForm(forms.ModelForm):
     class Meta:
         model = Products
-        fields = ['name', 'category', 'description', 'price', 'image']
+        fields = ['name', 'category', 'short_description', 'long_description', 'price', 'image']
         widgets = {
-            'name': forms.TextInput(attrs={'placeholder': 'Product Name'}),
-            'description': forms.Textarea(attrs={'placeholder': 'Product Description'}),
-            'price': forms.NumberInput(attrs={'placeholder': 'Price'}),
-            'category': forms.Select(attrs={'class': 'form-control'})  # Using Select widget for category
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Product Name'}),
+            'short_description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Short Description'}),
+            'long_description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Long Description'}),
+            'price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Price'}),
+            'category': forms.Select(attrs={'class': 'form-control'}),
+            'image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
-
-        image = forms.ImageField(required=False)
 
 class CoachProfileForm(forms.ModelForm):
     class Meta:

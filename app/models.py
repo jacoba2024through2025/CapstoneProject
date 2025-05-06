@@ -1,3 +1,4 @@
+from PIL import Image
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -161,18 +162,50 @@ class Products(models.Model):
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='other')
     price = models.DecimalField(max_digits=10, decimal_places=2)
     hidden = models.BooleanField(default=False)
-    description = models.TextField()
+    short_description = models.TextField(blank=True, null=True)
+    long_description = models.TextField()
     
     def __str__(self):
         return f"{self.name} - {self.price}"
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        if self.image and hasattr(self.image, 'path'):
+            try:
+                img = Image.open(self.image.path)
+                width, height = img.size
+
+                if width > 800 or height > 800:
+                    img.thumbnail((width, height))
+
+                if height < width:
+                    left = (width - height) / 2
+                    right = (width + height) / 2
+                    top = 0
+                    bottom = height
+                    img = img.crop((left, top, right, bottom))
+
+                elif width < height:
+                    left = 0
+                    right = width
+                    top = (height - width) / 2
+                    bottom = (height + width) / 2
+                    img = img.crop((left, top, right, bottom))
+
+                img.save(self.image.path)
+            except Exception as e:
+                # Optional: log or print error during image processing
+                print(f"Image processing failed: {e}")
+
     
 class Meeting(models.Model):
     PHASE_CHOICES = [
         ('phase_1', 'Phase 1: Introduction & Basics'),
         ('phase_2', 'Phase 2: Skill Reinforcement'),
+        ('phase_3', 'Phase 3: Custom Session'),
         
     ]
-    
     GRADE_RANGE_CHOICES = [
         ('prek_4th', 'PreK - 4th Grade'),
         ('5th_7th', '5th - 7th Grade'),
@@ -217,7 +250,10 @@ class Meeting(models.Model):
     def __str__(self):
         return f"{self.name} ({self.start_date} - {self.end_date})"
 
-    def auto_generate_description(self):
+    def auto_generate_description(self, phase=None):
+        if (phase or self.phase) == 'phase_3':  
+            return ''
+        
         lesson_plan = {
             'prek_4th': {
                 'phase_1': {
@@ -261,12 +297,14 @@ class Meeting(models.Model):
             },
         }
 
+        effective_phase = phase or self.phase
+
         # Fetch all completed meetings for this player in the same class, grade range, and phase
         completed_meetings = Meeting.objects.filter(
             class_item=self.class_item,
             player=self.player,
             grade_range=self.grade_range,
-            phase=self.phase,
+            phase=effective_phase,
             status='completed'
         ).count()
 

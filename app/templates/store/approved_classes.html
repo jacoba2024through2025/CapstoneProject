@@ -1,32 +1,32 @@
 {% extends 'root.html' %}
 {% block content %}
 
-<div class="container mt-4">
-  <h2>Your Approved Classes</h2>
+<title>{% block title %}My Classes{% endblock title %}</title>
+<div class="approved-classes-container container mt-4 height-control">
+  <h2 class="approved-classes-header">Your Classes</h2>
 
   {% if approved_classes %}
-    <div class="row mt-3">
+    <div class="row approved-classes-row mt-3">
       {% for class_obj in approved_classes %}
-        <div class="col-md-4">
-          <div class="card mb-4 shadow-sm">
+        <div class="col-md-4 approved-class-col">
+          <div class="approved-class-card card mb-4">
             {% if class_obj.class_image %}
-              <img src="{{ class_obj.class_image.url }}" class="card-img-top" alt="{{ class_obj.name }}">
+              <img src="{{ class_obj.class_image.url }}" class="approved-class-img card-img-top" alt="{{ class_obj.name }}">
             {% else %}
-              <img src="/media/class_images/default.jpg" class="card-img-top" alt="Default Image">
+              <img src="/media/class_images/default.jpg" class="approved-class-img card-img-top" alt="Default Image">
             {% endif %}
-            <div class="card-body">
-                <h5 class="card-title">{{ class_obj.name }}</h5>
-                <p class="card-text">{{ class_obj.description|truncatewords:20 }}</p>
-                <p><strong>Price:</strong> {{ class_obj.price|default:"Free" }}</p>
-                <p><strong>Coach:</strong> {{ class_obj.coach.first_name }} {{ class_obj.coach.last_name }}</p>
-                <a href="{% url 'class_dashboard' class_obj.id %}" class="btn btn-primary mt-2">Go to Class</a>
-              </div>
+            <div class="approved-class-body card-body">
+                <h5 class="approved-class-title card-title">{{ class_obj.name }}</h5>
+                <p class="approved-class-description card-text">{{ class_obj.description|truncatewords:20 }}</p>
+                <p class="approved-class-coach"><strong>Coach:</strong> {{ class_obj.coach.first_name }} {{ class_obj.coach.last_name }}</p>
+                <a href="{% url 'class_dashboard' class_obj.id %}" class="approved-class-button mt-2">Go to Class</a>
+            </div>
           </div>
         </div>
       {% endfor %}
     </div>
   {% else %}
-    <p>You haven't been approved for any classes yet.</p>
+    <p class="no-approved-classes-text">You haven't been approved for any classes yet.</p>
   {% endif %}
 </div>
 

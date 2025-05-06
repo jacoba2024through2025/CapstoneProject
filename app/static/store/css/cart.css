@@ -10,8 +10,16 @@ body {
   font-family: "Rubik", sans-serif;
   font-size: 14px;
   font-weight: 400;
-  background: #e0e0e0;
   color: #000000;
+  background:
+    radial-gradient(circle farthest-side at 0% 50%,#343131 23.5%,#0000 0)22.05px 31.5px,
+    radial-gradient(circle farthest-side at 0% 50%,#c03a3a 24%,#0000 0)19.95px 31.5px,
+    linear-gradient(#343131 14%,#0000 0, #0000 85%,#343131 0)0 0,
+    linear-gradient(150deg,#343131 24%,#c03a3a 0,#c03a3a 26%,#0000 0,#0000 74%,#c03a3a 0,#c03a3a 76%,#343131 0)0 0,
+    linear-gradient(30deg,#343131 24%,#c03a3a 0,#c03a3a 26%,#0000 0,#0000 74%,#c03a3a 0,#c03a3a 76%,#343131 0)0 0,
+    linear-gradient(90deg,#c03a3a 2%,#343131 0,#343131 98%,#c03a3a 0%)0 0 #343131;
+  background-size: 42px 63px;
+  background-color: #e4e9ec;
 }
 ul {
   list-style: none;
@@ -19,7 +27,7 @@ ul {
 }
 .button {
   display: inline-block;
-  background: #0e8ce4;
+  background: #CA152C;
   border-radius: 5px;
   height: 48px;
   -webkit-transition: all 200ms ease;
@@ -33,7 +41,7 @@ ul {
   font-size: 18px;
   font-weight: 400;
   line-height: 48px;
-  color: #ffffff;
+  color: #000000;
   padding-left: 35px;
   padding-right: 35px;
 }
@@ -48,6 +56,13 @@ ul {
 .cart_title {
   font-size: 30px;
   font-weight: 500;
+  align-content: center;
+  display: grid;
+  justify-content : center;
+  background-color : #fff;
+  box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.1);
+  border: solid 1px #e8e8e8;
+  border-radius: 12px;
 }
 .cart_items {
   margin-top: 8px;
