@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+import dj_database_url
+from dotenv import load_dotenv
+load_dotenv()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -28,7 +32,8 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    '2112-50-86-23-122.ngrok-free.app',  # <== your current ngrok subdomain
+    '2112-50-86-23-122.ngrok-free.app',
+    'westletics-di2k.onrender.com'  # <== your current ngrok subdomain
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -95,6 +100,9 @@ DATABASES = {
 }
 
 
+
+#postgresql://westletics_database_user:S8ZKedNzqzqKL2n2r7brZrHXnJaFSnGm@dpg-d0d68j2dbo4c73du4b90-a.oregon-postgres.render.com/westletics_database
+
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -159,8 +167,12 @@ EMAIL_HOST_PASSWORD = 'oybq eyqm dvjm rrmr'
 DEFAULT_FROM_EMAIL = 'jacob.allen202324@gmail.com'
 CONTACT_EMAIL = 'zombiejake2005@gmail.com'
 
-STRIPE_PUBLIC_KEY = "pk_test_51R8jUoLJ4Bm15VyFg3FvKKgSePWYlEpTV4g2D9KzponPmrER7rP5Xmy4NnVtmgCDhDidRmAyVAt1aOFvEtHMgRx700PftdTMCN"
-STRIPE_SECRET_KEY = "sk_test_51R8jUoLJ4Bm15VyFCoHLVHC6lYViZ3JJIDAmSGgwWiRAczCNL7CpH0TB1opN17VRJBjmuQ6zdopUhphdZW7lmcFG00DrvIsXYV"
+STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY")
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+
+
+
+
 
 BACKEND_DOMAIN = 'http://localhost:8000'
 PAYMENT_SUCCESS_URL = BACKEND_DOMAIN + '/success/'
