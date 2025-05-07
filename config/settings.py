@@ -33,7 +33,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     '2112-50-86-23-122.ngrok-free.app',
-    'westletics.onrender.com'  # <== your current ngrok subdomain
+    'capstoneproject-7lmo.onrender.com'  # <== your current ngrok subdomain
 ]
 
 CSRF_TRUSTED_ORIGINS = [
