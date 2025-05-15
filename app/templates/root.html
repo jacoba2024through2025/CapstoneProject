@@ -31,7 +31,7 @@
             <div class="logo-container">
               <a href="{% url 'home' %}"><img src="{% static 'store/images/W_logo.png' %}" alt="Westletics Logo" class="project-logo" /></a>
             </div>
-            <a class="navbar-brand" href="{% url 'home' %}"><h2 class="west-h2">Westletics</h2></a>
+            
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
@@ -145,7 +145,7 @@
     {% block script %}{% endblock script %}
     {% comment %} Schedule Scripts {% endcomment %}
     <script src="schedule/js/jquery.min.js"></script>
-    <script src="schedule/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="schedule/js/aos.js"></script>
     <script src="schedule/js/smoothscroll.js"></script>
     <script src="schedule/js/custom.js"></script>
